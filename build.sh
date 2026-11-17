@@ -1,6 +1,6 @@
 #!/bin/bash
 # Mate Notch derleme betiği.
-#   ./build.sh            → hızlı geliştirme derlemesi: ./Mate Notch.app (bu Mac'in mimarisi)
+#   ./build.sh            → hızlı geliştirme derlemesi: .build/dev/Mate Notch.app (bu Mac'in mimarisi)
 #   ./build.sh --release  → evrensel (Apple Silicon + Intel) uygulama + DMG: dist/Mate Notch.app, dist/Mate-Notch.dmg
 # Sürüm: VERSION=1.2.0 ./build.sh --release
 set -e
@@ -16,7 +16,8 @@ if [ "$RELEASE" = 1 ]; then
 else
   swift build -c release
   BIN=".build/release/MateNotch"
-  APP="Mate Notch.app"
+  APP=".build/dev/Mate Notch.app"
+  mkdir -p .build/dev
 fi
 
 # İkon yoksa üret
@@ -25,6 +26,8 @@ if [ ! -f Resources/AppIcon.icns ]; then
   iconutil -c icns Resources/AppIcon.iconset -o Resources/AppIcon.icns
 fi
 
+# Derleme çıktıları Spotlight/Launchpad aramasında "kopya uygulama" olarak çıkmasın
+touch "$(dirname "$APP")/.metadata_never_index"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/MateNotch"
