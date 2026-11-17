@@ -109,6 +109,9 @@ struct RootView: View {
             }
         }
         .onChange(of: pill) { _, v in state.pillVisible = v }
+        .onChange(of: CGSize(width: w, height: h)) { _, sz in if !open { state.hotSize = sz } }
+        .onChange(of: open) { _, o in if !o { state.hotSize = CGSize(width: w, height: h) } }
+        .onAppear { state.hotSize = CGSize(width: w, height: h) }
         .frame(width: w, height: h, alignment: .top)
         .clipShape(NotchShape(top: open ? 16 : 6, bottom: open ? 30 : (pill ? 18 : 11)))
         .background(

@@ -83,15 +83,13 @@ final class NotchController {
 
     private var hotRect: NSRect {
         let g = state.geometry
-        let extra: CGFloat = state.pillVisible ? Layout.pillExtra : 0   // satır sayısına göre
-        let w = max(g.notchWidth + Layout.sideW * 2, state.pillVisible ? Layout.pillMinW : 0)
-        let pad = CGFloat(UserDefaults.standard.double(forKey: Pref.hotPadding))   // açılma alanı genişletme
-        let exW = CGFloat(UserDefaults.standard.double(forKey: Pref.collapsedExtraW))
-        let exH = CGFloat(UserDefaults.standard.double(forKey: Pref.collapsedExtraH))
-        let ew = max(exW, g.notchWidth - w)      // açılma alanı fiziksel notch'tan küçülmesin
-        let eh = max(exH, 0)
-        return NSRect(x: g.screenFrame.midX - (w + ew) / 2 - pad, y: g.screenFrame.maxY - g.notchHeight - eh - 2 - extra - pad,
-                      width: w + ew + 2 * pad, height: g.notchHeight + eh + 12 + extra + pad)
+        // Açılma alanı = kapalı notch'un GERÇEKTE GÖRÜNEN boyutu. (Eskiden her zaman "notch + 54 pt kanat" idi; kanat yokken
+        // notch'un yanındaki boş yere gelince de açılıyordu.) En az fiziksel notch kadar; yanlara/aşağı genişletme ayarı eklenir.
+        let w = max(state.hotSize.width, g.notchWidth)
+        let h = max(state.hotSize.height, g.notchHeight)
+        let pad = CGFloat(UserDefaults.standard.double(forKey: Pref.hotPadding))
+        return NSRect(x: g.screenFrame.midX - w / 2 - pad, y: g.screenFrame.maxY - h - 2 - pad,
+                      width: w + 2 * pad, height: h + 12 + pad)
     }
     private var openRect: NSRect {
         let g = state.geometry
