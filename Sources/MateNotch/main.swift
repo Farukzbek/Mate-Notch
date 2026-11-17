@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         CalendarService.shared.start()
         LyricsService.shared.start()
         UpdateService.shared.start()
+        HUDService.shared.start()
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = Self.menuIcon()

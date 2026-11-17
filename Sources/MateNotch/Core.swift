@@ -105,6 +105,12 @@ enum Pref {
     static let showStats = "showStats"
     static let uiScale = "uiScale"
     static let styleCollapsed = "styleCollapsed"
+    static let hudVolume = "hudVolume"
+    static let hudBrightness = "hudBrightness"
+    static let hudKeyboard = "hudKeyboard"
+    static let hudStyle = "hudStyle"
+    static let hudDuration = "hudDuration"
+    static let hudHideSystem = "hudHideSystem"
     static let showAI = "showAI"
     static let aiProvider = "aiProvider"
     static let autoUpdateCheck = "autoUpdateCheck"
@@ -136,7 +142,7 @@ enum Pref {
             openOnHover: true, hoverDelay: 0.15, liveActivities: true, haptics: true,
             showShelf: true, showClipboard: true, showTimer: true, showStats: true,
             lyricsEnabled: false, lyricsInNotch: true,
-            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, showAI: true, aiProvider: "auto", autoUpdateCheck: true, autoUpdateInstall: true, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
+            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, hudVolume: true, hudBrightness: true, hudKeyboard: true, hudStyle: "bar", hudDuration: 1.6, hudHideSystem: false, showAI: true, aiProvider: "auto", autoUpdateCheck: true, autoUpdateInstall: true, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
             showCalendar: true, calDate: true, calEvent: true, qbCaffeinate: true, qbTimer: true, qbCapture: true, qbColor: true, showArtwork: true, captureMode: "area", captureClipboard: true, bgStyle: "black", bgColor: "#1F2A44",
         ])
     }

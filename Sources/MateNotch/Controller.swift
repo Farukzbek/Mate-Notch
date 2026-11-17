@@ -64,6 +64,11 @@ final class NotchController {
                 try? out.write(toFile: "/tmp/matenotch_ai.txt", atomically: true, encoding: .utf8)
             }
         }
+        if let k = ProcessInfo.processInfo.environment["MATENOTCH_HUD"] {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                HUDService.shared.preview(k == "brightness" ? .brightness : (k == "keyboard" ? .keyboard : .volume))
+            }
+        }
         if ProcessInfo.processInfo.environment["MATENOTCH_CLEANER"] != nil {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { CleanerWindow.show() }
         }
@@ -169,9 +174,21 @@ final class NotchController {
     }
 
     /// Kapalı notch boyutu ayarlanırken: kaydırırken notch kapalı hâlde gösterilir, bırakınca ayar önizlemesi için yeniden açılır.
-    func previewCollapsed(editing: Bool) {
+    /// Bir ayar değişince: notch'u kapat ve sonucu görebilmen için 2,5 sn kapalı tut.
+    func showCollapsedResult() {
+        previewCollapsed(editing: true)
+        previewCollapsed(editing: false, hold: 2.5)
+    }
+
+    private var reopenWork: DispatchWorkItem?
+    func previewCollapsed(editing: Bool, hold: TimeInterval = 0.7) {
+        reopenWork?.cancel()                       // bekleyen "yeniden aç" iptal: kapalıyken ayarı görmeye devam
         if editing { close() }
-        else if state.previewHold { DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in self?.open() } }
+        else if state.previewHold {
+            let w = DispatchWorkItem { [weak self] in self?.open() }
+            reopenWork = w
+            DispatchQueue.main.asyncAfter(deadline: .now() + hold, execute: w)
+        }
     }
 
     // MARK: Open / close

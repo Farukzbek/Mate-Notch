@@ -16,6 +16,8 @@ struct RootView: View {
     @ObservedObject var capture = CaptureService.shared
     @ObservedObject var lyrics = LyricsService.shared
     @ObservedObject var clip = ClipboardService.shared
+    @ObservedObject var hud = HUDService.shared
+    @AppStorage(Pref.hudStyle) var hudStyle = "bar"
     @AppStorage(Pref.liveActivities) var liveActivities = true
     @AppStorage(Pref.lyricsEnabled) var lyricsOn = false
     @AppStorage(Pref.lyricsInNotch) var lyricsInNotch = true
@@ -49,13 +51,14 @@ struct RootView: View {
     var body: some View {
         let g = state.geometry
         let open = state.isOpen
-        let pill = !open && (showPill || clip.justCopied)
-        let extra = clip.justCopied ? Layout.pillExtra(1) : Layout.pillExtra(pillLines)
+        let pill = !open && (showPill || clip.justCopied || hud.visible)
+        let extra = (clip.justCopied || hud.visible) ? Layout.pillExtra(1) : Layout.pillExtra(pillLines)
+        let pillW: CGFloat = hud.visible ? (hudStyle == "bar" ? 250 : 170) : Layout.pillMinW
         let u = open ? CGFloat(uiScale) : 1
         let base0 = max(40, g.notchWidth + CGFloat(exW))
         let ch = max(12, g.notchHeight + CGFloat(exH))
         let base = activity != nil ? base0 + Layout.sideW * 2 : base0
-        let w = open ? Layout.openW : (pill ? max(base, Layout.pillMinW) : base)
+        let w = open ? Layout.openW : (pill ? max(base, pillW) : base)
         let h = open ? g.notchHeight / u + Layout.bodyH : ch + (pill ? extra : 0)
 
         ZStack(alignment: .top) {
@@ -77,6 +80,13 @@ struct RootView: View {
                 // Sabit boyutlu içerik: kabuk küçülürken yeniden yerleşim (layout) yapılmaz, sadece kırpılır.
                 OpenContent()
                     .frame(width: Layout.openW, height: g.notchHeight / u + Layout.bodyH, alignment: .top)
+                    .overlay(alignment: .bottom) {   // notch açıkken de geri bildirim (sistem göstergesi gizliyse)
+                        if hud.visible {
+                            HUDBanner().frame(height: 30).fixedSize(horizontal: true, vertical: false)
+                                .background(Capsule().fill(.black.opacity(0.6)))
+                                .padding(.bottom, 10).transition(.opacity)
+                        }
+                    }
                     .transition(.asymmetric(insertion: .opacity.animation(.easeOut(duration: 0.22).delay(0.08)),
                                             removal: .opacity.animation(.easeIn(duration: 0.16))))
             } else if let a = activity {
@@ -84,7 +94,7 @@ struct RootView: View {
                     .transition(.opacity.animation(.easeOut(duration: 0.25).delay(0.18)))
             }
             if pill {
-                Group { if clip.justCopied { CopiedBanner() } else { LyricPill() } }
+                Group { if hud.visible { HUDBanner() } else if clip.justCopied { CopiedBanner() } else { LyricPill() } }
                     .frame(height: extra)
                     .padding(.top, ch)
                     .transition(.opacity.animation(.easeOut(duration: 0.25).delay(0.18)))
@@ -985,6 +995,13 @@ struct SettingsView: View {
     @ObservedObject var updater = UpdateService.shared
     @AppStorage(Pref.closedIcon) var closedIcon = "equalizer"
     @AppStorage(Pref.closedIconIdle) var closedIconIdle = false
+    @AppStorage(Pref.hudVolume) var hudVolume = true
+    @AppStorage(Pref.hudBrightness) var hudBrightness = true
+    @AppStorage(Pref.hudKeyboard) var hudKeyboard = true
+    @AppStorage(Pref.hudStyle) var hudStyle = "bar"
+    @AppStorage(Pref.hudDuration) var hudDuration = 1.6
+    @AppStorage(Pref.hudHideSystem) var hudHideSystem = false
+    @ObservedObject var hud = HUDService.shared
     @AppStorage(Pref.collapsedExtraW) var exW = 0.0
     @AppStorage(Pref.collapsedExtraH) var exH = 0.0
     // Seçici kendi hassas rengini tutar; hex yalnızca kayda yazılır (geri okunmaz) → sürüklerken renk kaymaz
@@ -1037,6 +1054,8 @@ struct SettingsView: View {
                         .onChange(of: pickerColor) { _, c in bgHex = c.hexString }
                 }
                 Toggle("Kapalıyken de uygula", isOn: $styleCollapsed).disabled(bgStyle == "black")
+                    .collapsesNotch()
+                    .onChange(of: styleCollapsed) { _, _ in NotchController.shared.showCollapsedResult() }
                 Text("Kapalıyken notch varsayılan olarak siyah kalır (donanım notch'uyla bütünleşir); bu seçenek açılırsa seçtiğin stil kapalı hâle de uygulanır. Fiziksel notch'un olduğu kısım her zaman siyah görünür.")
                     .font(.caption).foregroundStyle(.secondary)
             }
@@ -1077,9 +1096,42 @@ struct SettingsView: View {
                 Picker("Müzik göstergesi", selection: $closedIcon) {
                     ForEach(ClosedIcon.allCases) { i in Label(i.title, systemImage: i.symbol).tag(i.rawValue) }
                 }
+                .collapsesNotch()
+                .onChange(of: closedIcon) { _, _ in NotchController.shared.showCollapsedResult() }
                 Toggle("İçerik oynatılmıyorken de simgeyi göster", isOn: $closedIconIdle)
                     .disabled(closedIcon == "none")
-                Text("Müzik çalarken notch'un sağında görünür; ses dalgası ve diğer simgeler çalarken hareket eder. Sözler açık ya da kapalı olsun gösterge her zaman görünür.")
+                    .collapsesNotch()
+                    .onChange(of: closedIconIdle) { _, _ in NotchController.shared.showCollapsedResult() }
+                Text("Müzik çalarken notch'un sağında görünür; ses dalgası ve diğer simgeler çalarken hareket eder. Sözler açık ya da kapalı olsun gösterge her zaman görünür. Bu ayarlarla uğraşırken notch kapalı hâlde gösterilir.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Section("Ses ve parlaklık göstergesi") {
+                Toggle("Ses değişikliklerini notch'ta göster", isOn: $hudVolume).collapsesNotch()
+                Toggle("Parlaklık değişikliklerini notch'ta göster", isOn: $hudBrightness).collapsesNotch()
+                Toggle("Klavye aydınlatması değişikliklerini göster", isOn: $hudKeyboard)
+                    .disabled(!hud.keyboardAvailable).collapsesNotch()
+                Picker("Gösterge stili", selection: $hudStyle) {
+                    Text("Çubuk + yüzde").tag("bar")
+                    Text("Yalnızca yüzde").tag("percent")
+                    Text("Yalnızca simge").tag("icon")
+                }
+                .collapsesNotch()
+                .onChange(of: hudStyle) { _, _ in NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.volume) }
+                HStack {
+                    Text("Gösterge süresi")
+                    Slider(value: $hudDuration, in: 0.8...4, step: 0.1)
+                    Text(String(format: "%.1f sn", hudDuration)).monospacedDigit().frame(width: 50)
+                }.collapsesNotch()
+                HStack {
+                    Text("Önizle")
+                    Button("Ses") { NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.volume) }
+                    Button("Parlaklık") { NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.brightness) }
+                    if hud.keyboardAvailable { Button("Klavye") { NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.keyboard) } }
+                }
+                Toggle("Sistemin kendi göstergesini gizle (deneysel)", isOn: $hudHideSystem)
+                    .onChange(of: hudHideSystem) { _, _ in HUDService.shared.applyHideSystem() }
+                if !hud.hideStatus.isEmpty { Text(hud.hideStatus).font(.caption).foregroundStyle(hudHideSystem ? .green : .orange) }
+                Text("Gizleme açıkken ses, parlaklık ve klavye ışığı tuşlarını Mate Notch işler (⇧⌥ ile ince ayar); macOS'un ekran ortasındaki karesi çıkmaz. Erişilebilirlik izni ister. Kapatınca tuşlar normale döner. Parlaklık ve klavye ışığı için macOS'un özel arayüzleri kullanılır; yerleşik ekranlarda çalışır.")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("Ana Sayfa") {
@@ -1106,11 +1158,15 @@ struct SettingsView: View {
             Section("Mate Lyrics") {
                 Toggle("Şarkı sözlerini göster", isOn: $lyricsOn)
                 Toggle("Notch'ta anlık söz satırı", isOn: $lyricsInNotch).disabled(!lyricsOn)
+                    .collapsesNotch()
+                    .onChange(of: lyricsInNotch) { _, _ in NotchController.shared.showCollapsedResult() }
                 Picker("Notch'ta kaç satır görünsün", selection: $pillLines) {
                     Text("1 satır").tag(1)
                     Text("2 satır (anlık + sonraki)").tag(2)
                 }
                 .pickerStyle(.segmented).disabled(!lyricsOn || !lyricsInNotch)
+                .collapsesNotch()
+                .onChange(of: pillLines) { _, _ in NotchController.shared.showCollapsedResult() }
                 Text("Söz satırı Ana Sayfa'da şarkı adının altında görünür; oradaki 💬 düğmesiyle de açıp kapatabilirsin. Sözler lrclib.net'ten gelir.")
                     .font(.caption).foregroundStyle(.secondary)
             }
@@ -1543,5 +1599,14 @@ struct ProviderRow: View {
         let cur = svc.model(provider)
         if !l.contains(cur) { l.insert(cur, at: 0) }
         return l
+    }
+}
+
+
+/// Kapalı notch'u etkileyen ayar satırları: fare satırın üstündeyken notch kapalı hâlde gösterilir,
+/// satırdan ayrılınca (kısa bir gecikmeyle) ayar önizlemesi için yeniden açılır.
+extension View {
+    func collapsesNotch() -> some View {
+        onHover { NotchController.shared.previewCollapsed(editing: $0, hold: 1.5) }
     }
 }
