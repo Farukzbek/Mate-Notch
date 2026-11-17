@@ -253,20 +253,16 @@ final class NotchController {
         case .leftMouseDown:
             if !state.isOpen, inHot, !onHover { open() }
             else if state.isOpen, !inOpen, !state.pinned, !state.previewHold, !state.inputFocused { close() }
-        case .leftMouseDragged:
-            // Dosya sürüklerken Raf'ı aç
-            let pb = NSPasteboard(name: .drag)
-            let hasFiles = pb.canReadObject(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true])
-            if hasFiles {
-                state.dragging = true
-                if !state.isOpen, inHot || inOpen { state.tab = .shelf; open() }
-            }
+        // Not: dosya sürükleme burada ALGILANMAZ. Sürükleme panosu son sürüklemeden kalan eski dosyaları tutar; fare her
+        // sürüklendiğinde (örn. bir uygulama penceresini taşırken) buna bakmak Raf'ı yanlışlıkla açıyordu.
+        // Gerçek dosya sürüklemeyi pollDrag() algılar: fare basılıyken panonun YENİ değiştiğine ve içinde dosya olduğuna bakar.
         case .leftMouseUp:
             state.dragging = false
         default: break
         }
 
-        if e.type == .mouseMoved || e.type == .leftMouseDragged { hover(inHot: inHot, inOpen: inOpen, onHover: onHover) }
+        // Yalnızca fare hareketinde: tuş basılıyken yapılan sürüklemelerde (pencere taşıma vb.) "üzerine gelince aç" çalışmaz.
+        if e.type == .mouseMoved { hover(inHot: inHot, inOpen: inOpen, onHover: onHover) }
     }
 
     private func hover(inHot: Bool, inOpen: Bool, onHover: Bool) {
