@@ -21,7 +21,6 @@ final class NotchController {
     private var openWork: DispatchWorkItem?
     private var closeWork: DispatchWorkItem?
     private var bag = Set<AnyCancellable>()
-    private var lastScroll = Date.distantPast
 
     func setup() {
         panel = NotchPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel],
@@ -198,7 +197,6 @@ final class NotchController {
         let mask: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDragged, .leftMouseDown, .leftMouseUp]
         NSEvent.addGlobalMonitorForEvents(matching: mask) { [weak self] e in self?.handle(e) }
         NSEvent.addLocalMonitorForEvents(matching: mask) { [weak self] e in self?.handle(e); return e }
-        NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] e in self?.scroll(e); return e }
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] e in
             if e.keyCode == UInt16(kVK_Escape), self?.state.isOpen == true, self?.state.previewHold == false { self?.close(); return nil }
             return e
@@ -254,17 +252,6 @@ final class NotchController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + UserDefaults.standard.double(forKey: Pref.closeDelay), execute: w)
             }
         }
-    }
-
-    /// Açıkken yatay kaydırma ile sekme değiştir.
-    private func scroll(_ e: NSEvent) {
-        guard state.isOpen, abs(e.scrollingDeltaX) > abs(e.scrollingDeltaY), abs(e.scrollingDeltaX) > 6,
-              Date().timeIntervalSince(lastScroll) > 0.35 else { return }
-        lastScroll = Date()
-        let tabs = Tab.visible()
-        let i = tabs.firstIndex(of: state.tab) ?? 0
-        let n = e.scrollingDeltaX < 0 ? min(tabs.count - 1, i + 1) : max(0, i - 1)
-        withAnimation(.snappy(duration: 0.25)) { state.tab = tabs[n] }
     }
 }
 
