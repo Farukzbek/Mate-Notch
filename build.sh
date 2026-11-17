@@ -5,6 +5,9 @@
 # Sürüm: VERSION=1.2.0 ./build.sh --release
 set -e
 cd "$(dirname "$0")"
+# Sürüm: verilmezse son yayın etiketi (v1.0.1 → 1.0.1). Geliştirme derlemesi eski numara taşırsa uygulamanın kendi
+# güncelleyicisi onu yayındaki sürümle değiştirirdi.
+VERSION="${VERSION:-$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')}"
 VERSION="${VERSION:-1.0.0}"
 RELEASE=0; [ "$1" = "--release" ] && RELEASE=1
 
@@ -55,8 +58,15 @@ cat > "$APP/Contents/Info.plist" <<EOT
   <key>NSCalendarsFullAccessUsageDescription</key><string>Sıradaki etkinliği göstermek için takvime erişim gerekli.</string>
 </dict></plist>
 EOT
-# İmza: Developer ID varsa onunla (SIGN_ID="Developer ID Application: ..."), yoksa ad-hoc
-codesign --force --deep --sign "${SIGN_ID:--}" "$APP"
+# İmza kimliği (sırayla): SIGN_ID ortam değişkeni → bu Mac'teki "Apple Development" sertifikası → ad-hoc.
+# KALICI bir kimlik şart: ad-hoc imzada macOS izinleri (Erişilebilirlik, Takvim…) derlemenin parmak iziyle (cdhash)
+# eşler; her derlemede/güncellemede parmak izi değişince izinler geçersiz kalır. Sertifikayla imzalayınca izinler korunur.
+if [ -z "${SIGN_ID:-}" ]; then
+  AUTO_ID="$(security find-identity -v -p codesigning 2>/dev/null | grep -m1 'Apple Development' | awk '{print $2}')"
+fi
+SIGN="${SIGN_ID:-${AUTO_ID:--}}"
+codesign --force --deep --sign "$SIGN" "$APP"
+[ "$SIGN" = "-" ] && echo "UYARI: ad-hoc imza; her derlemede izinler sıfırlanır" || echo "İmza: $SIGN"
 echo "Hazır: $(pwd)/$APP"
 
 [ "$RELEASE" = 1 ] || exit 0

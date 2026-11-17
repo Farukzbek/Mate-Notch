@@ -5,6 +5,27 @@ import CoreGraphics
 import ApplicationServices
 
 /// Ses / parlaklık / klavye aydınlatması değişikliklerini notch'ta gösterir.
+/// macOS'un KENDİLİĞİNDEN yaptığı değişimleri (boşta kalınca ekranı/klavye ışığını kısma, tuşa basınca eski seviyeye döndürme)
+/// tuşla elle yapılan değişimlerden ayırır; otomatik olanlar için gösterge çıkmaz.
+private struct AutoChangeFilter {
+    var preDim: Float?          // kısılmadan önceki seviye (otomatik kısma sürerken)
+
+    mutating func isAutomatic(from: Float, to: Float, maxManualJump: Float) -> Bool {
+        let idle = Float(CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: CGEventType(rawValue: ~0)!))
+        let delta = to - from
+        if delta < 0 {
+            // Boşta kalınca (tuş basışı olmadan) veya tek tuş adımından çok büyük düşüş → otomatik kısma
+            if idle >= 4 || -delta > maxManualJump { if preDim == nil { preDim = from }; return true }
+            return false
+        }
+        if let pre = preDim {                 // otomatik kısmadan sonra geri açılma
+            if to >= pre - 0.03 { preDim = nil }
+            return true
+        }
+        return delta > maxManualJump          // büyük sıçrama: geri yükleme
+    }
+}
+
 final class HUDService: ObservableObject {
     static let shared = HUDService()
     enum Kind { case volume, brightness, keyboard }
@@ -24,6 +45,8 @@ final class HUDService: ObservableObject {
     // Parlaklık/klavye: yavaş (otomatik parlaklık) kaymaları saymamak için "taban" değer
     private var brightBase: Float?, brightBaseAt = Date()
     private var kbBase: Float?, kbBaseAt = Date()
+    private var brightFilter = AutoChangeFilter()
+    private var kbFilter = AutoChangeFilter()
 
     // MARK: Başlat
 
@@ -34,7 +57,7 @@ final class HUDService: ObservableObject {
         kbSetup()
         timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in self?.poll() }
         RunLoop.main.add(timer!, forMode: .common)
-        applyHideSystem(silent: true)
+        applyHideSystem(userInitiated: false)
     }
 
     // MARK: Gösterme
@@ -191,13 +214,17 @@ final class HUDService: ObservableObject {
     private func poll() {
         let d = UserDefaults.standard
         let now = Date()
+        // Tuş adımı büyük ayarlandıysa (tuşları biz işliyorsak) "elle yapılmış" sayılacak en büyük sıçrama da büyür
+        let stepFrac = Float(max(1, min(20, d.double(forKey: Pref.hudStep)))) / 100
+        let maxManual: Float = d.bool(forKey: Pref.hudHideSystem) ? max(0.15, stepFrac * 2 + 0.03) : 0.15
         if d.bool(forKey: Pref.hudBrightness), let b = Self.readBrightness() {
             if brightBase == nil { brightBase = b; brightBaseAt = now }
             else if let base = brightBase {
                 let active = visible && kind == .brightness
                 if abs(b - base) >= (active ? 0.003 : 0.03) {
+                    let auto = brightFilter.isAutomatic(from: base, to: b, maxManualJump: maxManual)
                     brightBase = b; brightBaseAt = now
-                    show(.brightness, level: Double(b))
+                    if !auto { show(.brightness, level: Double(b)) }
                 } else if now.timeIntervalSince(brightBaseAt) > 1.5 { brightBase = b; brightBaseAt = now }
             }
         }
@@ -206,8 +233,9 @@ final class HUDService: ObservableObject {
             else if let base = kbBase {
                 let active = visible && kind == .keyboard
                 if abs(k - base) >= (active ? 0.003 : 0.03) {
+                    let auto = kbFilter.isAutomatic(from: base, to: k, maxManualJump: 0.15)
                     kbBase = k; kbBaseAt = now
-                    show(.keyboard, level: Double(k))
+                    if !auto { show(.keyboard, level: Double(k)) }
                 } else if now.timeIntervalSince(kbBaseAt) > 1.5 { kbBase = k; kbBaseAt = now }
             }
         }
@@ -215,18 +243,37 @@ final class HUDService: ObservableObject {
 
     // MARK: Sistemin kendi göstergesini gizle (deneysel)
 
-    func applyHideSystem(silent: Bool = false) {
-        let on = UserDefaults.standard.bool(forKey: Pref.hudHideSystem)
-        if on {
-            if SystemKeys.shared.start() { hideStatus = "Açık: ses/parlaklık tuşlarını Mate Notch işliyor." }
-            else {
-                UserDefaults.standard.set(false, forKey: Pref.hudHideSystem)
-                hideStatus = "Erişilebilirlik izni gerekli: Sistem Ayarları › Gizlilik ve Güvenlik › Erişilebilirlik'te Mate Notch'u aç, sonra bu seçeneği tekrar aç."
-            }
-        } else {
-            SystemKeys.shared.stop()
-            if !silent { hideStatus = "" }
+    @Published var axWaiting = false          // Erişilebilirlik izni bekleniyor
+    private var axTimer: Timer?
+    private var axWaitingSince = Date()
+
+    private static let onMessage = "Açık: ses/parlaklık tuşlarını Mate Notch işliyor."
+    static let accessibilityURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
+
+    /// `userInitiated`: kullanıcı anahtarı şimdi açtı → izin penceresi gösterilir. Uygulama açılışında sessizce denenir.
+    func applyHideSystem(userInitiated: Bool = true) {
+        axTimer?.invalidate(); axTimer = nil
+        guard UserDefaults.standard.bool(forKey: Pref.hudHideSystem) else {
+            SystemKeys.shared.stop(); axWaiting = false; hideStatus = ""
+            return
         }
+        if SystemKeys.shared.start(prompt: userInitiated) { axWaiting = false; hideStatus = Self.onMessage; return }
+
+        // İzin yok: anahtarı KAPATMA. İzin verilince kendiliğinden başlasın (yeniden açıp yeniden izin istemek yok).
+        axWaiting = true
+        axWaitingSince = Date()
+        hideStatus = "Erişilebilirlik izni bekleniyor: Sistem Ayarları › Gizlilik ve Güvenlik › Erişilebilirlik'te Mate Notch'u aç. Açınca kendiliğinden başlar."
+        axTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] t in
+            guard let self else { t.invalidate(); return }
+            guard UserDefaults.standard.bool(forKey: Pref.hudHideSystem) else { t.invalidate(); self.axWaiting = false; return }
+            if SystemKeys.shared.start(prompt: false) {
+                t.invalidate(); self.axWaiting = false; self.hideStatus = Self.onMessage
+            } else if Date().timeIntervalSince(self.axWaitingSince) > 15 {
+                // Ayarlarda açık görünüp çalışmıyorsa: macOS eski bir kopyanın iznini hatırlıyordur
+                self.hideStatus = "İzin hâlâ gelmedi. Listede Mate Notch zaten açık görünüyorsa macOS eski bir kopyanın iznini tutuyor olabilir: onu seçip − ile kaldır, sonra + ile /Uygulamalar'dan Mate Notch'u yeniden ekle."
+            }
+        }
+        RunLoop.main.add(axTimer!, forMode: .common)
     }
 }
 
@@ -239,10 +286,10 @@ final class SystemKeys {
     private var tap: CFMachPort?
     private var source: CFRunLoopSource?
 
-    func start() -> Bool {
+    func start(prompt: Bool = true) -> Bool {
         if tap != nil { return true }
         guard AXIsProcessTrusted() else {
-            _ = AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary)
+            if prompt { _ = AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary) }
             return false
         }
         let mask = CGEventMask(1 << 14)      // NX_SYSDEFINED
@@ -275,7 +322,10 @@ final class SystemKeys {
         let key = (data & 0xFFFF0000) >> 16
         let down = ((data & 0x0000FF00) >> 8) == 0xA
         let fine = event.flags.contains(.maskAlternate) && event.flags.contains(.maskShift)    // ⇧⌥: ince adım
-        let step: Float = fine ? 1.0 / 64 : 1.0 / 16
+        // Ses ve ekran parlaklığı: Ayarlar'daki "tuş başına değişim" (%1–%20); ⇧⌥ ile dörtte biri.
+        let userStep = Float(max(1, min(20, UserDefaults.standard.double(forKey: Pref.hudStep)))) / 100
+        let step: Float = fine ? max(0.005, userStep / 4) : userStep
+        let keyStep: Float = fine ? 1.0 / 64 : 1.0 / 16          // klavye ışığı macOS'un kendi adımında kalır
 
         switch key {
         case 0, 1, 7:   // SOUND_UP, SOUND_DOWN, MUTE
@@ -294,7 +344,7 @@ final class SystemKeys {
             let h = HUDService.shared
             guard h.keyboardAvailable, let k = h.readKeyboard() else { return pass }
             if down {
-                let n = key == 21 ? k + step : k - step
+                let n = key == 21 ? k + keyStep : k - keyStep
                 if h.setKeyboard(n) { h.show(.keyboard, level: Double(min(1, max(0, n)))) }
             }
             return nil

@@ -1053,6 +1053,7 @@ struct SettingsView: View {
     @AppStorage(Pref.hudStyle) var hudStyle = "bar"
     @AppStorage(Pref.hudDuration) var hudDuration = 1.6
     @AppStorage(Pref.hudHideSystem) var hudHideSystem = false
+    @AppStorage(Pref.hudStep) var hudStep = 6.0
     @ObservedObject var hud = HUDService.shared
     @AppStorage(Pref.bannerBluetooth) var bannerBluetooth = true
     @AppStorage(Pref.privacyIndicator) var privacyIndicator = true
@@ -1188,10 +1189,23 @@ struct SettingsView: View {
                     Button("Parlaklık") { NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.brightness) }
                     if hud.keyboardAvailable { Button("Klavye") { NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.keyboard) } }
                 }
-                Toggle("Sistemin kendi göstergesini gizle (deneysel)", isOn: $hudHideSystem)
-                    .onChange(of: hudHideSystem) { _, _ in HUDService.shared.applyHideSystem() }
+                Toggle("Tuşları Mate Notch işlesin: sistem göstergesi gizlenir, adım ayarlanır (deneysel)", isOn: $hudHideSystem)
+                    .onChange(of: hudHideSystem) { _, _ in HUDService.shared.applyHideSystem(userInitiated: true) }
+                HStack {
+                    Text("Tuş başına değişim")
+                    Slider(value: $hudStep, in: 1...20, step: 1)
+                    Text("%\(Int(hudStep))").monospacedDigit().frame(width: 40)
+                }
+                .disabled(!hudHideSystem).opacity(hudHideSystem ? 1 : 0.5)
+                if !hudHideSystem {
+                    Text("Ses açma/kısma ve parlaklık açma/kısma tuşlarının her basışta kaç yüzde değişeceği. Bu ayar yalnızca yukarıdaki seçenek açıkken geçerli (tuşları Mate Notch işlediği için).")
+                        .font(.caption).foregroundStyle(.orange)
+                }
+                if hudHideSystem && hud.axWaiting {
+                    Button("Erişilebilirlik ayarlarını aç") { NSWorkspace.shared.open(HUDService.accessibilityURL) }
+                }
                 if !hud.hideStatus.isEmpty { Text(hud.hideStatus).font(.caption).foregroundStyle(hudHideSystem ? .green : .orange) }
-                Text("Gizleme açıkken ses, parlaklık ve klavye ışığı tuşlarını Mate Notch işler (⇧⌥ ile ince ayar); macOS'un ekran ortasındaki karesi çıkmaz. Erişilebilirlik izni ister. Kapatınca tuşlar normale döner. Parlaklık ve klavye ışığı için macOS'un özel arayüzleri kullanılır; yerleşik ekranlarda çalışır.")
+                Text("Bu seçenek açıkken ses, parlaklık ve klavye ışığı tuşlarını Mate Notch işler: macOS'un ekran ortasındaki karesi çıkmaz, ses/parlaklık adımı yukarıdaki yüzdeyle değişir (⇧⌥ ile dörtte biri). Klavye ışığı macOS'un kendi adımında (≈%6) kalır. Klavye ışığının boşta kalınca kendiliğinden kısılması/geri açılması için gösterge çıkmaz. Erişilebilirlik izni ister. Kapatınca tuşlar normale döner. Parlaklık ve klavye ışığı için macOS'un özel arayüzleri kullanılır; yerleşik ekranlarda çalışır.")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("Göstergeler ve bildirimler") {
