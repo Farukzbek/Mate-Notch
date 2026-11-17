@@ -24,6 +24,10 @@
 - **Pano geçmişi:** Kopyalayınca "Kopyalandı" bandı; tek tek veya toplu silme. Şifre yöneticisi kopyaları kaydedilmez.
 - **Renk seçici:** Ekrandan bir rengi seç, hex kodu panoya kopyalansın.
 - **Ekran görüntüsü düğmesi:** Seçilen alan, tam ekran, video kaydı veya sistem çekim aracı.
+- **Yapay zeka:** Panodaki veya yazdığın metni özetle, düzelt, yeniden yaz, çevir, açıkla; takvimden günlük özet; serbest soru. Varsayılan olarak **cihaz içi Apple modeliyle** çalışır (anahtar gerekmez, veri Mac'inden çıkmaz; Apple Intelligence gerekir). İstersen Ayarlar'dan **Claude, ChatGPT veya Gemini** hesabını (kendi API anahtarınla) bağlarsın; anahtar Anahtarlık'ta saklanır.
+- **AirDrop:** Raf sekmesinde dosyayı AirDrop alanına sürükle, alıcı seçici açılsın.
+- **Önbellek temizleyici:** Gereksiz önbellek ve günlük dosyalarını neye ait olduklarını yazarak listeler; sen onaylamadan hiçbir şey silmez.
+- **Otomatik güncelleme:** GitHub Releases'te yeni sürüm çıkınca denetler, doğrular (SHA-256 + imza) ve kendini günceller (ayarlardan kapatılabilir).
 - **Zamanlayıcı, sistem durumu (CPU / bellek / disk), uyanık tut, takvimde sıradaki etkinlik.**
 - **Görünüm:** Siyah, düz renk, albüm rengi veya **Liquid Glass** (yoğunluk ve cam tipi ayarlı); açık/kapalı boyut, açılma alanı ve gecikmeleri ayarlanabilir.
 - Kısayol: `⌃⌥Space` aç/kapat. Menü çubuğunda gülen yüzlü simge; Dock'ta yer kaplamaz.

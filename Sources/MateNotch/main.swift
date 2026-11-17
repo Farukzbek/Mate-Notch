@@ -1,25 +1,57 @@
 import AppKit
+import Combine
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
+    var updateItem: NSMenuItem!
+    var bag = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Pref.register()
+        Self.installMainMenu()
         NotchController.shared.setup()
         MediaService.shared.start()
         BatteryService.shared.start()
         ClipboardService.shared.start()
         CalendarService.shared.start()
         LyricsService.shared.start()
+        UpdateService.shared.start()
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = Self.menuIcon()
         let menu = NSMenu()
         menu.addItem(withTitle: "Aç / Kapat", action: #selector(toggle), keyEquivalent: "").target = self
+        menu.addItem(withTitle: "Önbellek Temizleyici…", action: #selector(cleaner), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Ayarlar…", action: #selector(settings), keyEquivalent: ",").target = self
+        updateItem = menu.addItem(withTitle: "Güncelle", action: #selector(installUpdate), keyEquivalent: "")
+        updateItem.target = self
+        updateItem.isHidden = true
+        UpdateService.shared.$available.receive(on: DispatchQueue.main).sink { [weak self] v in
+            self?.updateItem.isHidden = (v == nil)
+            if let v { self?.updateItem.title = "Güncelle: \(v) · yeniden başlat" }
+        }.store(in: &bag)
         menu.addItem(.separator())
         menu.addItem(withTitle: "Mate Notch'tan Çık", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         statusItem.menu = menu
+    }
+
+    /// Menü çubuğunda görünmeyen ama klavye kısayollarını (⌘C/⌘V/⌘X/⌘A/⌘Z) yazı alanlarına ileten ana menü.
+    static func installMainMenu() {
+        let main = NSMenu()
+        let appItem = NSMenuItem(); main.addItem(appItem)
+        let appMenu = NSMenu(); appMenu.addItem(withTitle: "Mate Notch'tan Çık", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appItem.submenu = appMenu
+        let editItem = NSMenuItem(); main.addItem(editItem)
+        let edit = NSMenu(title: "Düzen")
+        edit.addItem(withTitle: "Geri Al", action: Selector(("undo:")), keyEquivalent: "z")
+        let redo = edit.addItem(withTitle: "Yinele", action: Selector(("redo:")), keyEquivalent: "z"); redo.keyEquivalentModifierMask = [.command, .shift]
+        edit.addItem(.separator())
+        edit.addItem(withTitle: "Kes", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        edit.addItem(withTitle: "Kopyala", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        edit.addItem(withTitle: "Yapıştır", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        edit.addItem(withTitle: "Tümünü Seç", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        editItem.submenu = edit
+        NSApp.mainMenu = main
     }
 
     /// Gülen yüzlü kapsül: Mate yazılımı olduğu belli olsun. Template olduğu için açık/koyu menü çubuğuna uyar.
@@ -43,6 +75,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func toggle() { NotchController.shared.toggle() }
+    @objc func installUpdate() { UpdateService.shared.install() }
+    @objc func cleaner() { CleanerWindow.show() }
     @objc func settings() { SettingsWindow.show() }
 }
 

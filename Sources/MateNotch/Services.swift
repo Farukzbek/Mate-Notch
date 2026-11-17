@@ -449,3 +449,32 @@ final class CaffeinateService: ObservableObject {
         }
     }
 }
+
+// MARK: - AirDrop
+
+enum AirDrop {
+    /// Sistemin AirDrop paylaşımını açar: alıcı seçici belirir, dosyalar seçilen cihaza gider.
+    static func send(_ urls: [URL]) {
+        let files = urls.filter { FileManager.default.fileExists(atPath: $0.path) }
+        guard !files.isEmpty,
+              let service = NSSharingService(named: .sendViaAirDrop),
+              service.canPerform(withItems: files) else { NSSound.beep(); return }
+        NotchController.shared.close()
+        NSApp.activate(ignoringOtherApps: true)
+        service.perform(withItems: files)
+    }
+
+    /// Bırakılan sağlayıcılardan (NSItemProvider) dosya adreslerini toplayıp tek seferde gönderir.
+    static func send(providers: [NSItemProvider]) {
+        var urls: [URL] = []
+        let group = DispatchGroup()
+        for p in providers {
+            group.enter()
+            _ = p.loadObject(ofClass: URL.self) { url, _ in
+                if let url { DispatchQueue.main.async { urls.append(url) } }
+                group.leave()
+            }
+        }
+        group.notify(queue: .main) { send(urls) }
+    }
+}

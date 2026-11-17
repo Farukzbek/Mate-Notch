@@ -252,9 +252,10 @@ struct OpenContent: View {
     @AppStorage(Pref.showClipboard) var showClipboard = true
     @AppStorage(Pref.showTimer) var showTimer = true
     @AppStorage(Pref.showStats) var showStats = true
+    @AppStorage(Pref.showAI) var showAI = true
     @AppStorage(Pref.uiScale) var uiScale = 1.0
 
-    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats); return Tab.visible() }
+    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI); return Tab.visible().filter { $0 != .ai } }
 
     var body: some View {
         let g = state.geometry
@@ -267,6 +268,12 @@ struct OpenContent: View {
                 }
                 Spacer(minLength: g.hasNotch ? (g.notchWidth + 8) / CGFloat(uiScale) : 12)
                 HStack(spacing: 10) {
+                    if showAI {
+                        Button { withAnimation(.snappy(duration: 0.25)) { state.tab = .ai } } label: {
+                            Image(systemName: "sparkles")
+                                .foregroundStyle(state.tab == .ai ? Color.white : .white.opacity(0.5))
+                        }.buttonStyle(.plain).morph("Yapay Zeka")
+                    }
                     Button { state.pinned.toggle() } label: {
                         Image(systemName: state.pinned ? "pin.fill" : "pin")
                             .foregroundStyle(state.pinned ? Color.yellow : .white.opacity(0.5))
@@ -290,6 +297,7 @@ struct OpenContent: View {
             Group {
                 switch state.tab {
                 case .home: HomeView()
+                case .ai: AIView()
                 case .shelf: ShelfView()
                 case .clipboard: ClipboardView()
                 case .timer: TimerView()
@@ -551,6 +559,104 @@ struct QuickButton: View {
 
 struct ShelfView: View {
     @ObservedObject var shelf = ShelfService.shared
+    var body: some View {
+        HStack(spacing: 12) {
+            ShelfZone()
+            AirDropZone()
+        }
+    }
+}
+
+/// Dosyayı buraya sürükle → AirDrop alıcı seçicisi açılır. Tıklayınca raftaki tüm dosyalar gönderilir.
+struct AirDropZone: View {
+    @ObservedObject var shelf = ShelfService.shared
+    @State private var targeted = false
+    @State private var hovering = false
+
+    var body: some View {
+        Button {
+            AirDrop.send(shelf.urls)
+        } label: {
+            VStack(spacing: 7) {
+                AirDropGlyph()
+                    .foregroundStyle(targeted ? .white : Color(red: 0.35, green: 0.70, blue: 1.0))
+                    .frame(width: 40, height: 40)
+                    .scaleEffect(targeted ? 1.18 : 1)
+                Text("AirDrop").font(.system(size: 12, weight: .semibold))
+                Text(shelf.urls.isEmpty ? "Dosyayı buraya sürükle" : (hovering ? "Raftakileri gönder" : "Buraya sürükle\nveya tıkla"))
+                    .font(.system(size: 9.5)).foregroundStyle(.white.opacity(0.5))
+                    .multilineTextAlignment(.center).lineLimit(2)
+            }
+            .frame(width: 118).frame(maxHeight: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(targeted ? Color(red: 0.1, green: 0.45, blue: 0.95).opacity(0.55)
+                                   : Color(red: 0.1, green: 0.45, blue: 0.95).opacity(hovering ? 0.22 : 0.14))
+            )
+            .overlay(RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(Color(red: 0.35, green: 0.70, blue: 1.0).opacity(targeted ? 0.9 : 0.35), lineWidth: 1.2))
+            .contentShape(RoundedRectangle(cornerRadius: 16))
+        }
+        .buttonStyle(.plain)
+        .disabled(false)
+        .background(HoverTracker { h in withAnimation(.snappy(duration: 0.15)) { hovering = h } })
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: targeted)
+        .background(FileDropTarget(onTargeted: { targeted = $0 }, onDrop: { AirDrop.send($0) }))
+    }
+}
+
+/// Dosya bırakma alanı (AppKit NSDraggingDestination): SwiftUI'nin onDrop'una göre nonactivating panelde daha güvenilir.
+/// Sürüklenen dosya adreslerini doğrudan sürükleme panosundan okur.
+struct FileDropTarget: NSViewRepresentable {
+    var onTargeted: (Bool) -> Void
+    var onDrop: ([URL]) -> Void
+    func makeNSView(context: Context) -> DropView { let v = DropView(); v.onTargeted = onTargeted; v.onDrop = onDrop; return v }
+    func updateNSView(_ v: DropView, context: Context) { v.onTargeted = onTargeted; v.onDrop = onDrop }
+}
+
+final class DropView: NSView {
+    var onTargeted: ((Bool) -> Void)?
+    var onDrop: (([URL]) -> Void)?
+
+    override init(frame: NSRect) { super.init(frame: frame); registerForDraggedTypes([.fileURL]) }
+    required init?(coder: NSCoder) { fatalError() }
+
+    private func urls(_ info: NSDraggingInfo) -> [URL] {
+        (info.draggingPasteboard.readObjects(forClasses: [NSURL.self],
+                                             options: [.urlReadingFileURLsOnly: true]) as? [URL]) ?? []
+    }
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        guard !urls(sender).isEmpty else { return [] }
+        onTargeted?(true)
+        return .copy
+    }
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation { .copy }
+    override func draggingExited(_ sender: NSDraggingInfo?) { onTargeted?(false) }
+    override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool { true }
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        onTargeted?(false)
+        let list = urls(sender)
+        guard !list.isEmpty else { return false }
+        DispatchQueue.main.async { self.onDrop?(list) }
+        return true
+    }
+}
+
+/// AirDrop halkaları (SF Symbols'te yok): merkez nokta + altı açık iki halka.
+struct AirDropGlyph: View {
+    var body: some View {
+        ZStack {
+            Circle().frame(width: 7, height: 7)
+            Circle().trim(from: 0.09, to: 0.91).stroke(style: StrokeStyle(lineWidth: 3.2, lineCap: .round))
+                .frame(width: 22, height: 22).rotationEffect(.degrees(90))
+            Circle().trim(from: 0.09, to: 0.91).stroke(style: StrokeStyle(lineWidth: 3.2, lineCap: .round))
+                .frame(width: 38, height: 38).rotationEffect(.degrees(90))
+        }
+    }
+}
+
+struct ShelfZone: View {
+    @ObservedObject var shelf = ShelfService.shared
     @State private var targeted = false
 
     var body: some View {
@@ -576,14 +682,7 @@ struct ShelfView: View {
                 }
             }
         }
-        .onDrop(of: [.fileURL], isTargeted: $targeted) { providers in
-            for p in providers {
-                _ = p.loadObject(ofClass: URL.self) { url, _ in
-                    if let url { DispatchQueue.main.async { shelf.add([url]) } }
-                }
-            }
-            return true
-        }
+        .background(FileDropTarget(onTargeted: { targeted = $0 }, onDrop: { shelf.add($0) }))
     }
 }
 
@@ -598,6 +697,7 @@ struct ShelfItem: View {
         .onDrag { NSItemProvider(object: url as NSURL) }
         .contextMenu {
             Button("Finder'da göster") { NSWorkspace.shared.activateFileViewerSelecting([url]) }
+            Button("AirDrop ile gönder") { AirDrop.send([url]) }
             Button("Raftan kaldır") { shelf.remove(url) }
         }
     }
@@ -697,6 +797,12 @@ struct ClipRow: View {
         .background(RoundedRectangle(cornerRadius: 8).fill(.white.opacity(hovering ? 0.13 : 0.07)))
         .background(HoverTracker { h in withAnimation(.snappy(duration: 0.15)) { hovering = h } })
         .contextMenu {
+            Menu("Yapay zeka ile…") {
+                ForEach([AIAction.summarize, .fix, .rewrite, .toTR, .toEN, .explain]) { a in
+                    Button(a.title) { AIState.shared.start(a, text: item.text) }
+                }
+            }
+            Divider()
             Button("Sil", role: .destructive) { clip.remove(item) }
             Button("Tümünü sil", role: .destructive) { clip.clear() }
         }
@@ -761,6 +867,14 @@ struct StatsView: View {
             }
             .padding(10).frame(maxWidth: .infinity)
             .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.07)))
+            .overlay(alignment: .topTrailing) {
+                Button { CleanerWindow.show() } label: {
+                    Label("Önbellek temizle", systemImage: "sparkles").font(.system(size: 10, weight: .semibold))
+                        .padding(.horizontal, 9).frame(height: 22)
+                        .background(Capsule().fill(.white.opacity(0.12)))
+                }
+                .buttonStyle(PressStyle()).padding(7)
+            }
         }
         .onAppear { stats.retain() }
         .onDisappear { stats.release() }
@@ -825,6 +939,9 @@ struct SettingsView: View {
     @AppStorage(Pref.styleCollapsed) var styleCollapsed = false
     @AppStorage(Pref.glassDensity) var glassDensity = 0.35
     @AppStorage(Pref.glassClear) var glassClear = true
+    @AppStorage(Pref.autoUpdateCheck) var autoUpdateCheck = true
+    @AppStorage(Pref.autoUpdateInstall) var autoUpdateInstall = true
+    @ObservedObject var updater = UpdateService.shared
     @AppStorage(Pref.closedIcon) var closedIcon = "equalizer"
     @AppStorage(Pref.closedIconIdle) var closedIconIdle = false
     @AppStorage(Pref.collapsedExtraW) var exW = 0.0
@@ -893,6 +1010,27 @@ struct SettingsView: View {
                 Toggle("Canlı etkinlikler (müzik, zamanlayıcı, şarj)", isOn: $live)
                 Toggle("Dokunsal geri bildirim", isOn: $haptics)
                 Toggle("Girişte otomatik başlat", isOn: Binding(get: { loginItem }, set: { loginItem = $0; LaunchAtLogin.set($0) }))
+            }
+            Section("Yapay Zeka") { AISettingsSection() }
+            Section("Bakım") {
+                Button("Önbellek Temizleyiciyi aç…") { CleanerWindow.show() }
+                Text("Gereksiz önbellek ve günlük dosyalarını neye ait olduklarıyla listeler; sen onaylamadan hiçbir şey silmez.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Section("Güncellemeler") {
+                HStack {
+                    Text("Sürüm \(updater.current)")
+                    Spacer()
+                    Text(updater.status).font(.caption).foregroundStyle(.secondary)
+                }
+                Toggle("Güncellemeleri otomatik denetle", isOn: $autoUpdateCheck)
+                Toggle("Yeni sürümü otomatik kur ve yeniden başlat", isOn: $autoUpdateInstall).disabled(!autoUpdateCheck)
+                HStack {
+                    Button("Şimdi denetle") { updater.check() }.disabled(updater.busy)
+                    if updater.available != nil { Button("Şimdi kur") { updater.install() } }
+                }
+                Text("Sürümler GitHub'dan (Farukzbek/Mate-Notch) denetlenir. İndirilen paketin sağlama toplamı ve imzası doğrulanır. Kayıt sürerken veya notch açıkken kurulum beklenir.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
             Section("Kapalı notch simgesi") {
                 Picker("Müzik göstergesi", selection: $closedIcon) {
@@ -1213,3 +1351,156 @@ struct Morph: ViewModifier {
 }
 
 extension View { func morph(_ text: String, trailing: Bool = false) -> some View { modifier(Morph(text: text, trailing: trailing)) } }
+
+
+// MARK: - Yapay zeka sekmesi
+
+struct AIView: View {
+    @ObservedObject var ai = AIState.shared
+    @ObservedObject var svc = AIService.shared
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        VStack(spacing: 7) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(AIAction.chips) { a in
+                        Button { ai.run(a) } label: {
+                            Label(a.title, systemImage: a.icon).font(.system(size: 10.5, weight: .semibold))
+                                .padding(.horizontal, 9).frame(height: 24)
+                                .background(Capsule().fill(.white.opacity(0.11)))
+                        }.buttonStyle(PressStyle()).disabled(ai.busy)
+                    }
+                }
+            }
+            .frame(height: 24)
+
+            HStack(spacing: 6) {
+                TextField("Metin yaz, panodan al veya bir şey sor…", text: $ai.input)
+                    .textFieldStyle(.plain).font(.system(size: 12))
+                    .focused($focused)
+                    .onSubmit { ai.run(.ask) }
+                    .padding(.horizontal, 10).frame(height: 28)
+                    .background(RoundedRectangle(cornerRadius: 9).fill(.white.opacity(0.09)))
+                Button {
+                    if let t = ClipboardService.shared.items.first?.text { ai.input = t }
+                } label: { Image(systemName: "doc.on.clipboard").frame(width: 28, height: 28).background(Circle().fill(.white.opacity(0.09))) }
+                    .buttonStyle(PressStyle()).morph("Panodan al")
+                Button { ai.run(.ask) } label: {
+                    Image(systemName: "arrow.up").font(.system(size: 12, weight: .bold)).foregroundStyle(.black)
+                        .frame(width: 28, height: 28).background(Circle().fill(.white))
+                }.buttonStyle(PressStyle()).disabled(ai.busy).morph("Sor")
+            }
+
+            ZStack(alignment: .topLeading) {
+                RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.06))
+                if ai.busy {
+                    HStack(spacing: 8) { ProgressView().controlSize(.small); Text("Düşünüyor…").font(.system(size: 12)).foregroundStyle(.white.opacity(0.6)) }
+                        .padding(12)
+                } else if let e = ai.error {
+                    Text(e).font(.system(size: 11.5)).foregroundStyle(.orange).padding(12)
+                } else if ai.output.isEmpty {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Bir eylem seç ya da soru sor").font(.system(size: 12, weight: .medium))
+                        Text(svc.active() == .onDevice ? "Cihaz içi Apple modeli kullanılıyor (veri Mac'inden çıkmaz)"
+                                                       : "\(svc.active().title) kullanılıyor")
+                            .font(.system(size: 10.5)).foregroundStyle(.white.opacity(0.4))
+                        if svc.active() == .onDevice, let p = svc.onDeviceProblem {
+                            Text(p).font(.system(size: 10.5)).foregroundStyle(.orange)
+                        }
+                    }.padding(12)
+                } else {
+                    ScrollView(showsIndicators: false) {
+                        Text(ai.output).font(.system(size: 12.5)).textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 12).padding(.top, 10).padding(.bottom, 26)
+                    }
+                    .overlay(alignment: .bottomTrailing) {
+                        HStack(spacing: 8) {
+                            Text(ai.providerLabel).font(.system(size: 9.5)).foregroundStyle(.white.opacity(0.35)).lineLimit(1)
+                            Button { ClipboardService.shared.copyText(ai.output) } label: {
+                                Label("Kopyala", systemImage: "doc.on.doc").font(.system(size: 10, weight: .semibold))
+                                    .padding(.horizontal, 8).frame(height: 20).background(Capsule().fill(.white.opacity(0.14)))
+                            }.buttonStyle(PressStyle())
+                        }.padding(7)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .onChange(of: focused) { _, f in NotchState.shared.inputFocused = f }
+        .onDisappear { NotchState.shared.inputFocused = false }
+    }
+}
+
+// MARK: - Yapay zeka ayarları
+
+struct AISettingsSection: View {
+    @ObservedObject var svc = AIService.shared
+    @AppStorage(Pref.aiProvider) var provider = "auto"
+    @AppStorage(Pref.showAI) var showAI = true
+
+    var body: some View {
+        Toggle("Yapay zeka sekmesi ve düğmesi", isOn: $showAI)
+        Picker("Kullanılacak model", selection: $provider) {
+            Text("Otomatik (bağlı bulut model varsa o, yoksa cihaz içi)").tag("auto")
+            Text("Cihaz içi (Apple)").tag("onDevice")
+            ForEach([AIProvider.claude, .openai, .gemini]) { p in Text(p.title).tag(p.rawValue) }
+        }
+        HStack {
+            Text("Cihaz içi model").font(.callout)
+            Spacer()
+            if let p = svc.onDeviceProblem { Text(p).font(.caption).foregroundStyle(.orange).multilineTextAlignment(.trailing) }
+            else { Text("Hazır ✓ (anahtar gerekmez, veri Mac'inden çıkmaz)").font(.caption).foregroundStyle(.green) }
+        }
+        ForEach([AIProvider.claude, .openai, .gemini]) { p in ProviderRow(provider: p) }
+        Text("Bulut modeli bağlamazsan tüm yapay zeka özellikleri cihaz içi Apple modeliyle çalışır. Bulut model bağlarsan metinler o sağlayıcıya gönderilir; API anahtarın Mac'in Anahtarlığı'nda saklanır ve kullandıkça kendi hesabından ücretlendirilir.")
+            .font(.caption).foregroundStyle(.secondary)
+    }
+}
+
+struct ProviderRow: View {
+    let provider: AIProvider
+    @ObservedObject var svc = AIService.shared
+    @State private var key = ""
+
+    var body: some View {
+        let _ = svc.revision
+        let connected = svc.hasKey(provider)
+        let busy = svc.busy.contains(provider.rawValue)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(provider.title).font(.headline)
+                Spacer()
+                Text(svc.status[provider.rawValue] ?? (connected ? "Bağlı ✓" : "Bağlı değil"))
+                    .font(.caption).foregroundStyle(connected ? .green : .secondary).lineLimit(2).multilineTextAlignment(.trailing)
+            }
+            if connected {
+                HStack {
+                    Picker("Model", selection: Binding(get: { svc.model(provider) }, set: { svc.setModel($0, provider) })) {
+                        ForEach(modelList, id: \.self) { Text($0).tag($0) }
+                    }
+                    Button("Yenile") { Task { await svc.refreshModels(provider) } }
+                    Button("Bağlantıyı kes", role: .destructive) { svc.disconnect(provider) }
+                }
+            } else {
+                HStack {
+                    SecureField("API anahtarını yapıştır", text: $key)
+                    Button(busy ? "Bağlanıyor…" : "Bağla") {
+                        let k = key; key = ""
+                        Task { await svc.connect(provider, key: k) }
+                    }.disabled(key.trimmingCharacters(in: .whitespaces).isEmpty || busy)
+                }
+                Text("Anahtarı \(provider.keyPage) adresinden alabilirsin.").font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 2)
+        .task { if connected, svc.models[provider.rawValue] == nil { await svc.refreshModels(provider) } }
+    }
+
+    var modelList: [String] {
+        var l = svc.models[provider.rawValue] ?? []
+        let cur = svc.model(provider)
+        if !l.contains(cur) { l.insert(cur, at: 0) }
+        return l
+    }
+}

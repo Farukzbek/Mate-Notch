@@ -39,11 +39,12 @@ enum Layout {
 // MARK: - State
 
 enum Tab: String, CaseIterable, Identifiable {
-    case home, shelf, clipboard, timer, stats
+    case home, shelf, clipboard, timer, stats, ai
     var id: String { rawValue }
     var icon: String {
         switch self {
         case .home: return "house.fill"
+        case .ai: return "sparkles"
         case .shelf: return "tray.full.fill"
         case .clipboard: return "doc.on.clipboard.fill"
         case .timer: return "timer"
@@ -53,6 +54,7 @@ enum Tab: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .home: return "Ana Sayfa"
+        case .ai: return "Yapay Zeka"
         case .shelf: return "Raf"
         case .clipboard: return "Pano"
         case .timer: return "Zamanlayıcı"
@@ -71,6 +73,7 @@ extension Tab {
             case .clipboard: return d.bool(forKey: Pref.showClipboard)
             case .timer: return d.bool(forKey: Pref.showTimer)
             case .stats: return d.bool(forKey: Pref.showStats)
+            case .ai: return d.bool(forKey: Pref.showAI)
             }
         }
     }
@@ -84,6 +87,7 @@ final class NotchState: ObservableObject {
     @Published var geometry = NotchGeometry.current()
     @Published var pillVisible = false
     var dragging = false
+    var inputFocused = false     // yazı alanında yazarken notch kapanmasın
     var previewHold = false      // Ayarlar penceresi açıkken notch açık kalır (canlı önizleme)
 }
 
@@ -100,6 +104,10 @@ enum Pref {
     static let showStats = "showStats"
     static let uiScale = "uiScale"
     static let styleCollapsed = "styleCollapsed"
+    static let showAI = "showAI"
+    static let aiProvider = "aiProvider"
+    static let autoUpdateCheck = "autoUpdateCheck"
+    static let autoUpdateInstall = "autoUpdateInstall"
     static let closedIcon = "closedIcon"
     static let closedIconIdle = "closedIconIdle"
     static let glassDensity = "glassDensity"
@@ -127,7 +135,7 @@ enum Pref {
             openOnHover: true, hoverDelay: 0.15, liveActivities: true, haptics: true,
             showShelf: true, showClipboard: true, showTimer: true, showStats: true,
             lyricsEnabled: false, lyricsInNotch: true,
-            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
+            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, showAI: true, aiProvider: "auto", autoUpdateCheck: true, autoUpdateInstall: true, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
             showCalendar: true, calDate: true, calEvent: true, qbCaffeinate: true, qbTimer: true, qbCapture: true, qbColor: true, showArtwork: true, captureMode: "area", captureClipboard: true, bgStyle: "black", bgColor: "#1F2A44",
         ])
     }
