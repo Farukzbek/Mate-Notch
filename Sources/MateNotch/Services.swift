@@ -309,8 +309,7 @@ final class ClipboardService: ObservableObject {
         pb.clearContents()
         pb.setString(item.text, forType: .string)
         count = pb.changeCount
-        items.removeAll { $0 == item }
-        items.insert(ClipItem(text: item.text, date: Date()), at: 0)
+        // Satır yerinde kalır (başa taşınmaz): "Kopyalandı" geri bildirimi tıklanan satırda görünsün.
     }
 
     func clear() { items.removeAll() }
@@ -454,7 +453,11 @@ final class CaffeinateService: ObservableObject {
 
 enum AirDrop {
     /// Sistemin AirDrop paylaşımını açar: alıcı seçici belirir, dosyalar seçilen cihaza gider.
+    private static var last = Date.distantPast
     static func send(_ urls: [URL]) {
+        // Aynı bırakma birden fazla yoldan gelirse (hedef + izleyici) iki kez açılmasın
+        guard Date().timeIntervalSince(last) > 1.2 else { return }
+        last = Date()
         let files = urls.filter { FileManager.default.fileExists(atPath: $0.path) }
         guard !files.isEmpty,
               let service = NSSharingService(named: .sendViaAirDrop),

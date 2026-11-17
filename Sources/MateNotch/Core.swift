@@ -86,6 +86,7 @@ final class NotchState: ObservableObject {
     @Published var pinned = false
     @Published var geometry = NotchGeometry.current()
     @Published var pillVisible = false
+    @Published var airdropHover = false      // dosya sürüklenirken imleç AirDrop kutusunun üstünde
     var dragging = false
     var inputFocused = false     // yazı alanında yazarken notch kapanmasın
     var previewHold = false      // Ayarlar penceresi açıkken notch açık kalır (canlı önizleme)

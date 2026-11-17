@@ -82,6 +82,7 @@ final class NotchController {
             self?.reposition()
         }
         installMonitors()
+        startDragWatcher()
         HotKey.register(keyCode: UInt32(kVK_Space), modifiers: UInt32(controlKey | optionKey)) { [weak self] in
             self?.toggle()
         }
@@ -111,8 +112,10 @@ final class NotchController {
         let pad = CGFloat(UserDefaults.standard.double(forKey: Pref.hotPadding))   // açılma alanı genişletme
         let exW = CGFloat(UserDefaults.standard.double(forKey: Pref.collapsedExtraW))
         let exH = CGFloat(UserDefaults.standard.double(forKey: Pref.collapsedExtraH))
-        return NSRect(x: g.screenFrame.midX - (w + exW) / 2 - pad, y: g.screenFrame.maxY - g.notchHeight - exH - 2 - extra - pad,
-                      width: w + exW + 2 * pad, height: g.notchHeight + exH + 12 + extra + pad)
+        let ew = max(exW, g.notchWidth - w)      // açılma alanı fiziksel notch'tan küçülmesin
+        let eh = max(exH, 0)
+        return NSRect(x: g.screenFrame.midX - (w + ew) / 2 - pad, y: g.screenFrame.maxY - g.notchHeight - eh - 2 - extra - pad,
+                      width: w + ew + 2 * pad, height: g.notchHeight + eh + 12 + extra + pad)
     }
     private var openRect: NSRect {
         let g = state.geometry
@@ -189,6 +192,56 @@ final class NotchController {
         openWork?.cancel(); closeWork?.cancel()
         guard state.isOpen else { return }
         state.isOpen = false
+    }
+
+    // MARK: Dosya sürükleme algılama
+    // Başka bir uygulamadan (Finder) dosya sürüklenirken macOS fare olaylarını global izleyicilere göndermez.
+    // Bu yüzden fare düğmesi basılıyken sürükleme panosunu yoklarız.
+
+    private var dragTimer: Timer?
+    private var dragCount = NSPasteboard(name: .drag).changeCount
+    private var dragActive = false
+
+    private func startDragWatcher() {
+        let t = Timer(timeInterval: 0.04, repeats: true) { [weak self] _ in self?.pollDrag() }
+        RunLoop.main.add(t, forMode: .common)
+        dragTimer = t
+    }
+
+    private func pollDrag() {
+        let pb = NSPasteboard(name: .drag)
+        guard NSEvent.pressedMouseButtons & 1 != 0 else {          // sol tuş bırakıldı: sürükleme bitti
+            if dragActive {
+                // Fare AirDrop kutusunun üstündeyken bırakıldı: dosyaları doğrudan sürükleme panosundan okuyup gönder.
+                // (macOS'un bırakma bildirimi bu kutuda güvenilir gelmiyor; bu yol ona bağlı değil.)
+                if state.airdropHover {
+                    let urls = (pb.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL]) ?? []
+                    state.airdropHover = false
+                    if !urls.isEmpty { AirDrop.send(urls) }
+                }
+                dragActive = false; state.dragging = false; state.airdropHover = false
+            }
+            dragCount = pb.changeCount
+            return
+        }
+        if !dragActive {
+            guard pb.changeCount != dragCount,
+                  pb.canReadObject(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) else { return }
+            dragActive = true
+            state.dragging = true
+            if state.isOpen { state.tab = .shelf }                   // açıksa Raf'a (AirDrop alanı) geç
+        }
+        // İmleç AirDrop kutusunun üstünde mi? (kutu renk değiştirir, bırakınca gönderilir)
+        if state.isOpen, let r = DropView.airdrop?.screenRect {
+            let inside = r.contains(NSEvent.mouseLocation)
+            if inside != state.airdropHover { state.airdropHover = inside }
+        } else if state.airdropHover { state.airdropHover = false }
+        // Dosya notch'a yaklaşınca Raf'ı aç (alan, normal açılma alanından biraz geniş)
+        let p = NSEvent.mouseLocation
+        if !state.isOpen, hotRect.insetBy(dx: -30, dy: -24).contains(p) {
+            state.tab = .shelf
+            open()
+        }
     }
 
     // MARK: Monitors

@@ -52,10 +52,11 @@ struct RootView: View {
         let pill = !open && (showPill || clip.justCopied)
         let extra = clip.justCopied ? Layout.pillExtra(1) : Layout.pillExtra(pillLines)
         let u = open ? CGFloat(uiScale) : 1
-        let base0 = g.notchWidth + CGFloat(exW)
+        let base0 = max(40, g.notchWidth + CGFloat(exW))
+        let ch = max(12, g.notchHeight + CGFloat(exH))
         let base = activity != nil ? base0 + Layout.sideW * 2 : base0
         let w = open ? Layout.openW : (pill ? max(base, Layout.pillMinW) : base)
-        let h = open ? g.notchHeight / u + Layout.bodyH : g.notchHeight + CGFloat(exH) + (pill ? extra : 0)
+        let h = open ? g.notchHeight / u + Layout.bodyH : ch + (pill ? extra : 0)
 
         ZStack(alignment: .top) {
             let shape = NotchShape(top: open ? 16 : 6, bottom: open ? 30 : (pill ? 18 : 11))
@@ -85,7 +86,7 @@ struct RootView: View {
             if pill {
                 Group { if clip.justCopied { CopiedBanner() } else { LyricPill() } }
                     .frame(height: extra)
-                    .padding(.top, g.notchHeight + CGFloat(exH))
+                    .padding(.top, ch)
                     .transition(.opacity.animation(.easeOut(duration: 0.25).delay(0.18)))
             }
         }
@@ -118,16 +119,19 @@ struct CollapsedContent: View {
     @ObservedObject var media = MediaService.shared
     @ObservedObject var timer = TimerService.shared
     @ObservedObject var battery = BatteryService.shared
+    @AppStorage(Pref.collapsedExtraW) var exW = 0.0
+    @AppStorage(Pref.collapsedExtraH) var exH = 0.0
 
     var body: some View {
         let g = state.geometry
+        let wing = max(24, Layout.sideW + CGFloat(exW) / 2)        // kapalı notch daralınca kanatlar da daralır
         HStack(spacing: 0) {
-            left.frame(width: Layout.sideW - 8, alignment: .center)
+            left.frame(width: wing - 8, alignment: .center)
             Spacer(minLength: g.notchWidth - 16)
-            right.frame(width: Layout.sideW - 8, alignment: .center)
+            right.frame(width: wing - 8, alignment: .center)
         }
         .padding(.horizontal, 8)
-        .frame(height: g.notchHeight)
+        .frame(height: max(12, g.notchHeight + CGFloat(exH)))
     }
 
     @ViewBuilder var left: some View {
@@ -570,13 +574,15 @@ struct ShelfView: View {
 /// Dosyayı buraya sürükle → AirDrop alıcı seçicisi açılır. Tıklayınca raftaki tüm dosyalar gönderilir.
 struct AirDropZone: View {
     @ObservedObject var shelf = ShelfService.shared
-    @State private var targeted = false
+    @ObservedObject var state = NotchState.shared
+    @State private var dropTargeted = false
+    private var targeted: Bool { dropTargeted || state.airdropHover }
     @State private var hovering = false
 
     var body: some View {
-        Button {
-            AirDrop.send(shelf.urls)
-        } label: {
+        // Düğme (Button) yok: tıklama ve sürükle-bırak, en üstteki AppKit hedefi (FileDropTarget) tarafından karşılanır.
+        // Arkada kalan bir hedef, üstündeki düğme yüzünden sürüklemeyi hiç alamıyordu.
+        ZStack {
             VStack(spacing: 7) {
                 AirDropGlyph()
                     .foregroundStyle(targeted ? .white : Color(red: 0.35, green: 0.70, blue: 1.0))
@@ -595,28 +601,41 @@ struct AirDropZone: View {
             )
             .overlay(RoundedRectangle(cornerRadius: 16)
                 .strokeBorder(Color(red: 0.35, green: 0.70, blue: 1.0).opacity(targeted ? 0.9 : 0.35), lineWidth: 1.2))
-            .contentShape(RoundedRectangle(cornerRadius: 16))
         }
-        .buttonStyle(.plain)
-        .disabled(false)
-        .background(HoverTracker { h in withAnimation(.snappy(duration: 0.15)) { hovering = h } })
+        .frame(width: 118).frame(maxHeight: .infinity)
+        .onHover { h in withAnimation(.snappy(duration: 0.15)) { hovering = h } }
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: targeted)
-        .background(FileDropTarget(onTargeted: { targeted = $0 }, onDrop: { AirDrop.send($0) }))
+        .overlay(FileDropTarget(name: "airdrop", onTargeted: { dropTargeted = $0 },
+                                onDrop: { AirDrop.send($0) },
+                                onClick: { AirDrop.send(shelf.urls) }))
     }
 }
 
 /// Dosya bırakma alanı (AppKit NSDraggingDestination): SwiftUI'nin onDrop'una göre nonactivating panelde daha güvenilir.
 /// Sürüklenen dosya adreslerini doğrudan sürükleme panosundan okur.
 struct FileDropTarget: NSViewRepresentable {
+    var name = ""
     var onTargeted: (Bool) -> Void
     var onDrop: ([URL]) -> Void
-    func makeNSView(context: Context) -> DropView { let v = DropView(); v.onTargeted = onTargeted; v.onDrop = onDrop; return v }
-    func updateNSView(_ v: DropView, context: Context) { v.onTargeted = onTargeted; v.onDrop = onDrop }
+    var onClick: (() -> Void)? = nil
+    func makeNSView(context: Context) -> DropView {
+        let v = DropView(); v.onTargeted = onTargeted; v.onDrop = onDrop; v.onClick = onClick
+        if name == "airdrop" { DropView.airdrop = v }
+        return v
+    }
+    func updateNSView(_ v: DropView, context: Context) { v.onTargeted = onTargeted; v.onDrop = onDrop; v.onClick = onClick }
 }
 
 final class DropView: NSView {
+    /// AirDrop kutusunun görünümü: sürükleme izleyicisi imlecin bunun üstünde olup olmadığına bakar.
+    static weak var airdrop: DropView?
+    var screenRect: NSRect? {
+        guard let w = window else { return nil }
+        return w.convertToScreen(convert(bounds, to: nil))
+    }
     var onTargeted: ((Bool) -> Void)?
     var onDrop: (([URL]) -> Void)?
+    var onClick: (() -> Void)?
 
     override init(frame: NSRect) { super.init(frame: frame); registerForDraggedTypes([.fileURL]) }
     required init?(coder: NSCoder) { fatalError() }
@@ -631,6 +650,8 @@ final class DropView: NSView {
         return .copy
     }
     override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation { .copy }
+    override func mouseDown(with event: NSEvent) { if let c = onClick { c() } else { super.mouseDown(with: event) } }
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
     override func draggingExited(_ sender: NSDraggingInfo?) { onTargeted?(false) }
     override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool { true }
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
@@ -677,7 +698,7 @@ struct ShelfZone: View {
                         ForEach(shelf.urls, id: \.self) { u in ShelfItem(url: u) }
                         Button { shelf.clear() } label: {
                             Image(systemName: "trash").frame(width: 40, height: 60).foregroundStyle(.white.opacity(0.4))
-                        }.buttonStyle(.plain).tip("Rafı temizle", .top)
+                        }.buttonStyle(.plain).morph("Rafı temizle")
                     }.padding(12)
                 }
             }
@@ -769,18 +790,27 @@ struct ClipRow: View {
     var body: some View {
         HStack(spacing: 6) {
             Button {
-                clip.copy(item); copied = item.id
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { copied = nil }
+                clip.copy(item)
+                copied = item.id
+                let id = item.id
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { if copied == id { copied = nil } }
             } label: {
+                let isCopied = copied == item.id
                 HStack {
-                    Text(item.text.replacingOccurrences(of: "\n", with: " ")).lineLimit(1).font(.system(size: 12))
+                    // Yazı küçülüp yerine "Kopyalandı" gelir; süre dolunca isim geri büyür
+                    ZStack(alignment: .leading) {
+                        Text(item.text.replacingOccurrences(of: "\n", with: " ")).lineLimit(1).font(.system(size: 12))
+                            .scaleEffect(isCopied ? 0.5 : 1, anchor: .leading).opacity(isCopied ? 0 : 1)
+                        Label("Kopyalandı", systemImage: "checkmark.circle.fill")
+                            .font(.system(size: 12, weight: .semibold)).foregroundStyle(.green)
+                            .scaleEffect(isCopied ? 1 : 0.5, anchor: .leading).opacity(isCopied ? 1 : 0)
+                    }
                     Spacer()
-                    if copied == item.id {
-                        Label("Kopyalandı", systemImage: "checkmark").font(.system(size: 10)).foregroundStyle(.green)
-                    } else if !hovering {
+                    if !hovering && !isCopied {
                         Text(item.date, style: .relative).font(.system(size: 10)).foregroundStyle(.white.opacity(0.35))
                     }
                 }
+                .animation(.spring(response: 0.35, dampingFraction: 0.78), value: copied)
                 .contentShape(Rectangle())
             }
             .buttonStyle(PressStyle())
@@ -962,15 +992,15 @@ struct SettingsView: View {
                 Toggle("Albüm kapağını göster", isOn: $showArtwork)
                 HStack {
                     Text("Kapalı notch genişliği")
-                    Slider(value: $exW, in: 0...80, step: 2, onEditingChanged: { NotchController.shared.previewCollapsed(editing: $0) })
-                    Text(exW == 0 ? "Varsayılan" : "+\(Int(exW)) pt").monospacedDigit().frame(width: 70)
+                    Slider(value: $exW, in: -60...80, step: 2, onEditingChanged: { NotchController.shared.previewCollapsed(editing: $0) })
+                    Text(exW == 0 ? "Varsayılan" : (exW > 0 ? "+\(Int(exW)) pt" : "−\(Int(-exW)) pt")).monospacedDigit().frame(width: 70)
                 }
                 HStack {
                     Text("Kapalı notch yüksekliği")
-                    Slider(value: $exH, in: 0...24, step: 1, onEditingChanged: { NotchController.shared.previewCollapsed(editing: $0) })
-                    Text(exH == 0 ? "Varsayılan" : "+\(Int(exH)) pt").monospacedDigit().frame(width: 70)
+                    Slider(value: $exH, in: -14...24, step: 1, onEditingChanged: { NotchController.shared.previewCollapsed(editing: $0) })
+                    Text(exH == 0 ? "Varsayılan" : (exH > 0 ? "+\(Int(exH)) pt" : "−\(Int(-exH)) pt")).monospacedDigit().frame(width: 70)
                 }
-                Text("Kapalı notch donanım notch'undan küçük olamaz, yalnızca büyütülebilir. Kaydırırken notch geçici olarak kapalı hâlde gösterilir.")
+                Text("Eksi değerler kapalı notch'u küçültür. Notch'lu Mac'lerde ortadaki kısım donanımdır, o küçülmez; küçülme yanlardaki kanatlarda ve notch'suz Mac'lerde görünür. Kaydırırken notch geçici olarak kapalı hâlde gösterilir.")
                     .font(.caption).foregroundStyle(.secondary)
                 Picker("Arka plan", selection: $bgStyle) {
                     Text("Siyah (notch ile bütünleşik)").tag("black")
