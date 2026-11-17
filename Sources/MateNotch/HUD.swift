@@ -118,6 +118,7 @@ final class HUDService: ObservableObject {
             self?.registeredDevice = 0
             self?.registerAudio()
             self?.audioChanged(initial: true)      // aygıt değişince taban sıfırlanır, HUD çıkmaz
+            BluetoothService.shared.defaultOutputChanged()
         }
     }
 

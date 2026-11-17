@@ -5,7 +5,7 @@ import AppKit
 // MARK: - Root
 
 enum Activity: String {
-    case record, charge, timer, music, idle
+    case record, charge, timer, music, idle, privacy, download, focus
 }
 
 struct RootView: View {
@@ -17,6 +17,10 @@ struct RootView: View {
     @ObservedObject var lyrics = LyricsService.shared
     @ObservedObject var clip = ClipboardService.shared
     @ObservedObject var hud = HUDService.shared
+    @ObservedObject var bn = BannerService.shared
+    @ObservedObject var privacy = PrivacyService.shared
+    @ObservedObject var downloads = DownloadService.shared
+    @ObservedObject var focus = FocusService.shared
     @AppStorage(Pref.hudStyle) var hudStyle = "bar"
     @AppStorage(Pref.liveActivities) var liveActivities = true
     @AppStorage(Pref.lyricsEnabled) var lyricsOn = false
@@ -40,10 +44,13 @@ struct RootView: View {
 
     var activity: Activity? {
         if capture.recording { return .record }
+        if privacy.active { return .privacy }
         guard liveActivities else { return nil }
         if battery.flash { return .charge }
         if timer.running { return .timer }
+        if downloads.active { return .download }
         if media.isPlaying { return .music }
+        if focus.active { return .focus }
         if closedIconIdle && closedIconName != "none" { return .idle }
         return nil
     }
@@ -51,9 +58,10 @@ struct RootView: View {
     var body: some View {
         let g = state.geometry
         let open = state.isOpen
-        let pill = !open && (showPill || clip.justCopied || hud.visible)
-        let extra = (clip.justCopied || hud.visible) ? Layout.pillExtra(1) : Layout.pillExtra(pillLines)
-        let pillW: CGFloat = hud.visible ? (hudStyle == "bar" ? 250 : 170) : Layout.pillMinW
+        let banner = bn.current != nil
+        let pill = !open && (showPill || clip.justCopied || hud.visible || banner)
+        let extra = (clip.justCopied || hud.visible || banner) ? Layout.pillExtra(1) : Layout.pillExtra(pillLines)
+        let pillW: CGFloat = hud.visible ? (hudStyle == "bar" ? 250 : 170) : (banner ? 330 : Layout.pillMinW)
         let u = open ? CGFloat(uiScale) : 1
         let base0 = max(40, g.notchWidth + CGFloat(exW))
         let ch = max(12, g.notchHeight + CGFloat(exH))
@@ -94,7 +102,7 @@ struct RootView: View {
                     .transition(.opacity.animation(.easeOut(duration: 0.25).delay(0.18)))
             }
             if pill {
-                Group { if hud.visible { HUDBanner() } else if clip.justCopied { CopiedBanner() } else { LyricPill() } }
+                Group { if hud.visible { HUDBanner() } else if banner { BannerView() } else if clip.justCopied { CopiedBanner() } else { LyricPill() } }
                     .frame(height: extra)
                     .padding(.top, ch)
                     .transition(.opacity.animation(.easeOut(duration: 0.25).delay(0.18)))
@@ -129,6 +137,9 @@ struct CollapsedContent: View {
     @ObservedObject var media = MediaService.shared
     @ObservedObject var timer = TimerService.shared
     @ObservedObject var battery = BatteryService.shared
+    @ObservedObject var privacy = PrivacyService.shared
+    @ObservedObject var downloads = DownloadService.shared
+    @ObservedObject var focusState = FocusService.shared
     @AppStorage(Pref.collapsedExtraW) var exW = 0.0
     @AppStorage(Pref.collapsedExtraH) var exH = 0.0
 
@@ -144,10 +155,23 @@ struct CollapsedContent: View {
         .frame(height: max(12, g.notchHeight + CGFloat(exH)))
     }
 
+    static func short(_ b: Int64) -> String {
+        let mb = Double(b) / 1_048_576
+        return mb >= 1024 ? String(format: "%.1fG", mb / 1024) : String(format: "%.0fM", mb)
+    }
+
     @ViewBuilder var left: some View {
         switch activity {
         case .idle:
             Color.clear.frame(width: 1, height: 1)
+        case .privacy:
+            if privacy.camera { Image(systemName: "video.fill").foregroundStyle(.green).font(.system(size: 13, weight: .semibold)) }
+            else { Color.clear.frame(width: 1, height: 1) }
+        case .download:
+            Image(systemName: "arrow.down.circle.fill").foregroundStyle(.blue).font(.system(size: 14, weight: .semibold))
+                .symbolEffect(.pulse)
+        case .focus:
+            Image(systemName: "moon.fill").foregroundStyle(.purple).font(.system(size: 13, weight: .semibold))
         case .music:
             Group {
                 if showArtwork, let a = media.artwork {
@@ -169,8 +193,19 @@ struct CollapsedContent: View {
 
     @ViewBuilder var right: some View {
         switch activity {
-        case .music: ClosedIconView(playing: media.isPlaying, color: media.accent)
+        case .music:
+            HStack(spacing: 4) {                       // Odak açıksa ay simgesi müzik göstergesinin yanında
+                if focusState.active { Image(systemName: "moon.fill").font(.system(size: 11, weight: .semibold)).foregroundStyle(.purple) }
+                ClosedIconView(playing: media.isPlaying, color: media.accent)
+            }
         case .idle: ClosedIconView(playing: false, color: .white.opacity(0.65))
+        case .privacy:
+            if privacy.mic { Image(systemName: "mic.fill").foregroundStyle(.orange).font(.system(size: 13, weight: .semibold)) }
+            else { Color.clear.frame(width: 1, height: 1) }
+        case .download:
+            Text(Self.short(downloads.bytes)).font(.system(size: 10, weight: .semibold, design: .rounded)).foregroundStyle(.blue)
+                .monospacedDigit().lineLimit(1).minimumScaleFactor(0.7)
+        case .focus: Color.clear.frame(width: 1, height: 1)
         case .record:
             Text("KAYIT").font(.system(size: 9, weight: .bold, design: .rounded)).foregroundStyle(.red)
         case .timer:
@@ -340,7 +375,9 @@ struct HomeView: View {
     @AppStorage(Pref.qbCapture) var qbCapture = true
     @AppStorage(Pref.qbColor) var qbColor = true
 
-    var hasSide: Bool { (showCalendar && (calDate || calEvent)) || qbCaffeinate || qbTimer || qbCapture || qbColor }
+    @AppStorage(Pref.weatherEnabled) var weatherOn = false
+
+    var hasSide: Bool { (showCalendar && (calDate || calEvent)) || weatherOn || qbCaffeinate || qbTimer || qbCapture || qbColor }
 
     var body: some View {
         HStack(spacing: 20) {
@@ -450,6 +487,8 @@ struct PressStyle: ButtonStyle {
 }
 
 struct SideColumn: View {
+    @ObservedObject var weather = WeatherService.shared
+    @AppStorage(Pref.weatherEnabled) var weatherOn = false
     @ObservedObject var capture = CaptureService.shared
     @AppStorage(Pref.captureMode) var captureMode = "area"
     @AppStorage(Pref.showCalendar) var showCalendar = true
@@ -495,6 +534,19 @@ struct SideColumn: View {
                 .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.07)))
             }
 
+            if weatherOn, let t = weather.temp {
+                HStack(spacing: 9) {
+                    Image(systemName: weather.symbol).symbolRenderingMode(.multicolor).font(.system(size: 20))
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("\(t)°").font(.system(size: 18, weight: .bold, design: .rounded)).monospacedDigit()
+                        Text([weather.city.components(separatedBy: ",").first ?? "", weather.text].filter { !$0.isEmpty }.joined(separator: " · "))
+                            .font(.system(size: 10)).foregroundStyle(.white.opacity(0.55)).lineLimit(1)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(10).frame(maxWidth: .infinity, alignment: .leading)
+                .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.07)))
+            }
             if qbCaffeinate || qbTimer || qbCapture || qbColor {
                 HStack(spacing: 6) {
                     if qbCaffeinate {
@@ -1002,6 +1054,14 @@ struct SettingsView: View {
     @AppStorage(Pref.hudDuration) var hudDuration = 1.6
     @AppStorage(Pref.hudHideSystem) var hudHideSystem = false
     @ObservedObject var hud = HUDService.shared
+    @AppStorage(Pref.bannerBluetooth) var bannerBluetooth = true
+    @AppStorage(Pref.privacyIndicator) var privacyIndicator = true
+    @AppStorage(Pref.focusIndicator) var focusIndicator = false
+    @AppStorage(Pref.downloadIndicator) var downloadIndicator = false
+    @AppStorage(Pref.weatherEnabled) var weatherEnabled = false
+    @ObservedObject var focusSvc = FocusService.shared
+    @ObservedObject var weatherSvc = WeatherService.shared
+    @State private var cityQuery = UserDefaults.standard.string(forKey: Pref.weatherCity) ?? ""
     @AppStorage(Pref.collapsedExtraW) var exW = 0.0
     @AppStorage(Pref.collapsedExtraH) var exH = 0.0
     // Seçici kendi hassas rengini tutar; hex yalnızca kayda yazılır (geri okunmaz) → sürüklerken renk kaymaz
@@ -1134,6 +1194,25 @@ struct SettingsView: View {
                 Text("Gizleme açıkken ses, parlaklık ve klavye ışığı tuşlarını Mate Notch işler (⇧⌥ ile ince ayar); macOS'un ekran ortasındaki karesi çıkmaz. Erişilebilirlik izni ister. Kapatınca tuşlar normale döner. Parlaklık ve klavye ışığı için macOS'un özel arayüzleri kullanılır; yerleşik ekranlarda çalışır.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+            Section("Göstergeler ve bildirimler") {
+                Toggle("Bluetooth kulaklık bağlanınca bildir (AirPods pil durumu dahil)", isOn: $bannerBluetooth)
+                Toggle("Kamera / mikrofon kullanımdayken göster", isOn: $privacyIndicator).collapsesNotch()
+                Toggle("Odak (Rahatsız Etmeyin) açıkken ay simgesi göster", isOn: $focusIndicator).collapsesNotch()
+                    .onChange(of: focusIndicator) { _, on in if on { FocusService.shared.enable() } else { FocusService.shared.refresh() } }
+                if focusIndicator && !focusSvc.status.isEmpty { Text(focusSvc.status).font(.caption).foregroundStyle(.secondary) }
+                Toggle("İndirme ilerlemesini göster (İndirilenler klasörü)", isOn: $downloadIndicator).collapsesNotch()
+                Toggle("Hava durumunu göster (Ana Sayfa)", isOn: $weatherEnabled)
+                    .onChange(of: weatherEnabled) { _, _ in WeatherService.shared.refresh() }
+                if weatherEnabled {
+                    HStack {
+                        TextField("Şehir (ör. İstanbul)", text: $cityQuery).onSubmit { WeatherService.shared.search(cityQuery) }
+                        Button("Ara") { WeatherService.shared.search(cityQuery) }
+                    }
+                    if !weatherSvc.searchStatus.isEmpty { Text(weatherSvc.searchStatus).font(.caption).foregroundStyle(.secondary) }
+                }
+                Text("Kamera/mikrofon göstergesi izin gerektirmez. Odak ve İndirilenler için macOS bir kez izin sorar. Hava durumu Open-Meteo'dan gelir (anahtar gerekmez); yalnızca seçtiğin şehrin adı/konumu gönderilir, Mac'inin konumu kullanılmaz.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
             Section("Ana Sayfa") {
                 Toggle("Takvim kartı", isOn: $showCalendar)
                 Toggle("Bugünün tarihini göster", isOn: $calDate).disabled(!showCalendar)
@@ -1226,12 +1305,17 @@ struct CardLyric: View {
     @ObservedObject var lyrics = LyricsService.shared
     @ObservedObject var media = MediaService.shared
     @AppStorage(Pref.lyricsEnabled) var on = false
+    @State private var browse = 0                 // kaydırarak gezinme: çalan satıra göre kaç satır ötede
+    @State private var lastBrowse = Date.distantPast
+    @State private var hoverRow: Int?
+    @State private var plainTop = 0               // senkronsuz sözlerde ilk görünen satır
 
     /// Yalnızca sözü olan (senkron) veya enstrümantal şarkılarda göster; "söz yok" yazısı yok, alan hiç açılmaz.
     var visible: Bool {
         guard on else { return false }
         switch lyrics.state {
         case .synced, .instrumental: return true
+        case .plain(let rows): return rows.contains { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
         default: return false
         }
     }
@@ -1241,40 +1325,119 @@ struct CardLyric: View {
             if visible { block.transition(.opacity.combined(with: .scale(scale: 0.96, anchor: .topLeading))) }
         }
         .animation(.smooth(duration: 0.4), value: visible)
+        .onChange(of: lyrics.state) { _, _ in browse = 0; plainTop = 0 }
+        // Kaydırmayı bırakınca 3 sn sonra çalan satıra geri dön
+        .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
+            if browse != 0, Date().timeIntervalSince(lastBrowse) > 3 { withAnimation(.snappy) { browse = 0 } }
+        }
     }
 
     var block: some View {
         Group {
             switch lyrics.state {
-            case .synced(let lines):
-                TimelineView(.periodic(from: .now, by: 0.2)) { _ in
-                    let idx = lyrics.index(in: lines, at: media.position) ?? -1
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach([-1, 0, 1], id: \.self) { o in slot(lines, idx + o, current: o == 0) }
-                    }
-                    .animation(.spring(response: 0.42, dampingFraction: 0.86), value: idx)
-                }
+            case .synced(let lines): syncedBlock(lines)
+            case .plain(let rows): plainBlock(rows)
             default: dim("Enstrümantal")
             }
         }
         .lineLimit(1).minimumScaleFactor(0.85)
         .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48, alignment: .leading)
         .clipped()
-        .contextMenu {
-            Button("Sözleri öne al (+0,25 sn)") { lyrics.adjust(by: 0.25) }
-            Button("Sözleri geciktir (−0,25 sn)") { lyrics.adjust(by: -0.25) }
-            Text(String(format: "Senkron farkı: %+.2f sn", lyrics.offset))
-        }
     }
 
-    /// Anlık satır parlak, önceki ve sonraki sönük.
-    func slot(_ lines: [LyricLine], _ i: Int, current: Bool) -> some View {
+    func syncedBlock(_ lines: [LyricLine]) -> some View {
+        TimelineView(.periodic(from: .now, by: 0.2)) { _ in
+            let idx = lyrics.index(in: lines, at: media.position) ?? -1
+            let center = idx + browse
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach([-1, 0, 1], id: \.self) { o in
+                    slot(lines, center + o, current: center + o == idx, browsing: browse != 0 && o == 0)
+                        .background(RoundedRectangle(cornerRadius: 4).fill(.white.opacity(hoverRow == o + 1 ? 0.10 : 0)))
+                }
+            }
+            .animation(.spring(response: 0.42, dampingFraction: 0.86), value: center)
+        }
+        .overlay(LyricInteraction(
+            onScroll: { scroll($0, lines) },
+            onClick: { click($0, lines) },
+            onHover: { hoverRow = $0 },
+            menu: { menu($0, lines) }))
+    }
+
+    /// Senkronu olmayan sözler: yalnızca AÇIK notch'ta, durağan metin olarak (kaydırılabilir). Kapalı notch'ta gösterilmez.
+    func plainBlock(_ rows: [String]) -> some View {
+        let lines = rows.map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        return VStack(alignment: .leading, spacing: 0) {
+            ForEach(0..<3, id: \.self) { o in
+                let i = plainTop + o
+                Text(lines.indices.contains(i) ? lines[i] : " ")
+                    .font(.system(size: 11.5, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.7))
+                    .frame(maxWidth: .infinity, minHeight: 16, maxHeight: 16, alignment: .leading)
+                    .background(RoundedRectangle(cornerRadius: 4).fill(.white.opacity(hoverRow == o ? 0.10 : 0)))
+            }
+        }
+        .overlay(LyricInteraction(
+            onScroll: { plainTop = min(max(plainTop + $0, 0), max(0, lines.count - 3)) },
+            onClick: { _ in },
+            onHover: { hoverRow = $0 },
+            menu: { row in
+                let m = NSMenu()
+                let i = plainTop + row
+                if lines.indices.contains(i) {
+                    let t = lines[i]
+                    m.addItem(ActionItem("Bu satırı Türkçeye çevir") { AIState.shared.start(.toTR, text: t) })
+                    m.addItem(ActionItem("Bu satırı açıkla") { AIState.shared.start(.explain, text: t) })
+                }
+                let info = NSMenuItem(title: "Senkronsuz söz (zamanlaması yok)", action: nil, keyEquivalent: ""); info.isEnabled = false
+                m.addItem(info)
+                return m
+            }))
+    }
+
+    private func currentIndex(_ lines: [LyricLine]) -> Int { lyrics.index(in: lines, at: media.position) ?? -1 }
+
+    /// Yukarı/aşağı kaydırma: satırlar arasında gezin (çalan satır değişmez, müzik kesilmez).
+    private func scroll(_ d: Int, _ lines: [LyricLine]) {
+        let idx = currentIndex(lines)
+        let target = min(max(idx + browse + d, 0), lines.count - 1)
+        browse = target - idx
+        lastBrowse = Date()
+    }
+
+    /// Satıra tıkla: şarkıyı o satırın zamanına sar.
+    private func click(_ row: Int, _ lines: [LyricLine]) {
+        let i = currentIndex(lines) + browse + (row - 1)
+        guard lines.indices.contains(i) else { return }
+        media.seek(to: max(0, lines[i].time - lyrics.offset))
+        withAnimation(.snappy) { browse = 0 }
+    }
+
+    private func menu(_ row: Int, _ lines: [LyricLine]) -> NSMenu {
+        let m = NSMenu()
+        let i = currentIndex(lines) + browse + (row - 1)
+        if lines.indices.contains(i), lines[i].text != "♪" {
+            let t = lines[i].text
+            m.addItem(ActionItem("Bu satırı Türkçeye çevir") { AIState.shared.start(.toTR, text: t) })
+            m.addItem(ActionItem("Bu satırı açıkla") { AIState.shared.start(.explain, text: t) })
+            m.addItem(.separator())
+        }
+        m.addItem(ActionItem("Sözleri öne al (+0,25 sn)") { lyrics.adjust(by: 0.25) })
+        m.addItem(ActionItem("Sözleri geciktir (−0,25 sn)") { lyrics.adjust(by: -0.25) })
+        let info = NSMenuItem(title: String(format: "Senkron farkı: %+.2f sn", lyrics.offset), action: nil, keyEquivalent: "")
+        info.isEnabled = false
+        m.addItem(info)
+        return m
+    }
+
+    /// Çalan satır parlak; gezinirken seçili satır biraz parlar; diğerleri sönük.
+    func slot(_ lines: [LyricLine], _ i: Int, current: Bool, browsing: Bool) -> some View {
         let valid = lines.indices.contains(i)
         let raw = valid ? lines[i].text : " "
         let text = raw == "♪" ? "♪  ♪  ♪" : raw
         return Text(text)
             .font(.system(size: current ? 13.5 : 11.5, weight: current ? .bold : .medium, design: .rounded))
-            .foregroundStyle(.white.opacity(current ? 1 : 0.32))
+            .foregroundStyle(.white.opacity(current ? 1 : (browsing ? 0.66 : 0.32)))
             .frame(maxWidth: .infinity, minHeight: 16, maxHeight: 16, alignment: .leading)
             .id(valid ? lines[i].id : -1000 - i)
             .transition(.asymmetric(insertion: .move(edge: .bottom).combined(with: .opacity),
@@ -1283,6 +1446,64 @@ struct CardLyric: View {
 
     func dim(_ t: String) -> some View {
         Text(t).font(.system(size: 12, weight: .medium, design: .rounded)).foregroundStyle(.white.opacity(0.4))
+    }
+}
+
+/// Menü öğesi + kapanış (blok).
+final class ActionItem: NSMenuItem {
+    private let block: () -> Void
+    init(_ title: String, _ block: @escaping () -> Void) {
+        self.block = block
+        super.init(title: title, action: #selector(fire), keyEquivalent: "")
+        target = self
+    }
+    required init(coder: NSCoder) { fatalError() }
+    @objc private func fire() { block() }
+}
+
+/// Söz bloğunun üstündeki görünmez katman: dikey kaydırma, satıra tıklama, üzerine gelme ve sağ tık menüsü.
+/// (Üstteki SwiftUI düğmeleri/jestleri bu olayları almaz; o yüzden tek bir AppKit katmanı hepsini karşılar.)
+struct LyricInteraction: NSViewRepresentable {
+    var onScroll: (Int) -> Void           // +1: sonraki satıra, −1: öncekine
+    var onClick: (Int) -> Void            // satır sırası 0...2
+    var onHover: (Int?) -> Void
+    var menu: (Int) -> NSMenu
+    func makeNSView(context: Context) -> LyricInteractionView { let v = LyricInteractionView(); apply(v); return v }
+    func updateNSView(_ v: LyricInteractionView, context: Context) { apply(v) }
+    private func apply(_ v: LyricInteractionView) { v.onScroll = onScroll; v.onClick = onClick; v.onHover = onHover; v.menuProvider = menu }
+}
+
+final class LyricInteractionView: NSView {
+    var onScroll: ((Int) -> Void)?
+    var onClick: ((Int) -> Void)?
+    var onHover: ((Int?) -> Void)?
+    var menuProvider: ((Int) -> NSMenu)?
+    private var accum: CGFloat = 0
+    private let rowHeight: CGFloat = 16
+
+    override var isFlipped: Bool { true }
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    private func row(_ e: NSEvent) -> Int { min(2, max(0, Int(convert(e.locationInWindow, from: nil).y / rowHeight))) }
+
+    override func scrollWheel(with e: NSEvent) {
+        guard abs(e.scrollingDeltaY) >= abs(e.scrollingDeltaX) else { super.scrollWheel(with: e); return }
+        // Parmak yukarı = sonraki satırlar (içerik parmakla birlikte kayar)
+        accum += -(e.hasPreciseScrollingDeltas ? e.scrollingDeltaY : e.scrollingDeltaY * 12)
+        let step: CGFloat = 14
+        while accum >= step { onScroll?(1); accum -= step }
+        while accum <= -step { onScroll?(-1); accum += step }
+        if e.phase == .ended || e.phase == .cancelled { accum = 0 }
+    }
+    override func mouseDown(with e: NSEvent) { onClick?(row(e)) }
+    override func menu(for event: NSEvent) -> NSMenu? { menuProvider?(row(event)) }
+    override func mouseMoved(with e: NSEvent) { onHover?(row(e)) }
+    override func mouseExited(with e: NSEvent) { onHover?(nil) }
+    override func updateTrackingAreas() {
+        trackingAreas.forEach(removeTrackingArea)
+        addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseMoved, .mouseEnteredAndExited, .activeAlways, .inVisibleRect],
+                                       owner: self, userInfo: nil))
+        super.updateTrackingAreas()
     }
 }
 
@@ -1468,6 +1689,16 @@ struct AIView: View {
                                 .background(Capsule().fill(.white.opacity(0.11)))
                         }.buttonStyle(PressStyle()).disabled(ai.busy)
                     }
+                    if MediaService.shared.track != nil {
+                        Button { ai.run(.song) } label: {
+                            Label(AIAction.song.title, systemImage: AIAction.song.icon).font(.system(size: 10.5, weight: .semibold))
+                                .padding(.horizontal, 9).frame(height: 24).background(Capsule().fill(.white.opacity(0.11)))
+                        }.buttonStyle(PressStyle()).disabled(ai.busy)
+                    }
+                    Button { ai.ocr() } label: {
+                        Label("Ekrandan metin", systemImage: "text.viewfinder").font(.system(size: 10.5, weight: .semibold))
+                            .padding(.horizontal, 9).frame(height: 24).background(Capsule().fill(.white.opacity(0.11)))
+                    }.buttonStyle(PressStyle()).disabled(ai.busy)
                 }
             }
             .frame(height: 24)

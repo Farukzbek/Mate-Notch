@@ -97,6 +97,7 @@ final class LyricsService: ObservableObject {
         let instrumental: Bool?
         let plainLyrics: String?
         let syncedLyrics: String?
+        let albumName: String?
     }
 
     private static let session: URLSession = {
@@ -116,8 +117,70 @@ final class LyricsService: ObservableObject {
         return .ok(v)
     }
 
+    // MARK: - Kayıt seçimi (Mate Lyrics 1.9.1 ile aynı mantık)
+
+    /// Bir LRCLIB kaydının değerlendirmesi. LRCLIB'i herkes düzenleyebiliyor: bazı kayıtlarda başka şarkının sözleri
+    /// ya da saçma zamanlar var (ör. BLOK3 - ESKİSİ GİBİ: 27 satır şarkının 57–64. saniyelerine sıkışmış, sözler başka
+    /// bir şarkıya ait; doğru sözler senkronsuz kayıtta). Bu yüzden "senkronlu olan kazanır" yetmez.
+    private struct Candidate {
+        /// Küçük olan iyi: geçerli senkron < düz söz < enstrümantal < zamanı bozuk kaydın düz sözü (son çare)
+        enum Kind: Int { case syncedOK = 0, plain = 1, instrumental = 2, suspicious = 3 }
+        let kind: Kind
+        let state: LyricsState
+        let albumMatch: Bool
+        let diff: Double
+
+        func isBetter(than o: Candidate) -> Bool {
+            if kind != o.kind { return kind.rawValue < o.kind.rawValue }
+            if albumMatch != o.albumMatch { return albumMatch }
+            return diff < o.diff
+        }
+    }
+
+    /// Senkron zamanlar şarkıya uyuyor mu? Sözler şarkının büyük kısmına yayılmalı ve şarkı dışına taşmamalı.
+    static func timingsPlausible(_ lines: [LyricLine], duration: Double) -> Bool {
+        guard duration > 0 else { return true }
+        guard let first = lines.first?.time, let last = lines.last?.time else { return false }
+        return last <= duration + 30 && (last - first) >= duration * 0.3
+    }
+
+    private static func fold(_ s: String?) -> String {
+        (s ?? "").folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func candidate(from r: Record, track: Track) -> Candidate? {
+        let diff = abs((r.duration ?? track.duration) - track.duration)
+        let album = !fold(track.album).isEmpty && fold(r.albumName) == fold(track.album)
+        var suspicious = false
+        if let synced = r.syncedLyrics, !synced.isEmpty {
+            let lines = parseLRC(synced)
+            if !lines.isEmpty {
+                if timingsPlausible(lines, duration: track.duration) {
+                    return Candidate(kind: .syncedOK, state: .synced(lines), albumMatch: album, diff: diff)
+                }
+                suspicious = true
+            }
+        }
+        if let plain = r.plainLyrics?.trimmingCharacters(in: .whitespacesAndNewlines), !plain.isEmpty {
+            return Candidate(kind: suspicious ? .suspicious : .plain, state: .plain(plain.components(separatedBy: "\n")),
+                             albumMatch: album, diff: diff)
+        }
+        if r.instrumental == true {
+            return Candidate(kind: .instrumental, state: .instrumental, albumMatch: album, diff: diff)
+        }
+        return nil
+    }
+
     /// nil = ağ hatası (tekrar dene); .notFound = gerçekten söz yok.
-    private static func fetch(_ t: Track) async -> LyricsState? {
+    static func fetch(_ t: Track) async -> LyricsState? {
+        var best: Candidate?
+        func consider(_ c: Candidate?) {
+            guard let c else { return }
+            if best == nil || c.isBetter(than: best!) { best = c }
+        }
+
+        // 1) Birebir eşleşme (süre dahil). Geçerli senkronsa hemen kullan; değilse aday olarak sakla.
         var get = URLComponents(string: "https://lrclib.net/api/get")!
         get.queryItems = [
             .init(name: "track_name", value: t.title), .init(name: "artist_name", value: t.artist),
@@ -125,33 +188,25 @@ final class LyricsService: ObservableObject {
         ]
         var reachable = true
         switch await request(get.url!) as Response<Record> {
-        case .ok(let r): if let s = state(from: r) { return s }
+        case .ok(let r):
+            let c = candidate(from: r, track: t)
+            if c?.kind == .syncedOK { return c?.state }
+            consider(c)
         case .notFound: break
         case .failed: reachable = false
         }
+
+        // 2) Arama: "- Remastered", "(feat. ...)" gibi ekleri temizleyip adayları değerlendir.
         var search = URLComponents(string: "https://lrclib.net/api/search")!
         search.queryItems = [.init(name: "track_name", value: cleaned(t.title)), .init(name: "artist_name", value: t.artist)]
         let res: Response<[Record]> = await request(search.url!)
         if case .failed = res { return nil }
         if case .ok(let list) = res {
-            let diff = { (r: Record) in abs((r.duration ?? 0) - t.duration) }
-            let ranked = list.filter { diff($0) < 10 }.sorted {
-                let a = $0.syncedLyrics != nil ? 0 : 1, b = $1.syncedLyrics != nil ? 0 : 1
-                return a != b ? a < b : diff($0) < diff($1)
-            }
-            for r in ranked { if let s = state(from: r) { return s } }
+            // Süre sınırı geniş: LRCLIB'de bazen tek kayıt var ve süresi birkaç sn farklı; kayma olursa menüden ince ayar yapılır.
+            for r in list where abs((r.duration ?? 0) - t.duration) < 10 { consider(candidate(from: r, track: t)) }
         }
+        if let best { return best.state }
         return reachable ? .notFound : nil
-    }
-
-    private static func state(from r: Record) -> LyricsState? {
-        if let s = r.syncedLyrics, !s.isEmpty {
-            let lines = parseLRC(s)
-            if !lines.isEmpty { return .synced(lines) }
-        }
-        if let p = r.plainLyrics, !p.isEmpty { return .plain(p.components(separatedBy: "\n")) }
-        if r.instrumental == true { return .instrumental }
-        return nil
     }
 
     private static func cleaned(_ name: String) -> String {

@@ -54,35 +54,6 @@ final class NotchController {
             self?.open()
         }
 
-        if let t = ProcessInfo.processInfo.environment["MATENOTCH_AI_TEST"] {
-            Task {
-                var out = "provider: \(AIService.shared.active().rawValue)\n"
-                for action in [AIAction.summarize, .toEN, .fix] {
-                    do { let r = try await AIService.shared.complete(system: action.system, prompt: t); out += "[\(action.rawValue)] \(r.text)\n" }
-                    catch { out += "[\(action.rawValue)] HATA: \(error.localizedDescription)\n" }
-                }
-                try? out.write(toFile: "/tmp/matenotch_ai.txt", atomically: true, encoding: .utf8)
-            }
-        }
-        if let k = ProcessInfo.processInfo.environment["MATENOTCH_HUD"] {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                HUDService.shared.preview(k == "brightness" ? .brightness : (k == "keyboard" ? .keyboard : .volume))
-            }
-        }
-        if ProcessInfo.processInfo.environment["MATENOTCH_CLEANER"] != nil {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { CleanerWindow.show() }
-        }
-        if let f = ProcessInfo.processInfo.environment["MATENOTCH_AIRDROP_TEST"] {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                AirDrop.send(providers: [NSItemProvider(contentsOf: URL(fileURLWithPath: f))!])
-            }
-        }
-        if ProcessInfo.processInfo.environment["MATENOTCH_OPEN"] != nil {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                if let t = ProcessInfo.processInfo.environment["MATENOTCH_TAB"], let tab = Tab(rawValue: t) { NotchController.shared.state.tab = tab }
-                NotchController.shared.state.pinned = true; NotchController.shared.open()
-            }
-        }
         NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
             self?.reposition()
         }

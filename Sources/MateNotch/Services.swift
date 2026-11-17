@@ -58,9 +58,22 @@ final class MediaService: ObservableObject {
         }
     }
 
+    /// Derlenmiş betikler önbellekte: her saniye baştan derlemek CPU'yu gereksiz yoruyordu.
+    /// (Yalnızca `queue` üzerinde çağrılır, bu yüzden erişim seri.)
+    private static var compiled: [String: NSAppleScript] = [:]
+
     private static func run(_ src: String) -> NSAppleEventDescriptor? {
         var err: NSDictionary?
-        let r = NSAppleScript(source: src)?.executeAndReturnError(&err)
+        let script: NSAppleScript
+        if let c = compiled[src] { script = c }
+        else {
+            guard let s = NSAppleScript(source: src) else { return nil }
+            s.compileAndReturnError(nil)
+            if compiled.count > 40 { compiled.removeAll() }     // kontrol komutları (seek vb.) şişirmesin
+            compiled[src] = s
+            script = s
+        }
+        let r = script.executeAndReturnError(&err)
         return err == nil ? r : nil
     }
 

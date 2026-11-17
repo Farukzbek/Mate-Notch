@@ -277,7 +277,7 @@ final class AIService: ObservableObject {
 // MARK: - Eylemler
 
 enum AIAction: String, CaseIterable, Identifiable {
-    case summarize, fix, rewrite, toTR, toEN, explain, day, ask
+    case summarize, fix, rewrite, toTR, toEN, explain, day, ask, song
     var id: String { rawValue }
     static var chips: [AIAction] { [.summarize, .fix, .rewrite, .toTR, .toEN, .explain, .day] }
 
@@ -291,6 +291,7 @@ enum AIAction: String, CaseIterable, Identifiable {
         case .explain: return "Açıkla"
         case .day: return "Günümü özetle"
         case .ask: return "Sor"
+        case .song: return "Şarkıyı anlat"
         }
     }
     var icon: String {
@@ -302,6 +303,7 @@ enum AIAction: String, CaseIterable, Identifiable {
         case .explain: return "questionmark.bubble"
         case .day: return "calendar"
         case .ask: return "paperplane"
+        case .song: return "music.note"
         }
     }
     var system: String {
@@ -313,6 +315,7 @@ enum AIAction: String, CaseIterable, Identifiable {
         case .toEN: return "Translate the given text into natural English. Output only the translation."
         case .explain: return "Verilen metni sade Türkçe ile açıkla. Hata mesajı veya kod ise nedenini ve olası çözümünü kısaca anlat."
         case .day: return "Kullanıcının takvim etkinliklerine bakarak kısa bir günlük plan özeti çıkar ve varsa dikkat edilecek şeyleri belirt. Türkçe, en fazla 5 cümle."
+        case .song: return "Verilen şarkı ve sanatçı hakkında kısa bilgi ver: tür, dönem, tema veya anlam. Emin olmadığın bir şeyi uydurma; bilmiyorsan açıkça söyle. Türkçe, en fazla 5 cümle."
         case .ask: return "Soruya kısa, net ve doğru cevap ver. Kullanıcı Türkçe yazdıysa Türkçe cevap ver. Emin değilsen bunu belirt."
         }
     }
@@ -339,7 +342,10 @@ final class AIState: ObservableObject {
     func run(_ action: AIAction, text: String? = nil) {
         guard !busy else { return }
         var prompt: String
-        if action == .day {
+        if action == .song {
+            guard let t = MediaService.shared.track else { error = "Şu an çalan bir şarkı yok"; return }
+            prompt = "Şarkı: \(t.title)\nSanatçı: \(t.artist)\nAlbüm: \(t.album)"
+        } else if action == .day {
             prompt = Self.dayPrompt()
             guard !prompt.isEmpty else { output = "Yaklaşan etkinliğin yok. 🎉"; error = nil; providerLabel = ""; return }
         } else {
@@ -360,6 +366,28 @@ final class AIState: ObservableObject {
                 }
             } catch {
                 await MainActor.run { self.error = error.localizedDescription; self.busy = false }
+            }
+        }
+    }
+
+    /// Ekranda bir alan seç → metni oku (Vision, cihaz içi) → girdi alanına koy ve panoya kopyala.
+    func ocr() {
+        guard !busy else { return }
+        busy = true; error = nil; output = ""
+        NotchController.shared.close()                       // notch seçimin önüne girmesin
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            OCR.captureAndRecognize { result in
+                self.busy = false
+                NotchState.shared.tab = .ai
+                NotchController.shared.open()
+                switch result {
+                case .success(let text):
+                    self.input = text
+                    self.output = text
+                    self.providerLabel = "Ekrandan okundu · Vision (cihaz içi)"
+                    ClipboardService.shared.copyText(text)
+                case .failure(let e): self.error = e.localizedDescription
+                }
             }
         }
     }
