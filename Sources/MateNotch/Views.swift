@@ -693,13 +693,24 @@ struct ShelfZone: View {
                     Text("Sonra istediğin yere geri sürükle").font(.system(size: 10)).foregroundStyle(.white.opacity(0.35))
                 }.foregroundStyle(.white.opacity(0.5))
             } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(shelf.urls, id: \.self) { u in ShelfItem(url: u) }
-                        Button { shelf.clear() } label: {
-                            Image(systemName: "trash").frame(width: 40, height: 60).foregroundStyle(.white.opacity(0.4))
-                        }.buttonStyle(.plain).morph("Rafı temizle")
-                    }.padding(12)
+                VStack(spacing: 0) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(shelf.urls, id: \.self) { u in ShelfItem(url: u) }
+                        }.padding(12)
+                    }
+                    .frame(maxHeight: .infinity)
+                    // Temizle düğmesi rafın en altında, içeriklerden ayrı
+                    HStack {
+                        Text("\(shelf.urls.count) dosya").font(.system(size: 10, weight: .medium)).foregroundStyle(.white.opacity(0.4))
+                        Spacer()
+                        Button { withAnimation(.snappy) { shelf.clear() } } label: {
+                            Label("Rafı temizle", systemImage: "trash").font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.7)).padding(.horizontal, 10).frame(height: 22)
+                                .background(Capsule().fill(.white.opacity(0.1)))
+                        }.buttonStyle(PressStyle())
+                    }
+                    .padding(.horizontal, 12).padding(.bottom, 8)
                 }
             }
         }
