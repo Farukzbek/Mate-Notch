@@ -162,36 +162,33 @@ final class BuddyService: ObservableObject {
     func wake() { if asleep { withAnimation(.easeInOut(duration: 0.3)) { asleep = false } } }
 }
 
-// MARK: - Çizim (notch'un sağ kanadında küçük yüz)
+// MARK: - Çizim (notch'un sağ kanadında: yuvarlak yüz yok, yalnızca göz ve ağız)
 
 struct BuddyView: View {
     @ObservedObject var b = BuddyService.shared
-    private let face = Color(red: 0.96, green: 0.94, blue: 0.89)
-    private let ink = Color(red: 0.10, green: 0.10, blue: 0.12)
+    private let ink = Color(red: 0.96, green: 0.94, blue: 0.89)     // siyah notch üzerinde açık renk çizgiler
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1.0 / 24)) { ctx in
             let t = ctx.date.timeIntervalSinceReferenceDate
             let bob: CGFloat = b.bobbing ? CGFloat(sin(t * 5.4)) * 1.3 : b.asleep ? CGFloat(sin(t * 1.1)) * 0.6 : CGFloat(sin(t * 1.5)) * 0.4
-            let hy = 16 + bob - b.hop
+            let cy = 16 + bob - b.hop
             ZStack(alignment: .topLeading) {
                 if b.paper {
                     RoundedRectangle(cornerRadius: 1.5).fill(.white).frame(width: 7, height: 9)
                         .overlay(VStack(spacing: 1.5) { ForEach(0..<3, id: \.self) { _ in Capsule().fill(.gray.opacity(0.6)).frame(width: 4, height: 0.8) } })
                         .rotationEffect(.degrees(b.paperHeld ? -12 : 8))
-                        .scaleEffect(b.paperHeld ? 1 - b.reach * 0.0 : 1)
-                        .position(x: b.paperHeld ? 31 + 9 * b.reach : 41, y: b.paperHeld ? 18 + 7 * b.reach : 25)
+                        .position(x: b.paperHeld ? 36 - 10 * (1 - b.reach) : 42, y: b.paperHeld ? 22 - 5 * (1 - b.reach) : 24)
                 }
-                arm(t: t, hy: hy)
                 ZStack {
-                    Circle().fill(face)
                     eyes
                     mouth
                     if b.phones { headphones }
                     if b.tired { sweat }
                 }
-                .frame(width: 20, height: 20)
-                .position(x: 23, y: hy)
+                .frame(width: 26, height: 22)
+                .position(x: 21, y: cy)
+                hand(t: t)
                 if b.asleep { zzz(t) }
             }
             .frame(width: 46, height: 32)
@@ -203,48 +200,50 @@ struct BuddyView: View {
     private var eyes: some View {
         let shut = b.blink || b.asleep
         let open: CGFloat = shut ? 0.12 : (b.tired ? 0.45 : 1)
-        return HStack(spacing: 5.5) {
-            ForEach(0..<2, id: \.self) { _ in Capsule().fill(ink).frame(width: 2.5, height: 4).scaleEffect(y: open) }
+        return HStack(spacing: 7) {
+            ForEach(0..<2, id: \.self) { _ in Capsule().fill(ink).frame(width: 3, height: 5).scaleEffect(y: open) }
         }
-        .offset(x: b.glance * 1.6, y: -1.5)
+        .offset(x: b.glance * 2, y: -3)
     }
 
     @ViewBuilder private var mouth: some View {
-        if b.asleep { Circle().fill(ink).frame(width: 2.4, height: 2.4).offset(y: 5) }
-        else if b.happy { Capsule().fill(ink).frame(width: 7, height: 4.4).offset(y: 4.6) }
-        else if b.tired { Capsule().fill(ink).frame(width: 5.5, height: 1.4).offset(y: 5) }
-        else { SmileShape().stroke(ink, style: StrokeStyle(lineWidth: 1.4, lineCap: .round)).frame(width: 8, height: 3.2).offset(y: 4.4) }
+        if b.asleep { Circle().fill(ink).frame(width: 2.6, height: 2.6).offset(y: 5) }
+        else if b.happy { Capsule().fill(ink).frame(width: 8, height: 5).offset(y: 4.5) }
+        else if b.tired { Capsule().fill(ink).frame(width: 6, height: 1.6).offset(y: 5) }
+        else { SmileShape().stroke(ink, style: StrokeStyle(lineWidth: 1.6, lineCap: .round)).frame(width: 9, height: 3.4).offset(y: 4.4) }
     }
 
     private var headphones: some View {
-        ZStack {
-            Circle().trim(from: 0.5, to: 1).stroke(Color(white: 0.22), style: StrokeStyle(lineWidth: 2.2, lineCap: .round))
-                .frame(width: 19.5, height: 19.5).offset(y: -0.5)
-            RoundedRectangle(cornerRadius: 1.6).fill(Color(white: 0.22)).frame(width: 3.6, height: 7.5).offset(x: -10, y: 1)
-            RoundedRectangle(cornerRadius: 1.6).fill(Color(white: 0.22)).frame(width: 3.6, height: 7.5).offset(x: 10, y: 1)
+        let c = Color.white.opacity(0.55)
+        return ZStack {
+            Circle().trim(from: 0.5, to: 1).stroke(c, style: StrokeStyle(lineWidth: 2.2, lineCap: .round))
+                .frame(width: 21, height: 21).offset(y: -1)
+            RoundedRectangle(cornerRadius: 1.6).fill(c).frame(width: 3.6, height: 7.5).offset(x: -10.5, y: 0.5)
+            RoundedRectangle(cornerRadius: 1.6).fill(c).frame(width: 3.6, height: 7.5).offset(x: 10.5, y: 0.5)
         }
         .transition(.scale(scale: 0.5).combined(with: .opacity))
     }
 
     private var sweat: some View {
-        Circle().fill(Color(red: 0.55, green: 0.78, blue: 0.95)).frame(width: 3.4, height: 4.2).offset(x: 8, y: -5.5)
+        Circle().fill(Color(red: 0.55, green: 0.78, blue: 0.95)).frame(width: 3.4, height: 4.2).offset(x: 11, y: -7)
     }
 
     private func zzz(_ t: Double) -> some View {
         let p = CGFloat((t.truncatingRemainder(dividingBy: 3)) / 3)
         return Text("z").font(.system(size: 6 + p * 3, weight: .bold, design: .rounded)).foregroundStyle(.white.opacity(0.75 - Double(p) * 0.6))
-            .position(x: 34 + p * 5, y: 8 - p * 6)
+            .position(x: 33 + p * 5, y: 8 - p * 6)
     }
 
-    @ViewBuilder private func arm(t: Double, hy: CGFloat) -> some View {
-        if b.waving || b.reach > 0.001 {
-            let shoulder = CGPoint(x: 31, y: hy + 2)
-            let hand: CGPoint = b.reach > 0.001
-                ? CGPoint(x: 31 + 10 * b.reach, y: hy + 2 + 8 * b.reach)
-                : CGPoint(x: 36 + CGFloat(sin(t * 13)) * 3, y: 8 + CGFloat(cos(t * 13)) * 1.2)
-            Path { p in p.move(to: shoulder); p.addLine(to: hand) }
-                .stroke(face, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
-            Circle().fill(face).frame(width: 5.5, height: 5.5).position(hand)
+    /// El: sistemin kendi el simgesi (temiz çizgiler). Sallarken bilekten sağa-sola döner, uzanırken kağıda gider.
+    @ViewBuilder private func hand(t: Double) -> some View {
+        if b.waving {
+            Image(systemName: "hand.wave.fill").font(.system(size: 12, weight: .regular)).foregroundStyle(ink)
+                .rotationEffect(.degrees(sin(t * 11) * 16), anchor: .bottom)
+                .position(x: 38, y: 12)
+        } else if b.reach > 0.001 {
+            Image(systemName: "hand.raised.fill").font(.system(size: 11, weight: .regular)).foregroundStyle(ink)
+                .rotationEffect(.degrees(20))
+                .position(x: 33 + 7 * b.reach, y: 16 + 5 * b.reach)
         }
     }
 }
