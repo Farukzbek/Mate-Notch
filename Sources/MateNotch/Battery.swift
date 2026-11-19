@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 import IOBluetooth
+import CoreBluetooth
 
 // MARK: - Cihaz pilleri (Mac + bağlı Bluetooth cihazlar)
 
@@ -83,7 +84,7 @@ final class DeviceBatteryService: ObservableObject {
                 func pct(_ k: String) -> Int? { (info[k] as? String).flatMap { Int($0.replacingOccurrences(of: "%", with: "")) } }
                 let l = pct("device_batteryLevelLeft"), r = pct("device_batteryLevelRight"), c = pct("device_batteryLevelCase"), m = pct("device_batteryLevelMain")
                 var parts: [String] = []
-                if let l { parts.append("Sol %\(l)") }; if let r { parts.append("Sağ %\(r)") }; if let c { parts.append("Kutu %\(c)") }
+                if let l { parts.append("Sol %\(l)") }; if let r { parts.append(L("Sağ %\(r)")) }; if let c { parts.append("Kutu %\(c)") }
                 let level = m ?? [l, r].compactMap { $0 }.min() ?? c
                 out.append(PowerDevice(id: (info["device_address"] as? String) ?? name, name: name,
                                        icon: icon(forName: name, minorType: info["device_minorType"] as? String),
@@ -99,18 +100,19 @@ final class DeviceBatteryService: ObservableObject {
     private static func valid(_ v: Int?) -> Int? { guard let v, (1...100).contains(v) else { return nil }; return v }
 
     static func mergeIOBluetooth(into list: inout [PowerDevice]) {
+        guard CBManager.authorization == .allowedAlways else { return }      // izin yokken IOBluetooth'a dokunma: pencere çıkarır
         guard let paired = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] else { return }
         func read(_ d: IOBluetoothDevice, _ key: String) -> Int? {
             guard d.responds(to: NSSelectorFromString(key)) else { return nil }
             return valid((d.value(forKey: key) as? NSNumber)?.intValue)
         }
         for d in paired where d.isConnected() {
-            let name = d.name ?? "Bluetooth cihazı"
+            let name = d.name ?? L("Bluetooth cihazı")
             let single = read(d, "batteryPercentSingle") ?? read(d, "batteryPercentCombined") ?? read(d, "batteryPercent")
             let l = read(d, "batteryPercentLeft"), r = read(d, "batteryPercentRight"), c = read(d, "batteryPercentCase")
             let level = single ?? [l, r].compactMap { $0 }.min() ?? c
             var parts: [String] = []
-            if let l { parts.append("Sol %\(l)") }; if let r { parts.append("Sağ %\(r)") }; if let c { parts.append("Kutu %\(c)") }
+            if let l { parts.append("Sol %\(l)") }; if let r { parts.append(L("Sağ %\(r)")) }; if let c { parts.append("Kutu %\(c)") }
             if let i = list.firstIndex(where: { $0.name == name || $0.id.caseInsensitiveCompare(d.addressString ?? "") == .orderedSame }) {
                 if list[i].percent == nil { list[i].percent = level; list[i].detail = parts.isEmpty ? list[i].detail : parts.joined(separator: " · ") }
             } else {
@@ -150,10 +152,11 @@ final class PowerAlertService {
         let s = percent <= critical ? 2 : (percent <= threshold ? 1 : 0)
         guard s > (stage[id] ?? 0) else { return }
         stage[id] = s
+        if isMac { DispatchQueue.main.async { BuddyService.shared.lowBattery() } }
         BannerService.shared.post(NotchBanner(
             icon: isMac ? (s == 2 ? "battery.0percent" : "battery.25percent") : icon,
-            title: s == 2 ? "Pil çok düşük" : "Pil azalıyor",
-            subtitle: "\(name) %\(percent)" + (isMac ? " · şarja tak" : ""),
+            title: s == 2 ? L("Pil çok düşük") : L("Pil azalıyor"),
+            subtitle: "\(name) %\(percent)" + (isMac ? L(" · şarja tak") : ""),
             tint: s == 2 ? .red : .orange), duration: 7)
         if s == 2 { NSSound(named: "Basso")?.play() }
     }
@@ -168,7 +171,7 @@ struct BatteriesView: View {
 
     var rows: [PowerDevice] {
         [PowerDevice(id: "mac", name: "Bu Mac", icon: "laptopcomputer", percent: mac.level, charging: mac.pluggedIn || mac.charging,
-                     detail: mac.pluggedIn ? (mac.charging ? "Şarj oluyor" : "Güç adaptörüne bağlı") : nil, isMac: true)] + svc.devices
+                     detail: mac.pluggedIn ? (mac.charging ? L("Şarj oluyor") : L("Güç adaptörüne bağlı")) : nil, isMac: true)] + svc.devices
     }
 
     var body: some View {

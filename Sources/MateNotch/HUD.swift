@@ -247,7 +247,7 @@ final class HUDService: ObservableObject {
     private var axTimer: Timer?
     private var axWaitingSince = Date()
 
-    private static let onMessage = "Açık: ses/parlaklık tuşlarını Mate Notch işliyor."
+    private static let onMessage = L("Açık: ses/parlaklık tuşlarını Mate Notch işliyor.")
     static let accessibilityURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
 
     /// `userInitiated`: kullanıcı anahtarı şimdi açtı → izin penceresi gösterilir. Uygulama açılışında sessizce denenir.
@@ -262,7 +262,7 @@ final class HUDService: ObservableObject {
         // İzin yok: anahtarı KAPATMA. İzin verilince kendiliğinden başlasın (yeniden açıp yeniden izin istemek yok).
         axWaiting = true
         axWaitingSince = Date()
-        hideStatus = "Erişilebilirlik izni bekleniyor: Sistem Ayarları › Gizlilik ve Güvenlik › Erişilebilirlik'te Mate Notch'u aç. Açınca kendiliğinden başlar."
+        hideStatus = L("Erişilebilirlik izni bekleniyor: Sistem Ayarları › Gizlilik ve Güvenlik › Erişilebilirlik'te Mate Notch'u aç. Açınca kendiliğinden başlar.")
         axTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] t in
             guard let self else { t.invalidate(); return }
             guard UserDefaults.standard.bool(forKey: Pref.hudHideSystem) else { t.invalidate(); self.axWaiting = false; return }
@@ -270,7 +270,7 @@ final class HUDService: ObservableObject {
                 t.invalidate(); self.axWaiting = false; self.hideStatus = Self.onMessage
             } else if Date().timeIntervalSince(self.axWaitingSince) > 15 {
                 // Ayarlarda açık görünüp çalışmıyorsa: macOS eski bir kopyanın iznini hatırlıyordur
-                self.hideStatus = "İzin hâlâ gelmedi. Listede Mate Notch zaten açık görünüyorsa macOS eski bir kopyanın iznini tutuyor olabilir: onu seçip − ile kaldır, sonra + ile /Uygulamalar'dan Mate Notch'u yeniden ekle."
+                self.hideStatus = L("İzin hâlâ gelmedi. Listede Mate Notch zaten açık görünüyorsa macOS eski bir kopyanın iznini tutuyor olabilir: onu seçip − ile kaldır, sonra + ile /Uygulamalar'dan Mate Notch'u yeniden ekle.")
             }
         }
         RunLoop.main.add(axTimer!, forMode: .common)

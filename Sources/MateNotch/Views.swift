@@ -21,6 +21,8 @@ struct RootView: View {
     @ObservedObject var privacy = PrivacyService.shared
     @ObservedObject var downloads = DownloadService.shared
     @ObservedObject var focus = FocusService.shared
+    @ObservedObject var buddy = BuddyService.shared
+    @AppStorage(BuddyKey.on) var buddyOn = false
     @AppStorage(Pref.hudStyle) var hudStyle = "bar"
     @AppStorage(Pref.liveActivities) var liveActivities = true
     @AppStorage(Pref.lyricsEnabled) var lyricsOn = false
@@ -51,6 +53,7 @@ struct RootView: View {
         if downloads.active { return .download }
         if media.isPlaying { return .music }
         if focus.active { return .focus }
+        if buddyOn || buddy.previewing { return .idle }
         if closedIconIdle && closedIconName != "none" { return .idle }
         return nil
     }
@@ -131,6 +134,7 @@ struct RootView: View {
                         : .spring(response: 0.5, dampingFraction: 0.88), value: open)
         .animation(.spring(response: 0.42, dampingFraction: 0.82), value: activity)
         .animation(.spring(response: 0.42, dampingFraction: 0.82), value: pill)
+        .animation(.spring(response: 0.5, dampingFraction: 0.78), value: buddyOn || buddy.previewing)
         .environment(\.colorScheme, .dark)
     }
 }
@@ -149,6 +153,9 @@ struct CollapsedContent: View {
     @ObservedObject var focusState = FocusService.shared
     @AppStorage(Pref.collapsedExtraW) var exW = 0.0
     @AppStorage(Pref.collapsedExtraH) var exH = 0.0
+    @AppStorage(BuddyKey.on) var buddyOn = false
+    @ObservedObject var buddy = BuddyService.shared
+    var buddyActive: Bool { buddyOn || buddy.previewing }
 
     var body: some View {
         let g = state.geometry
@@ -201,11 +208,15 @@ struct CollapsedContent: View {
     @ViewBuilder var right: some View {
         switch activity {
         case .music:
-            HStack(spacing: 4) {                       // Odak açıksa ay simgesi müzik göstergesinin yanında
-                if focusState.active { Image(systemName: "moon.fill").font(.system(size: 11, weight: .semibold)).foregroundStyle(.purple) }
-                ClosedIconView(playing: media.isPlaying, color: media.accent)
+            if buddyActive { BuddyView() }             // maskot açıkken müzik göstergesinin (equalizer) yerini alır
+            else {
+                HStack(spacing: 4) {                   // Odak açıksa ay simgesi müzik göstergesinin yanında
+                    if focusState.active { Image(systemName: "moon.fill").font(.system(size: 11, weight: .semibold)).foregroundStyle(.purple) }
+                    ClosedIconView(playing: media.isPlaying, color: media.accent)
+                }
             }
-        case .idle: ClosedIconView(playing: false, color: .white.opacity(0.65))
+        case .idle:
+            if buddyActive { BuddyView() } else { ClosedIconView(playing: false, color: .white.opacity(0.65)) }
         case .privacy:
             if privacy.mic { Image(systemName: "mic.fill").foregroundStyle(.orange).font(.system(size: 13, weight: .semibold)) }
             else { Color.clear.frame(width: 1, height: 1) }
@@ -330,15 +341,15 @@ struct OpenContent: View {
                         Button { withAnimation(.snappy(duration: 0.25)) { state.tab = .ai } } label: {
                             Image(systemName: "sparkles")
                                 .foregroundStyle(state.tab == .ai ? Color.white : .white.opacity(0.5))
-                        }.buttonStyle(.plain).morph("Yapay Zeka")
+                        }.buttonStyle(.plain).morph(L("Yapay Zeka"))
                     }
                     Button { state.pinned.toggle() } label: {
                         Image(systemName: state.pinned ? "pin.fill" : "pin")
                             .foregroundStyle(state.pinned ? Color.yellow : .white.opacity(0.5))
-                    }.buttonStyle(.plain).morph(state.pinned ? "Bırak" : "Sabitle")
+                    }.buttonStyle(.plain).morph(state.pinned ? L("Bırak") : L("Sabitle"))
                     Button { SettingsWindow.show() } label: {
                         Image(systemName: "gearshape.fill").foregroundStyle(.white.opacity(0.5))
-                    }.buttonStyle(.plain).morph("Ayarlar")
+                    }.buttonStyle(.plain).morph(L("Ayarlar"))
                     Button { withAnimation(.snappy(duration: 0.25)) { state.tab = .batteries } } label: {
                         HStack(spacing: 6) {
                             HStack(spacing: 3) {
@@ -353,7 +364,7 @@ struct OpenContent: View {
                             }
                         }
                         .font(.system(size: 11, weight: .medium))
-                    }.buttonStyle(.plain).tip("Piller")
+                    }.buttonStyle(.plain).tip(L("Piller"))
                 }
                 .font(.system(size: 12))
             }
@@ -393,10 +404,11 @@ struct HomeView: View {
     @AppStorage(Pref.qbTimer) var qbTimer = true
     @AppStorage(Pref.qbCapture) var qbCapture = true
     @AppStorage(Pref.qbColor) var qbColor = true
+    @AppStorage(Pref.qbShortcuts) var qbShortcuts = true
 
     @AppStorage(Pref.weatherEnabled) var weatherOn = false
 
-    var hasSide: Bool { (showCalendar && (calDate || calEvent)) || weatherOn || qbCaffeinate || qbTimer || qbCapture || qbColor }
+    var hasSide: Bool { (showCalendar && (calDate || calEvent)) || weatherOn || qbCaffeinate || qbTimer || qbCapture || qbColor || qbShortcuts }
 
     var body: some View {
         HStack(spacing: 20) {
@@ -438,14 +450,14 @@ struct MediaCard: View {
                     Spacer(minLength: 2)
                     scrubber(t)
                     HStack(spacing: 0) {
-                        Color.clear.frame(width: 24, height: 1)
+                        OutputPickerButton().frame(width: 24, height: 24)
                         Spacer(minLength: 0)
                         HStack(spacing: 22) {
-                        Button { media.previous() } label: { Image(systemName: "backward.fill") }.tip("Önceki", .top)
+                        Button { media.previous() } label: { Image(systemName: "backward.fill") }.tip(L("Önceki"), .top)
                         Button { media.togglePlay() } label: {
                             Image(systemName: media.isPlaying ? "pause.fill" : "play.fill").font(.system(size: 20))
-                        }.tip(media.isPlaying ? "Duraklat" : "Oynat", .top)
-                        Button { media.next() } label: { Image(systemName: "forward.fill") }.tip("Sonraki", .top)
+                        }.tip(media.isPlaying ? "Duraklat" : L("Oynat"), .top)
+                        Button { media.next() } label: { Image(systemName: "forward.fill") }.tip(L("Sonraki"), .top)
                         }
                         Spacer(minLength: 0)
                         LyricsToggle()
@@ -517,12 +529,13 @@ struct SideColumn: View {
     @AppStorage(Pref.qbTimer) var qbTimer = true
     @AppStorage(Pref.qbCapture) var qbCapture = true
     @AppStorage(Pref.qbColor) var qbColor = true
+    @AppStorage(Pref.qbShortcuts) var qbShortcuts = true
     @ObservedObject var cal = CalendarService.shared
     @ObservedObject var caf = CaffeinateService.shared
     @ObservedObject var timer = TimerService.shared
 
     static func fmt(_ d: Date, _ pattern: String) -> String {
-        let f = DateFormatter(); f.locale = Locale(identifier: "tr_TR"); f.dateFormat = pattern
+        let f = DateFormatter(); f.locale = Locale(identifier: Loc.code); f.dateFormat = pattern
         return f.string(from: d)
     }
 
@@ -566,18 +579,21 @@ struct SideColumn: View {
                 .padding(10).frame(maxWidth: .infinity, alignment: .leading)
                 .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.07)))
             }
-            if qbCaffeinate || qbTimer || qbCapture || qbColor {
+            if qbCaffeinate || qbTimer || qbCapture || qbColor || qbShortcuts {
                 HStack(spacing: 6) {
                     if qbCaffeinate {
-                        QuickButton(icon: "cup.and.saucer.fill", on: caf.active, tint: .orange, help: "Uyanık tut") { caf.toggle() }
+                        QuickButton(icon: "cup.and.saucer.fill", on: caf.active, tint: .orange, help: L("Uyanık tut")) { caf.toggle() }
                     }
                     if qbTimer {
                         QuickButton(icon: "timer", on: timer.running, tint: .orange, help: "25 dk odak") {
                             if timer.running { timer.pause() } else { timer.set(minutes: 25); timer.start() }
                         }
                     }
+                    if qbShortcuts && ShortcutsService.available {
+                        QuickButton(icon: "bolt.fill", on: false, tint: .yellow, help: L("Kısayollar")) { ShortcutsService.showMenu() }
+                    }
                     if qbColor {
-                        QuickButton(icon: "eyedropper", on: false, tint: .pink, help: "Renk seç") { ColorPickService.shared.pick() }
+                        QuickButton(icon: "eyedropper", on: false, tint: .pink, help: L("Renk seç")) { ColorPickService.shared.pick() }
                     }
                     if qbCapture {
                         QuickButton(icon: CaptureService.icon(captureMode, recording: capture.recording),
@@ -597,6 +613,13 @@ struct SideColumn: View {
                     Text(e.title ?? "Etkinlik").font(.system(size: 12, weight: .semibold)).lineLimit(1)
                     Text(eventTime(e)).font(.system(size: 10)).foregroundStyle(.white.opacity(0.55))
                 }
+                if let url = CalendarService.meetingURL(e) {
+                    Button { NSWorkspace.shared.open(url) } label: {
+                        Image(systemName: "video.fill").font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(.black).frame(width: 24, height: 20)
+                            .background(Capsule().fill(.green))
+                    }.buttonStyle(PressStyle()).morph(L("Katıl"))
+                }
             }
         } else {
             Text(cal.denied ? "Takvim izni yok" : "Yaklaşan etkinlik yok")
@@ -606,7 +629,7 @@ struct SideColumn: View {
 
     func eventTime(_ e: EKEventAlias) -> String {
         let f = DateFormatter(); f.timeStyle = .short; f.dateStyle = .none
-        if e.startDate <= Date() { return "Şimdi · \(f.string(from: e.endDate)) bitiş" }
+        if e.startDate <= Date() { return L("Şimdi · \(f.string(from: e.endDate)) bitiş") }
         let mins = Int(e.startDate.timeIntervalSinceNow / 60)
         if mins < 60 { return "\(mins) dk sonra" }
         return f.string(from: e.startDate)
@@ -670,7 +693,7 @@ struct AirDropZone: View {
                     .frame(width: 40, height: 40)
                     .scaleEffect(targeted ? 1.18 : 1)
                 Text("AirDrop").font(.system(size: 12, weight: .semibold))
-                Text(shelf.urls.isEmpty ? "Dosyayı buraya sürükle" : (hovering ? "Raftakileri gönder" : "Buraya sürükle\nveya tıkla"))
+                Text(shelf.urls.isEmpty ? "Dosyayı buraya sürükle" : (hovering ? "Raftakileri gönder" : L("Buraya sürükle\nveya tıkla")))
                     .font(.system(size: 9.5)).foregroundStyle(.white.opacity(0.5))
                     .multilineTextAlignment(.center).lineLimit(2)
             }
@@ -840,6 +863,12 @@ struct CopiedBanner: View {
 struct ClipboardView: View {
     @ObservedObject var clip = ClipboardService.shared
     @State private var copied: UUID?
+    @State private var query = ""
+    @FocusState private var searchFocus: Bool
+    private var shown: [ClipItem] {
+        let q = query.trimmingCharacters(in: .whitespaces)
+        return q.isEmpty ? clip.items : clip.items.filter { $0.text.localizedCaseInsensitiveContains(q) }
+    }
 
     var body: some View {
         if clip.items.isEmpty {
@@ -851,7 +880,14 @@ struct ClipboardView: View {
         } else {
             VStack(spacing: 6) {
                 HStack {
-                    Text("\(clip.items.count) öğe").font(.system(size: 10, weight: .medium)).foregroundStyle(.white.opacity(0.4))
+                    HStack(spacing: 4) {
+                        Image(systemName: "magnifyingglass").font(.system(size: 9))
+                        TextField("Ara", text: $query).textFieldStyle(.plain).font(.system(size: 11)).focused($searchFocus)
+                    }
+                    .foregroundStyle(.white.opacity(0.6))
+                    .padding(.horizontal, 8).frame(width: 130, height: 20)
+                    .background(Capsule().fill(.white.opacity(0.08)))
+                    Text("\(shown.count) öğe").font(.system(size: 10, weight: .medium)).foregroundStyle(.white.opacity(0.4))
                     Spacer()
                     Button { withAnimation(.snappy) { clip.clear() } } label: {
                         Label("Tümünü sil", systemImage: "trash").font(.system(size: 10, weight: .medium))
@@ -860,7 +896,7 @@ struct ClipboardView: View {
                 }
                 ScrollView(showsIndicators: false) {
                     LazyVStack(spacing: 5) {
-                        ForEach(clip.items) { item in
+                        ForEach(shown) { item in
                             ClipRow(item: item, copied: $copied)
                                 .transition(.asymmetric(insertion: .opacity,
                                                         removal: .opacity.combined(with: .move(edge: .trailing))))
@@ -869,6 +905,8 @@ struct ClipboardView: View {
                     .animation(.snappy(duration: 0.25), value: clip.items)
                 }
             }
+            .onChange(of: searchFocus) { _, f in NotchState.shared.inputFocused = f }
+            .onDisappear { NotchState.shared.inputFocused = false }
         }
     }
 }
@@ -906,12 +944,20 @@ struct ClipRow: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(PressStyle())
+            if item.pinned && !hovering {
+                Image(systemName: "pin.fill").font(.system(size: 9)).foregroundStyle(.white.opacity(0.45))
+            }
             if hovering {
+                Button { withAnimation(.snappy(duration: 0.25)) { clip.togglePin(item) } } label: {
+                    Image(systemName: item.pinned ? "pin.slash.fill" : "pin.fill").font(.system(size: 12)).foregroundStyle(.white.opacity(0.65))
+                }
+                .buttonStyle(PressStyle())
+                .morph(item.pinned ? L("Sabitlemeyi kaldır") : L("Sabitle"))
                 Button { withAnimation(.snappy(duration: 0.25)) { clip.remove(item) } } label: {
                     Image(systemName: "xmark.circle.fill").font(.system(size: 14)).foregroundStyle(.white.opacity(0.65))
                 }
                 .buttonStyle(PressStyle())
-                .morph("Sil")
+                .morph(L("Sil"))
                 .transition(.scale(scale: 0.5).combined(with: .opacity))
             }
         }
@@ -925,6 +971,7 @@ struct ClipRow: View {
                 }
             }
             Divider()
+            Button(item.pinned ? "Sabitlemeyi kaldır" : "Sabitle") { clip.togglePin(item) }
             Button("Sil", role: .destructive) { clip.remove(item) }
             Button("Tümünü sil", role: .destructive) { clip.clear() }
         }
@@ -940,21 +987,40 @@ struct TimerView: View {
             ZStack {
                 Circle().stroke(.white.opacity(0.12), lineWidth: 7)
                 Circle().trim(from: 0, to: timer.total > 0 ? timer.remaining / timer.total : 0)
-                    .stroke(Color.orange, style: StrokeStyle(lineWidth: 7, lineCap: .round))
+                    .stroke(timer.pomodoro && timer.phaseBreak ? Color.green : Color.orange, style: StrokeStyle(lineWidth: 7, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .animation(.linear(duration: 0.25), value: timer.remaining)
+                    .animation(.smooth(duration: 0.5), value: timer.phaseBreak)
                 Text(timer.label).font(.system(size: 22, weight: .semibold, design: .rounded)).monospacedDigit()
             }
             .frame(width: 112, height: 112)
 
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 8) {
-                    ForEach([5, 10, 25, 45], id: \.self) { m in
-                        Button("\(m) dk") { timer.set(minutes: m) }
-                            .buttonStyle(PressStyle()).font(.system(size: 11, weight: .medium))
+                    if timer.pomodoro {
+                        Group {
+                        Label(timer.phaseBreak ? L("Mola") : L("Odak"), systemImage: timer.phaseBreak ? "cup.and.saucer.fill" : "brain.head.profile")
+                            .font(.system(size: 11, weight: .semibold)).foregroundStyle(timer.phaseBreak ? .green : .orange)
                             .padding(.horizontal, 10).frame(height: 26)
-                            .background(Capsule().fill(.white.opacity(Int(timer.total / 60) == m ? 0.22 : 0.09)))
+                            .background(Capsule().fill(.white.opacity(0.09)))
+                        Text("\(timer.round % 4)/4").font(.system(size: 10)).foregroundStyle(.white.opacity(0.45))
+                        }.transition(.opacity.combined(with: .scale(scale: 0.85, anchor: .leading)))
+                    } else {
+                        HStack(spacing: 8) {
+                        ForEach([5, 10, 25, 45], id: \.self) { m in
+                            Button("\(m) dk") { timer.set(minutes: m) }
+                                .buttonStyle(PressStyle()).font(.system(size: 11, weight: .medium))
+                                .padding(.horizontal, 10).frame(height: 26)
+                                .background(Capsule().fill(.white.opacity(Int(timer.total / 60) == m ? 0.22 : 0.09)))
+                        }
+                        }.transition(.opacity.combined(with: .scale(scale: 0.85, anchor: .leading)))
                     }
+                    Button { withAnimation(.smooth(duration: 0.5)) { timer.pomodoro.toggle() } } label: {
+                        Image(systemName: "repeat").font(.system(size: 11, weight: .semibold))
+                            .frame(width: 26, height: 26)
+                            .background(Circle().fill(timer.pomodoro ? Color.orange : .white.opacity(0.09)))
+                            .foregroundStyle(timer.pomodoro ? .black : .white.opacity(0.8))
+                    }.buttonStyle(PressStyle()).tip(L("Pomodoro (25 dk odak / 5 dk mola)"), .top)
                 }
                 HStack(spacing: 10) {
                     Button { timer.running ? timer.pause() : timer.start() } label: {
@@ -965,7 +1031,7 @@ struct TimerView: View {
                     Button { timer.reset() } label: {
                         Image(systemName: "arrow.counterclockwise").frame(width: 32, height: 32)
                             .background(Circle().fill(.white.opacity(0.1)))
-                    }.buttonStyle(PressStyle()).tip("Sıfırla", .top)
+                    }.buttonStyle(PressStyle()).tip(L("Sıfırla"), .top)
                 }
             }
         }
@@ -979,9 +1045,9 @@ struct StatsView: View {
     @ObservedObject var stats = StatsService.shared
     var body: some View {
         HStack(spacing: 14) {
-            ring("İŞLEMCİ", stats.cpu, .green)
+            ring(L("İŞLEMCİ"), stats.cpu, .green)
             ring("BELLEK", stats.mem, .blue)
-            ring("DİSK", stats.disk, .purple)
+            ring(L("DİSK"), stats.disk, .purple)
             VStack(alignment: .leading, spacing: 4) {
                 Text("CPU GEÇMİŞİ").font(.system(size: 9, weight: .semibold)).foregroundStyle(.white.opacity(0.4))
                 Sparkline(values: stats.cpuHistory).stroke(Color.green, lineWidth: 1.8)
@@ -1041,6 +1107,8 @@ struct SettingsView: View {
     @AppStorage(Pref.showShelf) var showShelf = true
     @AppStorage(Pref.showClipboard) var showClipboard = true
     @AppStorage(Pref.showTimer) var showTimer = true
+    @AppStorage(Pref.meetingAlert) var meetingAlert = true
+    @AppStorage("shelfExpireDays") var shelfExpire = 0
     @AppStorage(Pref.showStats) var showStats = true
     @AppStorage(Pref.lyricsEnabled) var lyricsOn = false
     @AppStorage(Pref.lyricsInNotch) var lyricsInNotch = true
@@ -1054,6 +1122,7 @@ struct SettingsView: View {
     @AppStorage(Pref.qbTimer) var qbTimer = true
     @AppStorage(Pref.qbCapture) var qbCapture = true
     @AppStorage(Pref.qbColor) var qbColor = true
+    @AppStorage(Pref.qbShortcuts) var qbShortcuts = true
     @AppStorage(Pref.captureMode) var captureMode = "area"
     @AppStorage(Pref.captureClipboard) var captureClipboard = true
     @AppStorage(Pref.bgStyle) var bgStyle = "black"
@@ -1092,6 +1161,7 @@ struct SettingsView: View {
     // Seçici kendi hassas rengini tutar; hex yalnızca kayda yazılır (geri okunmaz) → sürüklerken renk kaymaz
     @State private var pickerColor = Color(hex: UserDefaults.standard.string(forKey: Pref.bgColor) ?? "#1F2A44")
     @State private var loginItem = LaunchAtLogin.enabled
+    @State private var language = AppLanguage.current
 
     var body: some View {
         Form {
@@ -1154,10 +1224,22 @@ struct SettingsView: View {
                     .font(.caption).foregroundStyle(.secondary)
                 Toggle("Canlı etkinlikler (müzik, zamanlayıcı, şarj)", isOn: $live)
                 Toggle("Dokunsal geri bildirim", isOn: $haptics)
+                Picker("Raf içeriği otomatik temizlensin", selection: $shelfExpire) {
+                    Text("Hiçbir zaman").tag(0); Text("1 gün sonra").tag(1); Text("7 gün sonra").tag(7); Text("30 gün sonra").tag(30)
+                }
                 Toggle("Girişte otomatik başlat", isOn: Binding(get: { loginItem }, set: { loginItem = $0; LaunchAtLogin.set($0) }))
+                Picker("Dil", selection: $language) {
+                    Text("Otomatik (sistem)").tag("auto")
+                    Text("Türkçe").tag("tr")
+                    Text("English").tag("en")
+                }
+                .onChange(of: language) { _, v in AppLanguage.apply(v) }
             }
+            Section("Maskot") { BuddySettingsSection() }
             Section("Yapay Zeka") { AISettingsSection() }
             Section("Bakım") {
+                Button("İzinleri kontrol et…") { WizardWindow.show() }
+                Button("Özellik turu…") { TourWindow.show() }
                 Button("Önbellek Temizleyiciyi aç…") { CleanerWindow.show() }
                 Text("Gereksiz önbellek ve günlük dosyalarını neye ait olduklarıyla listeler; sen onaylamadan hiçbir şey silmez.")
                     .font(.caption).foregroundStyle(.secondary)
@@ -1269,10 +1351,12 @@ struct SettingsView: View {
                 Toggle("Takvim kartı", isOn: $showCalendar)
                 Toggle("Bugünün tarihini göster", isOn: $calDate).disabled(!showCalendar)
                 Toggle("Sıradaki etkinliği göster", isOn: $calEvent).disabled(!showCalendar)
+                Toggle("Bağlantılı toplantıdan 5 dk önce uyar (Katıl düğmesi her zaman görünür)", isOn: $meetingAlert)
                 Toggle("Uyanık tut düğmesi", isOn: $qbCaffeinate)
                 Toggle("25 dk odak düğmesi", isOn: $qbTimer)
                 Toggle("Ekran görüntüsü düğmesi", isOn: $qbCapture)
                 Toggle("Renk seçici düğmesi (ekrandan renk al, hex kodunu kopyala)", isOn: $qbColor)
+                Toggle("Kısayollar düğmesi (Apple Kısayollar'ı çalıştır)", isOn: $qbShortcuts)
             }
             Section("Ekran görüntüsü butonu") {
                 Picker("Buton ne yapsın", selection: $captureMode) {
@@ -1389,7 +1473,7 @@ struct CardLyric: View {
             switch lyrics.state {
             case .synced(let lines): syncedBlock(lines)
             case .plain(let rows): plainBlock(rows)
-            default: dim("Enstrümantal")
+            default: dim(L("Enstrümantal"))
             }
         }
         .lineLimit(1).minimumScaleFactor(0.85)
@@ -1438,10 +1522,10 @@ struct CardLyric: View {
                 let i = plainTop + row
                 if lines.indices.contains(i) {
                     let t = lines[i]
-                    m.addItem(ActionItem("Bu satırı Türkçeye çevir") { AIState.shared.start(.toTR, text: t) })
-                    m.addItem(ActionItem("Bu satırı açıkla") { AIState.shared.start(.explain, text: t) })
+                    m.addItem(ActionItem(L("Bu satırı Türkçeye çevir")) { AIState.shared.start(.toTR, text: t) })
+                    m.addItem(ActionItem(L("Bu satırı açıkla")) { AIState.shared.start(.explain, text: t) })
                 }
-                let info = NSMenuItem(title: "Senkronsuz söz (zamanlaması yok)", action: nil, keyEquivalent: ""); info.isEnabled = false
+                let info = NSMenuItem(title: L("Senkronsuz söz (zamanlaması yok)"), action: nil, keyEquivalent: ""); info.isEnabled = false
                 m.addItem(info)
                 return m
             }))
@@ -1470,13 +1554,13 @@ struct CardLyric: View {
         let i = currentIndex(lines) + browse + (row - 1)
         if lines.indices.contains(i), lines[i].text != "♪" {
             let t = lines[i].text
-            m.addItem(ActionItem("Bu satırı Türkçeye çevir") { AIState.shared.start(.toTR, text: t) })
-            m.addItem(ActionItem("Bu satırı açıkla") { AIState.shared.start(.explain, text: t) })
+            m.addItem(ActionItem(L("Bu satırı Türkçeye çevir")) { AIState.shared.start(.toTR, text: t) })
+            m.addItem(ActionItem(L("Bu satırı açıkla")) { AIState.shared.start(.explain, text: t) })
             m.addItem(.separator())
         }
-        m.addItem(ActionItem("Sözleri öne al (+0,25 sn)") { lyrics.adjust(by: 0.25) })
-        m.addItem(ActionItem("Sözleri geciktir (−0,25 sn)") { lyrics.adjust(by: -0.25) })
-        let info = NSMenuItem(title: String(format: "Senkron farkı: %+.2f sn", lyrics.offset), action: nil, keyEquivalent: "")
+        m.addItem(ActionItem(L("Sözleri öne al (+0,25 sn)")) { lyrics.adjust(by: 0.25) })
+        m.addItem(ActionItem(L("Sözleri geciktir (−0,25 sn)")) { lyrics.adjust(by: -0.25) })
+        let info = NSMenuItem(title: String(format: L("Senkron farkı: %+.2f sn"), lyrics.offset), action: nil, keyEquivalent: "")
         info.isEnabled = false
         m.addItem(info)
         return m
@@ -1536,7 +1620,11 @@ final class LyricInteractionView: NSView {
     override var isFlipped: Bool { true }
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 
-    private func row(_ e: NSEvent) -> Int { min(2, max(0, Int(convert(e.locationInWindow, from: nil).y / rowHeight))) }
+    /// Satır, görünümün gerçek yüksekliğine göre bulunur (3 eşit satır): alttaki satır da üsttekiler gibi vurgulanır/tıklanır.
+    private func row(_ e: NSEvent) -> Int {
+        let h = bounds.height > 1 ? bounds.height : rowHeight * 3
+        return min(2, max(0, Int(convert(e.locationInWindow, from: nil).y / (h / 3))))
+    }
 
     override func scrollWheel(with e: NSEvent) {
         guard abs(e.scrollingDeltaY) >= abs(e.scrollingDeltaX) else { super.scrollWheel(with: e); return }
@@ -1551,6 +1639,27 @@ final class LyricInteractionView: NSView {
     override func menu(for event: NSEvent) -> NSMenu? { menuProvider?(row(event)) }
     override func mouseMoved(with e: NSEvent) { onHover?(row(e)) }
     override func mouseExited(with e: NSEvent) { onHover?(nil) }
+
+    // Fare konumu doğrudan okunur: izleme alanı/hit-test'e bağlı kalmadan her satır (alttaki dahil) vurgulanır.
+    private var poll: Timer?
+    private var lastRow: Int??
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        poll?.invalidate(); poll = nil
+        guard window != nil else { return }
+        poll = Timer.scheduledTimer(withTimeInterval: 1.0 / 30, repeats: true) { [weak self] _ in self?.pollMouse() }
+    }
+    private func pollMouse() {
+        guard let w = window, w.isVisible else { return }
+        let p = convert(w.convertPoint(fromScreen: NSEvent.mouseLocation), from: nil)
+        var r: Int? = nil
+        if p.x >= 0, p.x <= bounds.width, p.y >= 0, p.y <= bounds.height {
+            let h = bounds.height > 1 ? bounds.height : rowHeight * 3
+            r = min(2, max(0, Int(p.y / (h / 3))))
+        }
+        if lastRow == nil || lastRow! != r { lastRow = .some(r); onHover?(r) }
+    }
+    deinit { poll?.invalidate() }
     override func updateTrackingAreas() {
         trackingAreas.forEach(removeTrackingArea)
         addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseMoved, .mouseEnteredAndExited, .activeAlways, .inVisibleRect],
@@ -1569,7 +1678,7 @@ struct LyricsToggle: View {
         }
         .buttonStyle(PressStyle())
         .frame(width: 24, height: 24)     // kapsül (24 pt) sığsın, alttan/üstten kırpılmasın
-        .morph(on ? "Sözleri kapat" : "Sözleri aç", trailing: true)
+        .morph(on ? L("Sözleri kapat") : L("Sözleri aç"), trailing: true)
     }
 }
 
@@ -1769,7 +1878,7 @@ struct AIView: View {
                 Button { ai.run(.ask) } label: {
                     Image(systemName: "arrow.up").font(.system(size: 12, weight: .bold)).foregroundStyle(.black)
                         .frame(width: 28, height: 28).background(Circle().fill(.white))
-                }.buttonStyle(PressStyle()).disabled(ai.busy).morph("Sor")
+                }.buttonStyle(PressStyle()).disabled(ai.busy).morph(L("Sor"))
             }
 
             ZStack(alignment: .topLeading) {
@@ -1851,7 +1960,7 @@ struct ProviderRow: View {
             HStack {
                 Text(provider.title).font(.headline)
                 Spacer()
-                Text(svc.status[provider.rawValue] ?? (connected ? "Bağlı ✓" : "Bağlı değil"))
+                Text(svc.status[provider.rawValue] ?? (connected ? L("Bağlı ✓") : L("Bağlı değil")))
                     .font(.caption).foregroundStyle(connected ? .green : .secondary).lineLimit(2).multilineTextAlignment(.trailing)
             }
             if connected {

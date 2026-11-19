@@ -2,6 +2,7 @@
 import AppKit
 
 let out = CommandLine.arguments[1]
+let hint = CommandLine.arguments.contains("--gatekeeper-ipucu")
 let W: CGFloat = 600, H: CGFloat = 380
 
 func draw(scale: CGFloat) -> Data {
@@ -39,8 +40,12 @@ func draw(scale: CGFloat) -> Data {
     NSColor.white.withAlphaComponent(0.85).setStroke()
     arrow.stroke()
 
-    text("İlk açılışta macOS uyarı verirse:\nSistem Ayarları › Gizlilik ve Güvenlik › en altta \"Yine de Aç\"",
-         size: 12, weight: .medium, alpha: 0.85, centerY: 52)
+    if hint {
+        text("İlk açılışta macOS uyarı verirse:\nSistem Ayarları › Gizlilik ve Güvenlik › en altta \"Yine de Aç\"",
+             size: 12, weight: .medium, alpha: 0.85, centerY: 52)
+    } else {
+        text("Sonra Uygulamalar klasöründen Mate Notch'u aç", size: 12, weight: .medium, alpha: 0.85, centerY: 52)
+    }
 
     NSGraphicsContext.restoreGraphicsState()
     return rep.representation(using: .png, properties: [:])!

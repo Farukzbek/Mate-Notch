@@ -38,6 +38,14 @@ enum Layout {
 
 // MARK: - State
 
+/// Arayüz metni (SwiftUI dışında kullanılan String'ler için). Anahtar Türkçe metnin kendisi; İngilizce karşılık Localizable.strings'te.
+func L(_ key: String.LocalizationValue) -> String { String(localized: key) }
+
+/// Çalışan arayüz dili: "tr" ya da "en" (Ayarlar'daki dil seçimi / sistem dili). Tarih biçimi, hava durumu ve yapay zeka yanıt dili için.
+enum Loc {
+    static var code: String { (Bundle.main.preferredLocalizations.first ?? "tr").hasPrefix("tr") ? "tr" : "en" }
+}
+
 enum Tab: String, CaseIterable, Identifiable {
     case home, shelf, clipboard, timer, stats, ai, batteries
     var id: String { rawValue }
@@ -54,13 +62,13 @@ enum Tab: String, CaseIterable, Identifiable {
     }
     var title: String {
         switch self {
-        case .home: return "Ana Sayfa"
-        case .ai: return "Yapay Zeka"
-        case .batteries: return "Piller"
-        case .shelf: return "Raf"
-        case .clipboard: return "Pano"
-        case .timer: return "Zamanlayıcı"
-        case .stats: return "Sistem"
+        case .home: return L("Ana Sayfa")
+        case .ai: return L("Yapay Zeka")
+        case .batteries: return L("Piller")
+        case .shelf: return L("Raf")
+        case .clipboard: return L("Pano")
+        case .timer: return L("Zamanlayıcı")
+        case .stats: return L("Sistem")
         }
     }
 }
@@ -109,6 +117,7 @@ enum Pref {
     static let showStats = "showStats"
     static let uiScale = "uiScale"
     static let styleCollapsed = "styleCollapsed"
+    static let wizardShown = "wizardShown1"
     static let lowBatteryAlert = "lowBatteryAlert"
     static let lowBatteryDevices = "lowBatteryDevices"
     static let lowBatteryLevel = "lowBatteryLevel"
@@ -142,10 +151,12 @@ enum Pref {
     static let showCalendar = "showCalendar"
     static let calDate = "calDate"
     static let calEvent = "calEvent"
+    static let meetingAlert = "meetingAlert"
     static let qbCaffeinate = "qbCaffeinate"
     static let qbTimer = "qbTimer"
     static let qbCapture = "qbCapture"
     static let qbColor = "qbColor"
+    static let qbShortcuts = "qbShortcuts"
     static let pillLines = "pillLines"
     static let captureMode = "captureMode"
     static let captureClipboard = "captureClipboard"
@@ -160,8 +171,8 @@ enum Pref {
             openOnHover: true, hoverDelay: 0.15, liveActivities: true, haptics: true,
             showShelf: true, showClipboard: true, showTimer: true, showStats: true,
             lyricsEnabled: false, lyricsInNotch: true,
-            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, lowBatteryAlert: true, lowBatteryDevices: true, lowBatteryLevel: 20.0, bluetoothBatteries: true, headerDeviceBattery: true, bannerBluetooth: true, privacyIndicator: true, focusIndicator: false, downloadIndicator: false, weatherEnabled: false, hudVolume: true, hudBrightness: true, hudKeyboard: true, hudStyle: "bar", hudDuration: 1.6, hudHideSystem: false, hudStep: 6.0, showAI: true, aiProvider: "auto", autoUpdateCheck: true, autoUpdateInstall: true, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
-            showCalendar: true, calDate: true, calEvent: true, qbCaffeinate: true, qbTimer: true, qbCapture: true, qbColor: true, showArtwork: true, captureMode: "area", captureClipboard: true, bgStyle: "black", bgColor: "#1F2A44",
+            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, wizardShown: false, lowBatteryAlert: true, lowBatteryDevices: true, lowBatteryLevel: 20.0, bluetoothBatteries: true, headerDeviceBattery: true, bannerBluetooth: true, privacyIndicator: true, focusIndicator: false, downloadIndicator: false, weatherEnabled: false, hudVolume: true, hudBrightness: true, hudKeyboard: true, hudStyle: "bar", hudDuration: 1.6, hudHideSystem: false, hudStep: 6.0, showAI: true, aiProvider: "auto", autoUpdateCheck: true, autoUpdateInstall: true, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
+            showCalendar: true, calDate: true, calEvent: true, meetingAlert: true, qbCaffeinate: true, qbTimer: true, qbCapture: true, qbColor: true, qbShortcuts: true, showArtwork: true, captureMode: "area", captureClipboard: true, bgStyle: "black", bgColor: "#1F2A44",
         ])
     }
 }
@@ -274,17 +285,17 @@ enum ClosedIcon: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .equalizer: return "Equalizer (çubuklar)"
-        case .waveform: return "Ses dalgası"
-        case .musicNote: return "Müzik notası"
+        case .equalizer: return L("Equalizer (çubuklar)")
+        case .waveform: return L("Ses dalgası")
+        case .musicNote: return L("Müzik notası")
         case .airpods: return "AirPods Pro"
-        case .headphones: return "Kulaklık"
-        case .speaker: return "Hoparlör"
+        case .headphones: return L("Kulaklık")
+        case .speaker: return L("Hoparlör")
         case .homepod: return "HomePod"
         case .appleLogo: return "Apple logosu"
         case .heart: return "Kalp"
-        case .sparkles: return "Işıltı"
-        case .none: return "Hiçbiri"
+        case .sparkles: return L("Işıltı")
+        case .none: return L("Hiçbiri")
         }
     }
     var symbol: String {
@@ -301,5 +312,32 @@ enum ClosedIcon: String, CaseIterable, Identifiable {
         case .sparkles: return "sparkles"
         case .none: return "nosign"
         }
+    }
+}
+
+/// Uygulama dili: sistem diliyle ya da elle seçilen dille (değişince uygulama kendini yeniden başlatır).
+enum AppLanguage {
+    static var current: String {
+        (UserDefaults.standard.array(forKey: "AppleLanguages") as? [String]).flatMap { UserDefaults.standard.bool(forKey: "mnLangOverride") ? $0.first : nil } ?? "auto"
+    }
+    /// Şu an arayüzün gerçekten kullandığı dil ("tr" / "en").
+    static var effective: String { Loc.code }
+    static func setOverride(_ code: String) {
+        UserDefaults.standard.set([code], forKey: "AppleLanguages"); UserDefaults.standard.set(true, forKey: "mnLangOverride")
+    }
+    static func clearOverride() {
+        UserDefaults.standard.removeObject(forKey: "AppleLanguages"); UserDefaults.standard.removeObject(forKey: "mnLangOverride")
+    }
+    static func apply(_ code: String) {
+        let d = UserDefaults.standard
+        if code == "auto" { d.removeObject(forKey: "AppleLanguages"); d.removeObject(forKey: "mnLangOverride") }
+        else { d.set([code], forKey: "AppleLanguages"); d.set(true, forKey: "mnLangOverride") }
+        d.synchronize()
+        let path = Bundle.main.bundlePath
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/bin/sh")
+        p.arguments = ["-c", "sleep 0.6; /usr/bin/open \"$1\"", "sh", path]
+        try? p.run()
+        NSApp.terminate(nil)
     }
 }

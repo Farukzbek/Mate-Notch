@@ -17,12 +17,12 @@ final class CaptureService: ObservableObject {
     }
 
     static func label(_ mode: String, recording: Bool) -> String {
-        if recording { return "Kaydı durdur" }
+        if recording { return L("Kaydı durdur") }
         switch mode {
-        case "full": return "Tam ekran görüntüsü"
-        case "video": return "Video kaydı"
-        case "tool": return "Çekim aracı"
-        default: return "Alan seç"
+        case "full": return L("Tam ekran görüntüsü")
+        case "video": return L("Video kaydı")
+        case "tool": return L("Çekim aracı")
+        default: return L("Alan seç")
         }
     }
 

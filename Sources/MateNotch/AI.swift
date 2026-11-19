@@ -12,7 +12,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .onDevice: return "Cihaz içi (Apple)"
+        case .onDevice: return L("Cihaz içi (Apple)")
         case .claude: return "Claude (Anthropic)"
         case .openai: return "ChatGPT (OpenAI)"
         case .gemini: return "Gemini (Google)"
@@ -86,16 +86,16 @@ final class AIService: ObservableObject {
         if #available(macOS 26.0, *) {
             if case .unavailable(let reason) = SystemLanguageModel.default.availability {
                 switch reason {
-                case .deviceNotEligible: return "Bu Mac Apple Intelligence'ı desteklemiyor."
-                case .appleIntelligenceNotEnabled: return "Apple Intelligence kapalı: Sistem Ayarları › Apple Intelligence ve Siri'den aç."
-                case .modelNotReady: return "Apple Intelligence modeli hâlâ indiriliyor, biraz sonra dene."
-                @unknown default: return "Cihaz içi model şu an kullanılamıyor."
+                case .deviceNotEligible: return L("Bu Mac Apple Intelligence'ı desteklemiyor.")
+                case .appleIntelligenceNotEnabled: return L("Apple Intelligence kapalı: Sistem Ayarları › Apple Intelligence ve Siri'den aç.")
+                case .modelNotReady: return L("Apple Intelligence modeli hâlâ indiriliyor, biraz sonra dene.")
+                @unknown default: return L("Cihaz içi model şu an kullanılamıyor.")
                 }
             }
             return nil
         }
         #endif
-        return "Cihaz içi model için macOS 26 ve Apple Intelligence gerekir."
+        return L("Cihaz içi model için macOS 26 ve Apple Intelligence gerekir.")
     }
 
     /// Hangi model kullanılacak: ayara göre; bağlı olmayan bir bulut seçilmişse cihaz içine düşer.
@@ -119,17 +119,17 @@ final class AIService: ObservableObject {
     private func onDevice(system: String, prompt: String) async throws -> String {
         #if canImport(FoundationModels)
         if #available(macOS 26.0, *) {
-            if let problem = onDeviceProblem { throw AIError("\(problem) Ya da Ayarlar'dan bir bulut model (Claude, ChatGPT, Gemini) bağla.") }
+            if let problem = onDeviceProblem { throw AIError(L("\(problem) Ya da Ayarlar'dan bir bulut model (Claude, ChatGPT, Gemini) bağla.")) }
             let session = LanguageModelSession(instructions: system)
             let r = try await session.respond(to: String(prompt.prefix(6000)))   // cihaz içi modelin bağlam sınırı küçük
             return r.content
         }
         #endif
-        throw AIError("Cihaz içi model bu macOS sürümünde yok. Ayarlar'dan bir bulut model bağla.")
+        throw AIError(L("Cihaz içi model bu macOS sürümünde yok. Ayarlar'dan bir bulut model bağla."))
     }
 
     private func cloud(_ p: AIProvider, system: String, prompt: String) async throws -> String {
-        guard let key = Keychain.get(p.rawValue) else { throw AIError("\(p.title) bağlı değil") }
+        guard let key = Keychain.get(p.rawValue) else { throw AIError(L("\(p.title) bağlı değil")) }
         let model = self.model(p)
         var req: URLRequest
         var body: [String: Any]
@@ -166,19 +166,19 @@ final class AIService: ObservableObject {
             text = (((json["candidates"] as? [[String: Any]])?.first?["content"] as? [String: Any])?["parts"] as? [[String: Any]])?
                 .compactMap { $0["text"] as? String }.joined()
         }
-        guard let t = text, !t.isEmpty else { throw AIError("Modelden boş yanıt geldi") }
+        guard let t = text, !t.isEmpty else { throw AIError(L("Modelden boş yanıt geldi")) }
         return t
     }
 
     private static func send(_ req: URLRequest, provider: AIProvider) async throws -> [String: Any] {
         let (data, resp): (Data, URLResponse)
         do { (data, resp) = try await URLSession.shared.data(for: req) }
-        catch { throw AIError("Bağlanılamadı (internet?)") }
+        catch { throw AIError(L("Bağlanılamadı (internet?)")) }
         let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
         let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
         guard (200..<300).contains(code) else {
-            if code == 401 || code == 403 { throw AIError("API anahtarı geçersiz veya yetkisiz (\(code))") }
-            if code == 429 { throw AIError("İstek sınırına takıldın veya kotan bitti (429)") }
+            if code == 401 || code == 403 { throw AIError(L("API anahtarı geçersiz veya yetkisiz (\(code))")) }
+            if code == 429 { throw AIError(L("İstek sınırına takıldın veya kotan bitti (429)")) }
             let msg = ((json["error"] as? [String: Any])?["message"] as? String) ?? "HTTP \(code)"
             throw AIError(msg)
         }
@@ -191,7 +191,7 @@ final class AIService: ObservableObject {
     func connect(_ p: AIProvider, key: String) async {
         let k = key.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !k.isEmpty else { return }
-        await MainActor.run { busy.insert(p.rawValue); status[p.rawValue] = "Bağlanıyor…" }
+        await MainActor.run { busy.insert(p.rawValue); status[p.rawValue] = L("Bağlanıyor…") }
         Keychain.set(k, p.rawValue)
         do {
             let list = try await fetchModels(p)
@@ -199,11 +199,11 @@ final class AIService: ObservableObject {
                 models[p.rawValue] = list
                 if !list.contains(model(p)) { setModel(Self.pickDefault(p, from: list) ?? p.fallbackModel, p) }
             }
-            _ = try await cloud(p, system: "Kısa yanıt ver.", prompt: "Sadece 'tamam' yaz.")
-            await MainActor.run { status[p.rawValue] = "Bağlandı ✓" }
+            _ = try await cloud(p, system: "Reply briefly.", prompt: "Just write 'ok'.")
+            await MainActor.run { status[p.rawValue] = L("Bağlandı ✓") }
         } catch {
             Keychain.delete(p.rawValue)
-            await MainActor.run { status[p.rawValue] = "Bağlanamadı: \(error.localizedDescription)" }
+            await MainActor.run { status[p.rawValue] = L("Bağlanamadı: \(error.localizedDescription)") }
         }
         await MainActor.run { busy.remove(p.rawValue); revision += 1 }
     }
@@ -259,7 +259,7 @@ final class AIService: ObservableObject {
             ids = ids.filter { $0.hasPrefix("gemini") && !bad.contains(where: $0.contains) }
         }
         ids = Array(Set(ids)).sorted(by: >)
-        guard !ids.isEmpty else { throw AIError("Model listesi boş") }
+        guard !ids.isEmpty else { throw AIError(L("Model listesi boş")) }
         return ids
     }
 
@@ -283,15 +283,15 @@ enum AIAction: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .summarize: return "Özetle"
-        case .fix: return "Düzelt"
+        case .summarize: return L("Özetle")
+        case .fix: return L("Düzelt")
         case .rewrite: return "Yeniden yaz"
-        case .toTR: return "Türkçeye çevir"
-        case .toEN: return "İngilizceye çevir"
-        case .explain: return "Açıkla"
-        case .day: return "Günümü özetle"
-        case .ask: return "Sor"
-        case .song: return "Şarkıyı anlat"
+        case .toTR: return L("Türkçeye çevir")
+        case .toEN: return L("İngilizceye çevir")
+        case .explain: return L("Açıkla")
+        case .day: return L("Günümü özetle")
+        case .ask: return L("Sor")
+        case .song: return L("Şarkıyı anlat")
         }
     }
     var icon: String {
@@ -306,17 +306,22 @@ enum AIAction: String, CaseIterable, Identifiable {
         case .song: return "music.note"
         }
     }
+    /// Arayüz dili (Turkish / English): model yanıtını bu dilde verir.
+    static var responseLanguage: String { Loc.code == "tr" ? "Turkish" : "English" }
+
     var system: String {
+        // Talimatlar İngilizce; model, arayüz dilinde (veya metnin dilinde) yanıt verir.
+        let lang = AIAction.responseLanguage
         switch self {
-        case .summarize: return "Verilen metni Türkçe, kısa ve net özetle. Giriş cümlesi yazma, doğrudan özeti ver."
-        case .fix: return "Metindeki yazım ve dil bilgisi hatalarını düzelt. Anlamı, dili ve üslubu değiştirme. Yalnızca düzeltilmiş metni ver, açıklama ekleme."
-        case .rewrite: return "Metni daha akıcı, net ve profesyonel olacak şekilde yeniden yaz. Metnin dilini koru. Yalnızca yeni metni ver."
-        case .toTR: return "Verilen metni doğal bir Türkçeye çevir. Yalnızca çeviriyi ver."
+        case .summarize: return "Summarize the given text briefly and clearly in \(lang). No intro sentence; give the summary directly."
+        case .fix: return "Fix the spelling and grammar mistakes in the text. Do not change its meaning, language or tone. Output only the corrected text, with no explanation."
+        case .rewrite: return "Rewrite the text to be more fluent, clear and professional. Keep the language of the text. Output only the new text."
+        case .toTR: return "Translate the given text into natural Turkish. Output only the translation."
         case .toEN: return "Translate the given text into natural English. Output only the translation."
-        case .explain: return "Verilen metni sade Türkçe ile açıkla. Hata mesajı veya kod ise nedenini ve olası çözümünü kısaca anlat."
-        case .day: return "Kullanıcının takvim etkinliklerine bakarak kısa bir günlük plan özeti çıkar ve varsa dikkat edilecek şeyleri belirt. Türkçe, en fazla 5 cümle."
-        case .song: return "Verilen şarkı ve sanatçı hakkında kısa bilgi ver: tür, dönem, tema veya anlam. Emin olmadığın bir şeyi uydurma; bilmiyorsan açıkça söyle. Türkçe, en fazla 5 cümle."
-        case .ask: return "Soruya kısa, net ve doğru cevap ver. Kullanıcı Türkçe yazdıysa Türkçe cevap ver. Emin değilsen bunu belirt."
+        case .explain: return "Explain the given text in plain \(lang). If it is an error message or code, briefly explain the cause and a likely fix."
+        case .day: return "Look at the user's calendar events and write a short summary of the day's plan, noting anything to watch out for. Answer in \(lang), at most 5 sentences."
+        case .song: return "Give brief information about the given song and artist: genre, era, theme or meaning. Do not make up anything you are not sure about; say so if you do not know. Answer in \(lang), at most 5 sentences."
+        case .ask: return "Answer the question briefly, clearly and correctly. Reply in the language the user wrote in. If you are not sure, say so."
         }
     }
 }
@@ -343,15 +348,15 @@ final class AIState: ObservableObject {
         guard !busy else { return }
         var prompt: String
         if action == .song {
-            guard let t = MediaService.shared.track else { error = "Şu an çalan bir şarkı yok"; return }
-            prompt = "Şarkı: \(t.title)\nSanatçı: \(t.artist)\nAlbüm: \(t.album)"
+            guard let t = MediaService.shared.track else { error = L("Şu an çalan bir şarkı yok"); return }
+            prompt = "Song: \(t.title)\nArtist: \(t.artist)\nAlbum: \(t.album)"
         } else if action == .day {
             prompt = Self.dayPrompt()
-            guard !prompt.isEmpty else { output = "Yaklaşan etkinliğin yok. 🎉"; error = nil; providerLabel = ""; return }
+            guard !prompt.isEmpty else { output = L("Yaklaşan etkinliğin yok. 🎉"); error = nil; providerLabel = ""; return }
         } else {
             var source = (text ?? input).trimmingCharacters(in: .whitespacesAndNewlines)
             if source.isEmpty { source = ClipboardService.shared.items.first?.text ?? "" }
-            guard !source.isEmpty else { error = "Önce bir metin yaz veya bir şey kopyala"; return }
+            guard !source.isEmpty else { error = L("Önce bir metin yaz veya bir şey kopyala"); return }
             if action != .ask { input = source }
             prompt = source
         }
@@ -361,7 +366,7 @@ final class AIState: ObservableObject {
                 let r = try await AIService.shared.complete(system: action.system, prompt: prompt)
                 await MainActor.run {
                     self.output = r.text.trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.providerLabel = r.provider == .onDevice ? "Cihaz içi · Apple" : "\(r.provider.title) · \(AIService.shared.model(r.provider))"
+                    self.providerLabel = r.provider == .onDevice ? L("Cihaz içi · Apple") : "\(r.provider.title) · \(AIService.shared.model(r.provider))"
                     self.busy = false
                 }
             } catch {
@@ -384,7 +389,7 @@ final class AIState: ObservableObject {
                 case .success(let text):
                     self.input = text
                     self.output = text
-                    self.providerLabel = "Ekrandan okundu · Vision (cihaz içi)"
+                    self.providerLabel = L("Ekrandan okundu · Vision (cihaz içi)")
                     ClipboardService.shared.copyText(text)
                 case .failure(let e): self.error = e.localizedDescription
                 }
@@ -395,7 +400,7 @@ final class AIState: ObservableObject {
     static func dayPrompt() -> String {
         let events = CalendarService.shared.events
         guard !events.isEmpty else { return "" }
-        let f = DateFormatter(); f.locale = Locale(identifier: "tr_TR"); f.dateFormat = "d MMMM EEEE HH:mm"
-        return "Yaklaşan takvim etkinliklerim:\n" + events.map { "- \($0.title ?? "Etkinlik") (\(f.string(from: $0.startDate)))" }.joined(separator: "\n")
+        let f = DateFormatter(); f.locale = Locale(identifier: Loc.code); f.dateFormat = "d MMMM EEEE HH:mm"
+        return "My upcoming calendar events:\n" + events.map { "- \($0.title ?? "Event") (\(f.string(from: $0.startDate)))" }.joined(separator: "\n")
     }
 }

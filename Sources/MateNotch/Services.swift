@@ -217,10 +217,29 @@ final class TimerService: ObservableObject {
     @Published var total: TimeInterval = 25 * 60
     @Published var remaining: TimeInterval = 25 * 60
     @Published var running = false
+    /// Pomodoro: 25 dk odak → 5 dk mola, her 4. molada 15 dk; süre dolunca sıradaki aşama kendiliğinden başlar.
+    @Published var pomodoro = UserDefaults.standard.bool(forKey: "pomodoro") {
+        didSet {
+            UserDefaults.standard.set(pomodoro, forKey: "pomodoro")
+            if pomodoro { phaseBreak = false; round = 0; set(minutes: 25) } else { phaseBreak = false }
+        }
+    }
+    @Published var phaseBreak = false
+    @Published var round = 0
     private var end: Date?
     private var t: Timer?
 
     func set(minutes: Int) { pause(); total = Double(minutes * 60); remaining = total }
+
+    private func nextPhase() {
+        if phaseBreak { phaseBreak = false; total = 25 * 60 }
+        else { round += 1; phaseBreak = true; total = (round % 4 == 0 ? 15 : 5) * 60 }
+        remaining = total
+        BannerService.shared.post(NotchBanner(icon: phaseBreak ? "cup.and.saucer.fill" : "brain.head.profile",
+                                              title: phaseBreak ? L("Mola zamanı") : L("Odaklanma zamanı"),
+                                              subtitle: L("\(Int(total / 60)) dk"), tint: phaseBreak ? .green : .orange))
+        start()
+    }
 
     func start() {
         guard !running else { return }
@@ -240,7 +259,7 @@ final class TimerService: ObservableObject {
         if r <= 0 {
             pause()
             NSSound(named: "Glass")?.play()
-            NotificationCenter.default.post(name: .timerFinished, object: nil)
+            if pomodoro { nextPhase() } else { NotificationCenter.default.post(name: .timerFinished, object: nil) }
         }
     }
 
@@ -253,6 +272,7 @@ struct ClipItem: Identifiable, Equatable {
     let id = UUID()
     let text: String
     let date: Date
+    var pinned = false
 }
 
 final class ClipboardService: ObservableObject {
@@ -264,11 +284,32 @@ final class ClipboardService: ObservableObject {
     private var hideWork: DispatchWorkItem?
     private var count = NSPasteboard.general.changeCount
     private var timer: Timer?
+    private static let pinKey = "clipPins"
     private let blocked = ["org.nspasteboard.ConcealedType", "org.nspasteboard.TransientType",
                            "com.agilebits.onepassword", "com.typeit4me.clipping"]
 
     func start() {
+        items = (UserDefaults.standard.stringArray(forKey: Self.pinKey) ?? []).map { ClipItem(text: $0, date: Date(), pinned: true) }
         timer = Timer.scheduledTimer(withTimeInterval: 0.6, repeats: true) { [weak self] _ in self?.check() }
+    }
+
+    /// Sabitlenenler listenin başında kalır, en eski silinirken ve "Tümünü sil"de korunur, yeniden başlatınca da durur.
+    private func insertNew(_ s: String) {
+        let wasPinned = items.first { $0.text == s }?.pinned ?? false
+        items.removeAll { $0.text == s }
+        let at = items.firstIndex { !$0.pinned } ?? items.count
+        items.insert(ClipItem(text: s, date: Date(), pinned: wasPinned), at: wasPinned ? 0 : at)
+        while items.count > 30, let i = items.lastIndex(where: { !$0.pinned }) { items.remove(at: i) }
+        savePins()
+    }
+    private func savePins() { UserDefaults.standard.set(items.filter(\.pinned).map(\.text), forKey: Self.pinKey) }
+    func togglePin(_ item: ClipItem) {
+        guard let i = items.firstIndex(of: item) else { return }
+        var it = items.remove(at: i)
+        it.pinned.toggle()
+        let at = it.pinned ? 0 : (items.firstIndex { !$0.pinned } ?? items.count)
+        items.insert(it, at: at)
+        savePins()
     }
 
     private func check() {
@@ -284,14 +325,12 @@ final class ClipboardService: ObservableObject {
         else if let t = pb.string(forType: .string)?.trimmingCharacters(in: .whitespacesAndNewlines), !t.isEmpty {
             flash(t.replacingOccurrences(of: "\n", with: " "))
         } else if types.contains("public.file-url") { flash("Dosya") }
-        else if types.contains("public.png") || types.contains("public.tiff") { flash("Görsel") }
+        else if types.contains("public.png") || types.contains("public.tiff") { flash(L("Görsel")) }
         else { flash("") }
         if secret { return }
         guard let s = pb.string(forType: .string)?.trimmingCharacters(in: .whitespacesAndNewlines),
               !s.isEmpty, s.count < 5000 else { return }
-        items.removeAll { $0.text == s }
-        items.insert(ClipItem(text: s, date: Date()), at: 0)
-        if items.count > 30 { items.removeLast() }
+        insertNew(s)
     }
 
     private func flash(_ preview: String) {
@@ -309,14 +348,12 @@ final class ClipboardService: ObservableObject {
         pb.clearContents()
         pb.setString(text, forType: .string)
         count = pb.changeCount
-        items.removeAll { $0.text == text }
-        items.insert(ClipItem(text: text, date: Date()), at: 0)
-        if items.count > 30 { items.removeLast() }
+        insertNew(text)
         lastColor = color
         flash(text)
     }
 
-    func remove(_ item: ClipItem) { items.removeAll { $0 == item } }
+    func remove(_ item: ClipItem) { items.removeAll { $0 == item }; savePins() }
 
     func copy(_ item: ClipItem) {
         let pb = NSPasteboard.general
@@ -326,7 +363,7 @@ final class ClipboardService: ObservableObject {
         // Satır yerinde kalır (başa taşınmaz): "Kopyalandı" geri bildirimi tıklanan satırda görünsün.
     }
 
-    func clear() { items.removeAll() }
+    func clear() { items.removeAll { !$0.pinned } }
 }
 
 // MARK: - Shelf
@@ -335,19 +372,39 @@ final class ShelfService: ObservableObject {
     static let shared = ShelfService()
     @Published var urls: [URL] = []
     private let key = "shelfPaths"
+    private let datesKey = "shelfDates"
+    private var dates: [String: Double] = [:]    // yol → rafa eklenme zamanı
 
     init() {
         let paths = UserDefaults.standard.stringArray(forKey: key) ?? []
+        dates = UserDefaults.standard.dictionary(forKey: datesKey) as? [String: Double] ?? [:]
         urls = paths.map { URL(fileURLWithPath: $0) }.filter { FileManager.default.fileExists(atPath: $0.path) }
+        expire()
+        Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { [weak self] _ in self?.expire() }
     }
 
     func add(_ new: [URL]) {
-        for u in new where !urls.contains(u) { urls.insert(u, at: 0) }
+        for u in new where !urls.contains(u) { urls.insert(u, at: 0); dates[u.path] = Date().timeIntervalSince1970 }
         save()
     }
     func remove(_ u: URL) { urls.removeAll { $0 == u }; save() }
     func clear() { urls.removeAll(); save() }
-    private func save() { UserDefaults.standard.set(urls.map(\.path), forKey: key) }
+    /// "Rafı şu kadar günde bir temizle" ayarı: yalnızca raftaki kısayol kalkar, dosyaya dokunulmaz.
+    func expire() {
+        let days = UserDefaults.standard.integer(forKey: "shelfExpireDays")
+        guard days > 0 else { return }
+        let limit = Date().addingTimeInterval(-Double(days) * 86400).timeIntervalSince1970
+        let old = urls.filter { (dates[$0.path] ?? Date().timeIntervalSince1970) < limit }
+        guard !old.isEmpty else { return }
+        urls.removeAll { old.contains($0) }
+        save()
+    }
+    private func save() {
+        dates = dates.filter { k, _ in urls.contains { $0.path == k } }
+        for u in urls where dates[u.path] == nil { dates[u.path] = Date().timeIntervalSince1970 }
+        UserDefaults.standard.set(urls.map(\.path), forKey: key)
+        UserDefaults.standard.set(dates, forKey: datesKey)
+    }
 }
 
 // MARK: - Calendar
@@ -359,20 +416,50 @@ final class CalendarService: ObservableObject {
     private let store = EKEventStore()
     private var timer: Timer?
 
-    func start() {
+    /// İzin açılışta kendiliğinden İSTENMEZ (sihirbaz ister); verilmişse etkinlikler okunur.
+    static var authorized: Bool { EKEventStore.authorizationStatus(for: .event) == .fullAccess }
+
+    func requestAccess(_ done: (() -> Void)? = nil) {
         store.requestFullAccessToEvents { ok, _ in
-            DispatchQueue.main.async {
-                self.denied = !ok
-                self.refresh()
-            }
+            DispatchQueue.main.async { self.denied = !ok; self.refresh(); done?() }
         }
+    }
+
+    func start() {
+        denied = !Self.authorized
+        if Self.authorized { refresh() }
         NotificationCenter.default.addObserver(forName: .EKEventStoreChanged, object: store, queue: .main) { [weak self] _ in
             self?.refresh()
         }
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in self?.refresh() }
     }
 
+    /// Toplantı bağlantısı: etkinliğin URL'si, konumu ya da notlarında Zoom/Meet/Teams/Webex/Whereby adresi.
+    static func meetingURL(_ e: EKEvent) -> URL? {
+        let pattern = #"https?://[^\s<>"']*(zoom\.us|zoomgov\.com|meet\.google\.com|teams\.microsoft\.com|teams\.live\.com|webex\.com|whereby\.com|around\.co|gather\.town)[^\s<>"']*"#
+        let hay = [e.url?.absoluteString, e.location, e.notes].compactMap { $0 }.joined(separator: " ")
+        guard let r = hay.range(of: pattern, options: [.regularExpression, .caseInsensitive]) else { return nil }
+        return URL(string: String(hay[r]).trimmingCharacters(in: CharacterSet(charactersIn: ".,;)")))
+    }
+
+    private var alerted = Set<String>()
+    /// "Toplantı N dk sonra" bandı: bağlantılı toplantılar için başlamadan ~5 dk önce bir kez.
+    private func meetingAlert() {
+        guard UserDefaults.standard.bool(forKey: Pref.meetingAlert) else { return }
+        for e in events {
+            let mins = e.startDate.timeIntervalSinceNow / 60
+            let key = (e.eventIdentifier ?? e.title ?? "") + "\(e.startDate.timeIntervalSince1970)"
+            guard mins > 0, mins <= 5.5, Self.meetingURL(e) != nil, !alerted.contains(key) else { continue }
+            alerted.insert(key)
+            BannerService.shared.post(NotchBanner(icon: "video.fill", title: e.title ?? L("Toplantı"),
+                                                  subtitle: L("\(max(1, Int(mins.rounded()))) dk sonra"), tint: .green), duration: 6)
+        }
+    }
+
     func refresh() {
+        denied = !Self.authorized
+        guard Self.authorized else { events = []; return }
+        defer { meetingAlert() }
         let now = Date()
         let end = Calendar.current.date(byAdding: .day, value: 2, to: now) ?? now
         let pred = store.predicateForEvents(withStart: now, end: end, calendars: nil)
@@ -457,7 +544,7 @@ final class CaffeinateService: ObservableObject {
         } else {
             let r = IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleDisplaySleep as CFString,
                                                 IOPMAssertionLevel(kIOPMAssertionLevelOn),
-                                                "Mate Notch uyanık tut" as CFString, &id)
+                                                L("Mate Notch uyanık tut") as CFString, &id)
             active = (r == kIOReturnSuccess)
         }
     }

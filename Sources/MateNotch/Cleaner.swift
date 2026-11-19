@@ -78,16 +78,16 @@ final class CacheCleaner: ObservableObject {
 
     /// Bilinen önbellekler için açıklamalar; bilinmeyenler uygulama adıyla genel açıklama alır.
     private static let known: [String: (String, String, CacheRisk)] = [
-        "com.apple.Safari": ("Safari web önbelleği", "Safari'nin sitelerden sakladığı görseller, betikler ve veriler. Silinirse siteler ilk açılışta biraz yavaş yüklenir. Oturumların, şifrelerin ve geçmişin silinmez.", .safe),
-        "com.apple.dt.Xcode": ("Xcode önbelleği", "Xcode'un kod tamamlama ve dizin önbellekleri. Silinirse Xcode bir sonraki açılışta yeniden oluşturur.", .safe),
-        "Homebrew": ("Homebrew indirme önbelleği", "Homebrew'un indirdiği paket dosyaları. Silinirse paketler gerektiğinde yeniden indirilir.", .safe),
-        "org.swift.swiftpm": ("Swift Package Manager önbelleği", "Swift paketlerinin indirilen kaynakları. Silinirse projeler derlenirken yeniden indirilir.", .safe),
-        "pip": ("Python (pip) paket önbelleği", "pip'in indirdiği Python paketleri. Silinirse yeniden indirilir.", .safe),
-        "Google": ("Google Chrome ve Google uygulamaları önbelleği", "Chrome'un sitelerden sakladığı geçici dosyalar. Silinirse siteler ilk açılışta yavaş yüklenebilir; oturumların silinmez.", .safe),
-        "com.spotify.client": ("Spotify önbelleği", "Spotify'ın şarkı ve görsel önbelleği. DİKKAT: İndirdiğin çevrimdışı şarkılar da burada duruyor olabilir, silinirse yeniden indirmen gerekir.", .caution),
-        "CloudKit": ("iCloud (CloudKit) geçici verileri", "iCloud senkronizasyonunun geçici dosyaları. Silinirse gerektiğinde yeniden indirilir.", .safe),
-        "com.microsoft.VSCode": ("Visual Studio Code önbelleği", "VS Code'un geçici önbellek dosyaları. Silinirse yeniden oluşturulur.", .safe),
-        "com.google.Chrome": ("Google Chrome önbelleği", "Chrome'un sitelerden sakladığı geçici dosyalar. Silinirse siteler ilk açılışta yavaş yüklenebilir; oturumların silinmez.", .safe),
+        "com.apple.Safari": (L("Safari web önbelleği"), L("Safari'nin sitelerden sakladığı görseller, betikler ve veriler. Silinirse siteler ilk açılışta biraz yavaş yüklenir. Oturumların, şifrelerin ve geçmişin silinmez."), .safe),
+        "com.apple.dt.Xcode": (L("Xcode önbelleği"), L("Xcode'un kod tamamlama ve dizin önbellekleri. Silinirse Xcode bir sonraki açılışta yeniden oluşturur."), .safe),
+        "Homebrew": (L("Homebrew indirme önbelleği"), L("Homebrew'un indirdiği paket dosyaları. Silinirse paketler gerektiğinde yeniden indirilir."), .safe),
+        "org.swift.swiftpm": (L("Swift Package Manager önbelleği"), L("Swift paketlerinin indirilen kaynakları. Silinirse projeler derlenirken yeniden indirilir."), .safe),
+        "pip": (L("Python (pip) paket önbelleği"), L("pip'in indirdiği Python paketleri. Silinirse yeniden indirilir."), .safe),
+        "Google": (L("Google Chrome ve Google uygulamaları önbelleği"), L("Chrome'un sitelerden sakladığı geçici dosyalar. Silinirse siteler ilk açılışta yavaş yüklenebilir; oturumların silinmez."), .safe),
+        "com.spotify.client": (L("Spotify önbelleği"), L("Spotify'ın şarkı ve görsel önbelleği. DİKKAT: İndirdiğin çevrimdışı şarkılar da burada duruyor olabilir, silinirse yeniden indirmen gerekir."), .caution),
+        "CloudKit": (L("iCloud (CloudKit) geçici verileri"), L("iCloud senkronizasyonunun geçici dosyaları. Silinirse gerektiğinde yeniden indirilir."), .safe),
+        "com.microsoft.VSCode": (L("Visual Studio Code önbelleği"), L("VS Code'un geçici önbellek dosyaları. Silinirse yeniden oluşturulur."), .safe),
+        "com.google.Chrome": (L("Google Chrome önbelleği"), L("Chrome'un sitelerden sakladığı geçici dosyalar. Silinirse siteler ilk açılışta yavaş yüklenebilir; oturumların silinmez."), .safe),
     ]
     private static let appleAllowed: Set<String> = ["com.apple.Safari", "com.apple.dt.Xcode"]
 
@@ -112,19 +112,19 @@ final class CacheCleaner: ObservableObject {
                 appPath = app.path
                 let appName = FileManager.default.displayName(atPath: app.path).replacingOccurrences(of: ".app", with: "")
                 if detail.isEmpty {
-                    title = "\(appName) önbelleği"
-                    detail = "\(appName) uygulamasının geçici dosyaları (görseller, indirilen veriler). Silinirse uygulama gerektiğinde yeniden oluşturur; ilk açılış biraz yavaş olabilir."
+                    title = L("\(appName) önbelleği")
+                    detail = L("\(appName) uygulamasının geçici dosyaları (görseller, indirilen veriler). Silinirse uygulama gerektiğinde yeniden oluşturur; ilk açılış biraz yavaş olabilir.")
                 }
             }
             if detail.isEmpty {
-                detail = "\"\(name)\" klasörü: bu ada ait uygulama/araç önbelleği (uygulama bulunamadı). Genellikle silinirse yeniden oluşturulur."
+                detail = L("\"\(name)\" klasörü: bu ada ait uygulama/araç önbelleği (uygulama bulunamadı). Genellikle silinirse yeniden oluşturulur.")
             }
             out.append(CacheItem(title: title, detail: detail, location: "~/Library/Caches/\(name)", paths: [url], size: size,
                                  risk: risk, appPath: appPath, symbol: "internaldrive", selected: risk == .safe))
         }
         if !small.isEmpty {
-            out.append(CacheItem(title: "Diğer küçük önbellekler (\(small.count) klasör)",
-                                 detail: "Her biri 20 MB'dan küçük, çeşitli uygulamaların geçici dosyaları. Uygulamalar gerektiğinde yeniden oluşturur.",
+            out.append(CacheItem(title: L("Diğer küçük önbellekler (\(small.count) klasör)"),
+                                 detail: L("Her biri 20 MB'dan küçük, çeşitli uygulamaların geçici dosyaları. Uygulamalar gerektiğinde yeniden oluşturur."),
                                  location: "~/Library/Caches", paths: small.map { $0.0 }, size: small.reduce(0) { $0 + $1.1 },
                                  risk: .safe, appPath: nil, symbol: "tray.2", selected: true))
         }
@@ -137,15 +137,15 @@ final class CacheCleaner: ObservableObject {
             out.append(CacheItem(title: title, detail: detail, location: "~/" + rel, paths: [url], size: size,
                                  risk: risk, appPath: nil, symbol: symbol, selected: selected))
         }
-        add("Uygulama günlükleri", "Uygulamaların ve sistemin tuttuğu günlük (log) dosyaları. Hata ayıklamaya yarar, silinmesi hiçbir şeyi bozmaz.",
+        add(L("Uygulama günlükleri"), L("Uygulamaların ve sistemin tuttuğu günlük (log) dosyaları. Hata ayıklamaya yarar, silinmesi hiçbir şeyi bozmaz."),
             "Library/Logs", risk: .safe, selected: true, symbol: "doc.text")
-        add("Xcode derleme çıktıları (DerivedData)", "Xcode projelerinin derleme ara dosyaları. Silinirse projeler bir sonraki derlemede baştan derlenir (ilk derleme uzun sürer).",
+        add(L("Xcode derleme çıktıları (DerivedData)"), L("Xcode projelerinin derleme ara dosyaları. Silinirse projeler bir sonraki derlemede baştan derlenir (ilk derleme uzun sürer)."),
             "Library/Developer/Xcode/DerivedData", risk: .safe, selected: true, symbol: "hammer")
-        add("Xcode simülatör önbelleği", "iOS simülatörlerinin geçici önbelleği. Silinirse simülatör gerektiğinde yeniden oluşturur.",
+        add(L("Xcode simülatör önbelleği"), L("iOS simülatörlerinin geçici önbelleği. Silinirse simülatör gerektiğinde yeniden oluşturur."),
             "Library/Developer/CoreSimulator/Caches", risk: .safe, selected: true, symbol: "iphone")
-        add("Xcode cihaz desteği (iOS DeviceSupport)", "Bağladığın iPhone/iPad için indirilen hata ayıklama dosyaları. Silinirse cihaz bağlandığında yeniden indirilir ve bu uzun sürebilir.",
+        add(L("Xcode cihaz desteği (iOS DeviceSupport)"), L("Bağladığın iPhone/iPad için indirilen hata ayıklama dosyaları. Silinirse cihaz bağlandığında yeniden indirilir ve bu uzun sürebilir."),
             "Library/Developer/Xcode/iOS DeviceSupport", risk: .caution, selected: false, symbol: "cable.connector")
-        add("Çöp Kutusu", "Çöpe attığın dosyalar. DİKKAT: Burası boşaltılırsa dosyalar kalıcı olarak silinir ve geri getirilemez.",
+        add(L("Çöp Kutusu"), L("Çöpe attığın dosyalar. DİKKAT: Burası boşaltılırsa dosyalar kalıcı olarak silinir ve geri getirilemez."),
             ".Trash", risk: .caution, selected: false, symbol: "trash")
 
         out.sort { $0.size > $1.size }
@@ -196,7 +196,7 @@ struct CleanerView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Önbellek Temizleyici").font(.title2.bold())
+                Text(L("Önbellek Temizleyici")).font(.title2.bold())
                 Text("Yalnızca kendi kullanıcı klasörlerindeki, silinirse yeniden oluşturulabilen dosyalar listelenir. Sistem dosyalarına ve belgelerine dokunulmaz. Hiçbir şey sen onaylamadan silinmez.")
                     .font(.callout).foregroundStyle(.secondary)
             }
@@ -246,21 +246,21 @@ struct CleanerView: View {
         guard !chosen.isEmpty else { return }
         let a = NSAlert()
         a.alertStyle = .warning
-        a.messageText = "\(chosen.count) öğe silinecek (\(CacheCleaner.format(cleaner.selectedSize)))"
+        a.messageText = L("\(chosen.count) öğe silinecek (\(CacheCleaner.format(cleaner.selectedSize)))")
         var lines = chosen.prefix(12).map { "• \($0.title) — \(CacheCleaner.format($0.size))" }
-        if chosen.count > 12 { lines.append("… ve \(chosen.count - 12) öğe daha") }
-        var info = lines.joined(separator: "\n") + "\n\nBu işlem geri alınamaz. Uygulamalar gerekli önbellek dosyalarını gerektiğinde yeniden oluşturur."
+        if chosen.count > 12 { lines.append(L("… ve \(chosen.count - 12) öğe daha")) }
+        var info = lines.joined(separator: "\n") + L("\n\nBu işlem geri alınamaz. Uygulamalar gerekli önbellek dosyalarını gerektiğinde yeniden oluşturur.")
         if chosen.contains(where: { $0.risk == .caution }) {
-            info += "\n\nDikkat: Seçtiklerin arasında silinmesi daha etkili olan öğeler var (çevrimdışı şarkılar, Çöp Kutusu vb.)."
+            info += L("\n\nDikkat: Seçtiklerin arasında silinmesi daha etkili olan öğeler var (çevrimdışı şarkılar, Çöp Kutusu vb.).")
         }
         a.informativeText = info
-        a.addButton(withTitle: "Sil")
-        a.addButton(withTitle: "Vazgeç")
+        a.addButton(withTitle: L("Sil"))
+        a.addButton(withTitle: L("Vazgeç"))
         a.buttons[0].hasDestructiveAction = true
         guard a.runModal() == .alertFirstButtonReturn else { return }
         cleaner.message = "Temizleniyor…"
         cleaner.clean { freed, failed in
-            cleaner.message = "\(CacheCleaner.format(freed)) temizlendi" + (failed > 0 ? " · \(failed) dosya silinemedi (kullanımda veya izin yok)" : "")
+            cleaner.message = "\(CacheCleaner.format(freed)) temizlendi" + (failed > 0 ? L(" · \(failed) dosya silinemedi (kullanımda veya izin yok)") : "")
         }
     }
 }
@@ -305,7 +305,7 @@ enum CleanerWindow {
     static func show() {
         if window == nil {
             let w = NSWindow(contentViewController: NSHostingController(rootView: CleanerView()))
-            w.title = "Önbellek Temizleyici"
+            w.title = L("Önbellek Temizleyici")
             w.styleMask = [.titled, .closable, .resizable, .miniaturizable]
             w.isReleasedWhenClosed = false
             window = w

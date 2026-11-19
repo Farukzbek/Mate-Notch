@@ -7,7 +7,7 @@ final class UpdateService: ObservableObject {
     static let shared = UpdateService()
     static let repo = "Farukzbek/Mate-Notch"
 
-    @Published var status = "Henüz denetlenmedi"
+    @Published var status = L("Henüz denetlenmedi")
     @Published var available: String?          // yeni sürüm etiketi (ör. "v1.1.0")
     @Published var busy = false
 
@@ -54,7 +54,7 @@ final class UpdateService: ObservableObject {
     private enum Outcome { case release(Release), none, failed(String) }
 
     private static func fetchLatest() async -> Outcome {
-        guard let url = URL(string: "https://api.github.com/repos/\(repo)/releases/latest") else { return .failed("Adres hatalı") }
+        guard let url = URL(string: "https://api.github.com/repos/\(repo)/releases/latest") else { return .failed(L("Adres hatalı")) }
         var req = URLRequest(url: url)
         req.timeoutInterval = 15
         req.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
@@ -63,7 +63,7 @@ final class UpdateService: ObservableObject {
             let (data, resp) = try await URLSession.shared.data(for: req)
             let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
             if code == 404 { return .none }
-            guard code == 200 else { return .failed("GitHub yanıtı: \(code)") }
+            guard code == 200 else { return .failed(L("GitHub yanıtı: \(code)")) }
             return .release(try JSONDecoder().decode(Release.self, from: data))
         } catch { return .failed("Denetlenemedi (internet?)") }
     }
@@ -72,7 +72,7 @@ final class UpdateService: ObservableObject {
         busy = false
         switch outcome {
         case .none:
-            if !silent { status = "Henüz yayınlanmış sürüm yok" }
+            if !silent { status = L("Henüz yayınlanmış sürüm yok") }
         case .failed(let m):
             if !silent { status = m }
         case .release(let r):
@@ -80,14 +80,14 @@ final class UpdateService: ObservableObject {
                   let dmg = r.assets.first(where: { $0.name == "Mate-Notch.dmg" }),
                   let dmgURL = URL(string: dmg.browser_download_url) else {
                 available = nil
-                status = "Güncel (sürüm \(current))"
+                status = L("Güncel (sürüm \(current))")
                 return
             }
             self.dmgURL = dmgURL
             self.shaURL = r.assets.first(where: { $0.name == "Mate-Notch.dmg.sha256" }).flatMap { URL(string: $0.browser_download_url) }
             self.pageURL = URL(string: r.html_url)
             available = r.tag_name
-            status = "Yeni sürüm \(r.tag_name) hazır"
+            status = L("Yeni sürüm \(r.tag_name) hazır")
             tryAutoInstall()
         }
     }
@@ -116,14 +116,14 @@ final class UpdateService: ObservableObject {
     func install() {
         guard let dmg = dmgURL, !installing else { return }
         installing = true
-        status = "İndiriliyor…"
+        status = L("İndiriliyor…")
         Task {
             do {
                 try await Self.download(dmg, sha: shaURL, setStatus: { s in DispatchQueue.main.async { self.status = s } })
             } catch {
                 await MainActor.run {
                     self.installing = false
-                    self.status = "Güncelleme başarısız: \(error.localizedDescription)"
+                    self.status = L("Güncelleme başarısız: \(error.localizedDescription)")
                     if let p = self.pageURL { NSWorkspace.shared.open(p) }   // elle indirme sayfası
                 }
             }
@@ -134,22 +134,22 @@ final class UpdateService: ObservableObject {
         let fm = FileManager.default
         let dest = Bundle.main.bundleURL
         guard dest.pathExtension == "app", fm.isWritableFile(atPath: dest.deletingLastPathComponent().path) else {
-            throw UpdateError(message: "Uygulama klasörüne yazılamıyor; indirme sayfası açılıyor")
+            throw UpdateError(message: L("Uygulama klasörüne yazılamıyor; indirme sayfası açılıyor"))
         }
         let work = fm.temporaryDirectory.appendingPathComponent("MateNotchUpdate-\(UUID().uuidString)")
         try fm.createDirectory(at: work, withIntermediateDirectories: true)
 
         let (tmp, resp) = try await URLSession.shared.download(from: dmgURL)
-        guard (resp as? HTTPURLResponse)?.statusCode == 200 else { throw UpdateError(message: "İndirme başarısız") }
+        guard (resp as? HTTPURLResponse)?.statusCode == 200 else { throw UpdateError(message: L("İndirme başarısız")) }
         let dmg = work.appendingPathComponent("Mate-Notch.dmg")
         try fm.moveItem(at: tmp, to: dmg)
 
-        setStatus("Doğrulanıyor…")
+        setStatus(L("Doğrulanıyor…"))
         if let sha {
             let (data, _) = try await URLSession.shared.data(from: sha)
             let expected = String(data: data, encoding: .utf8)?.split(whereSeparator: { $0.isWhitespace }).first.map { String($0).lowercased() }
             let actual = SHA256.hash(data: try Data(contentsOf: dmg, options: .mappedIfSafe)).map { String(format: "%02x", $0) }.joined()
-            guard expected == actual else { throw UpdateError(message: "Sağlama toplamı uyuşmuyor") }
+            guard expected == actual else { throw UpdateError(message: L("Sağlama toplamı uyuşmuyor")) }
         }
 
         let mnt = work.appendingPathComponent("mnt")
@@ -161,7 +161,7 @@ final class UpdateService: ObservableObject {
         try run("/usr/bin/ditto", [mnt.appendingPathComponent("Mate Notch.app").path, newApp.path])
         try run("/usr/bin/codesign", ["--verify", "--deep", "--strict", newApp.path])
         guard Bundle(url: newApp)?.bundleIdentifier == Bundle.main.bundleIdentifier else {
-            throw UpdateError(message: "Paket kimliği uyuşmuyor")
+            throw UpdateError(message: L("Paket kimliği uyuşmuyor"))
         }
 
         // Uygulama kapanınca yerini değiştirip yeniden açan betik
@@ -177,7 +177,7 @@ final class UpdateService: ObservableObject {
         rm -rf "\\(work.path)"
         """.write(to: script, atomically: true, encoding: .utf8)
 
-        setStatus("Yeniden başlatılıyor…")
+        setStatus(L("Yeniden başlatılıyor…"))
         let p = Process()
         p.executableURL = URL(fileURLWithPath: "/bin/bash")
         p.arguments = [script.path, String(ProcessInfo.processInfo.processIdentifier), newApp.path, dest.path]

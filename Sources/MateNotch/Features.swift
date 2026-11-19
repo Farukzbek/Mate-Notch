@@ -61,8 +61,9 @@ final class BluetoothService {
             DeviceBatteryService.shared.refresh { list in
                 let dev = list.first { $0.name == name }
                 let battery = dev?.detail ?? dev?.percent.map { "%\($0)" }
+                BuddyService.shared.headphones()
                 BannerService.shared.post(NotchBanner(icon: Self.icon(for: name), title: name,
-                                                      subtitle: battery.map { "Bağlandı · \($0)" } ?? "Bağlandı", tint: .green))
+                                                      subtitle: battery.map { L("Bağlandı · \($0)") } ?? L("Bağlandı"), tint: .green))
             }
         }
     }
@@ -109,7 +110,7 @@ final class BluetoothService {
                 func v(_ k: String) -> String? { (info[k] as? String).map { $0.hasSuffix("%") ? $0 : $0 + "%" } }
                 var parts: [String] = []
                 if let l = v("device_batteryLevelLeft") { parts.append("Sol \(l)") }
-                if let r = v("device_batteryLevelRight") { parts.append("Sağ \(r)") }
+                if let r = v("device_batteryLevelRight") { parts.append(L("Sağ \(r)")) }
                 if let c = v("device_batteryLevelCase") { parts.append("Kutu \(c)") }
                 if parts.isEmpty, let m = v("device_batteryLevelMain") { parts.append(m) }
                 return parts.isEmpty ? nil : parts.joined(separator: " · ")
@@ -207,10 +208,10 @@ final class FocusService: ObservableObject {
         case .authorized:
             let f = INFocusStatusCenter.default.focusStatus.isFocused ?? false
             if f != active { active = f }
-            status = "İzin verildi ✓"
-        case .denied: active = false; status = "İzin reddedildi: Sistem Ayarları › Gizlilik ve Güvenlik › Odak'tan aç."
-        case .restricted: active = false; status = "Bu Mac'te kısıtlı."
-        default: active = false; status = "İzin bekleniyor…"
+            status = L("İzin verildi ✓")
+        case .denied: active = false; status = L("İzin reddedildi: Sistem Ayarları › Gizlilik ve Güvenlik › Odak'tan aç.")
+        case .restricted: active = false; status = L("Bu Mac'te kısıtlı.")
+        default: active = false; status = L("İzin bekleniyor…")
         }
     }
 }
@@ -254,7 +255,7 @@ final class DownloadService: ObservableObject {
                 for tmp in finished {
                     let base = (tmp as NSString).deletingPathExtension
                     if FileManager.default.fileExists(atPath: self.dir.appendingPathComponent(base).path) {
-                        BannerService.shared.post(NotchBanner(icon: "checkmark.circle.fill", title: "İndirme tamamlandı",
+                        BannerService.shared.post(NotchBanner(icon: "checkmark.circle.fill", title: L("İndirme tamamlandı"),
                                                               subtitle: base, tint: .green))
                     }
                 }
@@ -286,18 +287,18 @@ final class WeatherService: ObservableObject {
     func search(_ name: String) {
         let q = name.trimmingCharacters(in: .whitespaces)
         guard !q.isEmpty, let enc = q.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "https://geocoding-api.open-meteo.com/v1/search?name=\(enc)&count=1&language=tr") else { return }
-        searchStatus = "Aranıyor…"
+              let url = URL(string: "https://geocoding-api.open-meteo.com/v1/search?name=\(enc)&count=1&language=\(Loc.code)") else { return }
+        searchStatus = L("Aranıyor…")
         URLSession.shared.dataTask(with: url) { data, _, _ in
             let json = data.flatMap { try? JSONSerialization.jsonObject(with: $0) } as? [String: Any]
             let r = (json?["results"] as? [[String: Any]])?.first
             DispatchQueue.main.async {
-                guard let r, let lat = r["latitude"] as? Double, let lon = r["longitude"] as? Double else { self.searchStatus = "Şehir bulunamadı"; return }
+                guard let r, let lat = r["latitude"] as? Double, let lon = r["longitude"] as? Double else { self.searchStatus = L("Şehir bulunamadı"); return }
                 let d = UserDefaults.standard
                 d.set(lat, forKey: Pref.weatherLat); d.set(lon, forKey: Pref.weatherLon)
                 let label = [r["name"] as? String, r["country"] as? String].compactMap { $0 }.joined(separator: ", ")
                 d.set(label, forKey: Pref.weatherCity)
-                self.searchStatus = "Seçildi: \(label)"
+                self.searchStatus = L("Seçildi: \(label)")
                 self.refresh()
             }
         }.resume()
@@ -321,14 +322,14 @@ final class WeatherService: ObservableObject {
     /// WMO hava durumu kodu → SF Symbol + Türkçe açıklama
     static func describe(_ code: Int, day: Bool) -> (String, String) {
         switch code {
-        case 0: return (day ? "sun.max.fill" : "moon.stars.fill", "Açık")
-        case 1, 2: return (day ? "cloud.sun.fill" : "cloud.moon.fill", "Parçalı bulutlu")
+        case 0: return (day ? "sun.max.fill" : "moon.stars.fill", L("Açık"))
+        case 1, 2: return (day ? "cloud.sun.fill" : "cloud.moon.fill", L("Parçalı bulutlu"))
         case 3: return ("cloud.fill", "Bulutlu")
         case 45, 48: return ("cloud.fog.fill", "Sisli")
-        case 51...57: return ("cloud.drizzle.fill", "Çise")
-        case 61...67, 80...82: return ("cloud.rain.fill", "Yağmurlu")
-        case 71...77, 85, 86: return ("cloud.snow.fill", "Karlı")
-        case 95...99: return ("cloud.bolt.rain.fill", "Fırtınalı")
+        case 51...57: return ("cloud.drizzle.fill", L("Çise"))
+        case 61...67, 80...82: return ("cloud.rain.fill", L("Yağmurlu"))
+        case 71...77, 85, 86: return ("cloud.snow.fill", L("Karlı"))
+        case 95...99: return ("cloud.bolt.rain.fill", L("Fırtınalı"))
         default: return ("cloud.fill", "")
         }
     }
@@ -347,17 +348,17 @@ enum OCR {
             try? p.run(); p.waitUntilExit()
             DispatchQueue.main.async {
                 guard pb.changeCount != before, let img = NSImage(pasteboard: pb),
-                      let cg = img.cgImage(forProposedRect: nil, context: nil, hints: nil) else { done(.failure(AIError("Seçim iptal edildi"))); return }
+                      let cg = img.cgImage(forProposedRect: nil, context: nil, hints: nil) else { done(.failure(AIError(L("Seçim iptal edildi")))); return }
                 DispatchQueue.global(qos: .userInitiated).async {
                     let req = VNRecognizeTextRequest()
                     req.recognitionLevel = .accurate
                     req.recognitionLanguages = ["tr-TR", "en-US"]
                     req.usesLanguageCorrection = true
                     do { try VNImageRequestHandler(cgImage: cg).perform([req]) }
-                    catch { DispatchQueue.main.async { done(.failure(AIError("Metin okunamadı"))) }; return }
+                    catch { DispatchQueue.main.async { done(.failure(AIError(L("Metin okunamadı")))) }; return }
                     let text = (req.results ?? []).compactMap { $0.topCandidates(1).first?.string }.joined(separator: "\n")
                     DispatchQueue.main.async {
-                        text.isEmpty ? done(.failure(AIError("Seçilen alanda metin bulunamadı"))) : done(.success(text))
+                        text.isEmpty ? done(.failure(AIError(L("Seçilen alanda metin bulunamadı")))) : done(.success(text))
                     }
                 }
             }

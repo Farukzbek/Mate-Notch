@@ -324,7 +324,7 @@ enum SettingsWindow {
     static func show() {
         if window == nil {
             let w = NSWindow(contentViewController: NSHostingController(rootView: SettingsView()))
-            w.title = "Mate Notch Ayarları"
+            w.title = L("Mate Notch Ayarları")
             w.styleMask = [.titled, .closable, .resizable]
             w.isReleasedWhenClosed = false
             window = w

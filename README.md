@@ -14,6 +14,10 @@
   <sub>macOS 14 veya üstü · Apple Silicon ve Intel · <a href="#kurulum">kurulum adımları</a></sub>
 </p>
 
+<p align="center">
+  <img src="docs/screenshot-open.png" width="720" alt="Mate Notch: açık notch, Ana Sayfa">
+</p>
+
 ## Özellikler
 
 - **Notch'a uyumlu:** Fiziksel notch'un ölçüsünü okur, üzerine gelince yaylı bir animasyonla açılır. Notch'u olmayan Mac'lerde sanal bir hap gösterir.
@@ -21,18 +25,35 @@
 - **Senkron şarkı sözleri (Mate Lyrics altyapısı):** Müzik kartında 3 satır (önceki sönük, anlık parlak, sonraki sönük), kapalı notch'un altında 1 veya 2 satır. Sözü olmayan şarkıda alan hiç açılmaz. [lrclib.net](https://lrclib.net) kullanır.
 - **Canlı etkinlikler (kapalıyken):** müzik göstergesi, zamanlayıcı, şarj, ekran kaydı. Gösterge simgesi seçilebilir (equalizer, ses dalgası, AirPods, HomePod, Apple logosu…).
 - **Raf:** Dosyayı notch'a sürükle, sonra istediğin yere geri sürükle.
-- **Pano geçmişi:** Kopyalayınca "Kopyalandı" bandı; tek tek veya toplu silme. Şifre yöneticisi kopyaları kaydedilmez.
+- **Pano geçmişi:** Kopyalayınca "Kopyalandı" bandı; arama, sabitleme (yeniden başlatınca da durur), tek tek veya toplu silme. Şifre yöneticisi kopyaları kaydedilmez.
 - **Renk seçici:** Ekrandan bir rengi seç, hex kodu panoya kopyalansın.
 - **Ekran görüntüsü düğmesi:** Seçilen alan, tam ekran, video kaydı veya sistem çekim aracı.
 - **Yapay zeka:** Panodaki veya yazdığın metni özetle, düzelt, yeniden yaz, çevir, açıkla; takvimden günlük özet; serbest soru. Varsayılan olarak **cihaz içi Apple modeliyle** çalışır (anahtar gerekmez, veri Mac'inden çıkmaz; Apple Intelligence gerekir). İstersen Ayarlar'dan **Claude, ChatGPT veya Gemini** hesabını (kendi API anahtarınla) bağlarsın; anahtar Anahtarlık'ta saklanır.
 - **AirDrop:** Raf sekmesinde dosyayı AirDrop alanına sürükle, alıcı seçici açılsın.
 - **Önbellek temizleyici:** Gereksiz önbellek ve günlük dosyalarını neye ait olduklarını yazarak listeler; sen onaylamadan hiçbir şey silmez.
 - **Otomatik güncelleme:** GitHub Releases'te yeni sürüm çıkınca denetler, doğrular (SHA-256 + imza) ve kendini günceller (ayarlardan kapatılabilir).
+- **Günlük kullanım:** Apple **Kısayollar** düğmesi, toplantı bağlantısı varsa **Katıl** düğmesi ve 5 dk önce uyarı (Zoom, Meet, Teams…), **Pomodoro** (25/5, her 4. molada 15), ses çıkışı seçici, rafın belirli günde bir otomatik temizlenmesi.
+- **Piller ve uyarılar:** Mac, kulaklık, fare ve klavye pilleri; iki aşamalı düşük pil uyarısı; kulaklık bağlanınca bant.
+- **İzin sihirbazı ve özellik turu:** İlk açılışta dil seçimi, izinler ve her özelliği tek tek açıp deneme/atlama; sonradan menüden açılır. Güncellemeden sonra **Yenilikler** penceresi.
+- **Maskot (isteğe bağlı):** Kapalı notch'un sağ kanadında küçük bir arkadaş; kopyaladığında uzanıp alır, el sallar, müzikle ritim tutar, pil azalınca yorulur, kulaklık takar, boşta uyur. Her davranış ayrı kapatılabilir (Ayarlar › Maskot).
+
+<p align="center"><img src="docs/buddy.gif" width="440" alt="Maskot kopyalanan metni alıyor"></p>
+
+- **Türkçe ve İngilizce arayüz** (Ayarlar › Davranış › Dil).
 - **Zamanlayıcı, sistem durumu (CPU / bellek / disk), uyanık tut, takvimde sıradaki etkinlik.**
 - **Görünüm:** Siyah, düz renk, albüm rengi veya **Liquid Glass** (yoğunluk ve cam tipi ayarlı); açık/kapalı boyut, açılma alanı ve gecikmeleri ayarlanabilir.
 - Kısayol: `⌃⌥Space` aç/kapat. Menü çubuğunda gülen yüzlü simge; Dock'ta yer kaplamaz.
 
 ## Kurulum
+
+**Homebrew ile:**
+
+```bash
+brew tap farukzbek/tap
+brew install --cask mate-notch
+```
+
+**Ya da elle:**
 
 1. [Mate-Notch.dmg](https://github.com/Farukzbek/Mate-Notch/releases/latest/download/Mate-Notch.dmg) dosyasını indir.
 2. DMG'yi aç, **Mate Notch**'u **Uygulamalar** klasörüne sürükle.
@@ -61,6 +82,8 @@ VERSION=1.0.0 ./build.sh --release     # dist/Mate-Notch.dmg üretir
 
 `dist/Mate-Notch.dmg` dosyasını GitHub **Releases** sayfasına yükle (dosya adı `Mate-Notch.dmg` kalmalı; README'deki indirme bağlantısı buna işaret eder).
 Apple Developer ID sertifikan varsa `SIGN_ID="Developer ID Application: …" ./build.sh --release` ile imzalayabilir, notarize edince yukarıdaki "Yine de Aç" uyarısı kalkar.
+
+İmzalama ve Apple onayı (notarization) için bkz. [docs/IMZA.md](docs/IMZA.md).
 
 ## Lisans
 

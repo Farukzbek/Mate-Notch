@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Pref.register()
+        Diagnostics.runIfRequested()
         Self.installMainMenu()
         NotchController.shared.setup()
         MediaService.shared.start()
@@ -16,6 +17,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         CalendarService.shared.start()
         LyricsService.shared.start()
         UpdateService.shared.start()
+        WhatsNew.showIfUpdated()
+        BuddyService.shared.start()
         HUDService.shared.start()
         PrivacyService.shared.start()
         DeviceBatteryService.shared.start()
@@ -23,21 +26,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         DownloadService.shared.start()
         WeatherService.shared.start()
 
+        // İlk açılışta izin sihirbazı (bir kez); `--permissions` ile her zaman açılır
+        if CommandLine.arguments.contains("--tour") { DispatchQueue.main.asyncAfter(deadline: .now() + 1) { TourWindow.show() } }
+        let firstRun = !UserDefaults.standard.bool(forKey: Pref.wizardShown)
+        let needLang = !UserDefaults.standard.bool(forKey: "langChosen") && firstRun
+        if CommandLine.arguments.contains("--language") || needLang {
+            // Önce dil seçimi: seçilen dille yeniden başlayınca (ya da aynı dilde) izin sihirbazı açılır
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { LanguageWindow.show { if firstRun { UserDefaults.standard.set(true, forKey: Pref.wizardShown); WizardWindow.show() } } }
+        } else if CommandLine.arguments.contains("--permissions") || firstRun {
+            UserDefaults.standard.set(true, forKey: Pref.wizardShown)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { WizardWindow.show() }
+        }
+
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = Self.menuIcon()
         let menu = NSMenu()
-        menu.addItem(withTitle: "Aç / Kapat", action: #selector(toggle), keyEquivalent: "").target = self
-        menu.addItem(withTitle: "Önbellek Temizleyici…", action: #selector(cleaner), keyEquivalent: "").target = self
+        menu.addItem(withTitle: L("Aç / Kapat"), action: #selector(toggle), keyEquivalent: "").target = self
+        menu.addItem(withTitle: L("Önbellek Temizleyici…"), action: #selector(cleaner), keyEquivalent: "").target = self
+        menu.addItem(withTitle: L("İzinleri kontrol et…"), action: #selector(wizard), keyEquivalent: "").target = self
+        menu.addItem(withTitle: L("Özellik turu…"), action: #selector(tour), keyEquivalent: "").target = self
+        menu.addItem(withTitle: L("Yenilikler…"), action: #selector(whatsNew), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Ayarlar…", action: #selector(settings), keyEquivalent: ",").target = self
-        updateItem = menu.addItem(withTitle: "Güncelle", action: #selector(installUpdate), keyEquivalent: "")
+        updateItem = menu.addItem(withTitle: L("Güncelle"), action: #selector(installUpdate), keyEquivalent: "")
         updateItem.target = self
         updateItem.isHidden = true
         UpdateService.shared.$available.receive(on: DispatchQueue.main).sink { [weak self] v in
             self?.updateItem.isHidden = (v == nil)
-            if let v { self?.updateItem.title = "Güncelle: \(v) · yeniden başlat" }
+            if let v { self?.updateItem.title = L("Güncelle: \(v) · yeniden başlat") }
         }.store(in: &bag)
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Mate Notch'tan Çık", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        menu.addItem(withTitle: L("Mate Notch'tan Çık"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         statusItem.menu = menu
     }
 
@@ -45,17 +63,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     static func installMainMenu() {
         let main = NSMenu()
         let appItem = NSMenuItem(); main.addItem(appItem)
-        let appMenu = NSMenu(); appMenu.addItem(withTitle: "Mate Notch'tan Çık", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        let appMenu = NSMenu(); appMenu.addItem(withTitle: L("Mate Notch'tan Çık"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
         let editItem = NSMenuItem(); main.addItem(editItem)
-        let edit = NSMenu(title: "Düzen")
+        let edit = NSMenu(title: L("Düzen"))
         edit.addItem(withTitle: "Geri Al", action: Selector(("undo:")), keyEquivalent: "z")
         let redo = edit.addItem(withTitle: "Yinele", action: Selector(("redo:")), keyEquivalent: "z"); redo.keyEquivalentModifierMask = [.command, .shift]
         edit.addItem(.separator())
         edit.addItem(withTitle: "Kes", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
         edit.addItem(withTitle: "Kopyala", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        edit.addItem(withTitle: "Yapıştır", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
-        edit.addItem(withTitle: "Tümünü Seç", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        edit.addItem(withTitle: L("Yapıştır"), action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        edit.addItem(withTitle: L("Tümünü Seç"), action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
         editItem.submenu = edit
         NSApp.mainMenu = main
     }
@@ -83,6 +101,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func toggle() { NotchController.shared.toggle() }
     @objc func installUpdate() { UpdateService.shared.install() }
     @objc func cleaner() { CleanerWindow.show() }
+    @objc func wizard() { WizardWindow.show() }
+    @objc func tour() { TourWindow.show() }
+    @objc func whatsNew() { WhatsNew.show() }
     @objc func settings() { SettingsWindow.show() }
 }
 
