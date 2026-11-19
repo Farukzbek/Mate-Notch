@@ -238,11 +238,13 @@ struct BuddyView: View {
     @ViewBuilder private func hand(t: Double) -> some View {
         if b.waving {
             Image(systemName: "hand.wave.fill").font(.system(size: 12, weight: .regular)).foregroundStyle(ink)
+                .scaleEffect(x: -1, y: 1)                                  // simge sol eldir; sağ el olması için aynalanır
                 .rotationEffect(.degrees(sin(t * 11) * 16), anchor: .bottom)
                 .position(x: 38, y: 12)
         } else if b.reach > 0.001 {
             Image(systemName: "hand.raised.fill").font(.system(size: 11, weight: .regular)).foregroundStyle(ink)
-                .rotationEffect(.degrees(20))
+                .scaleEffect(x: -1, y: 1)
+                .rotationEffect(.degrees(-20))
                 .position(x: 33 + 7 * b.reach, y: 16 + 5 * b.reach)
         }
     }
