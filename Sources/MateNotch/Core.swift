@@ -39,12 +39,13 @@ enum Layout {
 // MARK: - State
 
 enum Tab: String, CaseIterable, Identifiable {
-    case home, shelf, clipboard, timer, stats, ai
+    case home, shelf, clipboard, timer, stats, ai, batteries
     var id: String { rawValue }
     var icon: String {
         switch self {
         case .home: return "house.fill"
         case .ai: return "sparkles"
+        case .batteries: return "battery.100"
         case .shelf: return "tray.full.fill"
         case .clipboard: return "doc.on.clipboard.fill"
         case .timer: return "timer"
@@ -55,6 +56,7 @@ enum Tab: String, CaseIterable, Identifiable {
         switch self {
         case .home: return "Ana Sayfa"
         case .ai: return "Yapay Zeka"
+        case .batteries: return "Piller"
         case .shelf: return "Raf"
         case .clipboard: return "Pano"
         case .timer: return "Zamanlayıcı"
@@ -74,6 +76,7 @@ extension Tab {
             case .timer: return d.bool(forKey: Pref.showTimer)
             case .stats: return d.bool(forKey: Pref.showStats)
             case .ai: return d.bool(forKey: Pref.showAI)
+            case .batteries: return true
             }
         }
     }
@@ -106,6 +109,11 @@ enum Pref {
     static let showStats = "showStats"
     static let uiScale = "uiScale"
     static let styleCollapsed = "styleCollapsed"
+    static let lowBatteryAlert = "lowBatteryAlert"
+    static let lowBatteryDevices = "lowBatteryDevices"
+    static let lowBatteryLevel = "lowBatteryLevel"
+    static let bluetoothBatteries = "bluetoothBatteries"
+    static let headerDeviceBattery = "headerDeviceBattery"
     static let bannerBluetooth = "bannerBluetooth"
     static let privacyIndicator = "privacyIndicator"
     static let focusIndicator = "focusIndicator"
@@ -152,7 +160,7 @@ enum Pref {
             openOnHover: true, hoverDelay: 0.15, liveActivities: true, haptics: true,
             showShelf: true, showClipboard: true, showTimer: true, showStats: true,
             lyricsEnabled: false, lyricsInNotch: true,
-            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, bannerBluetooth: true, privacyIndicator: true, focusIndicator: false, downloadIndicator: false, weatherEnabled: false, hudVolume: true, hudBrightness: true, hudKeyboard: true, hudStyle: "bar", hudDuration: 1.6, hudHideSystem: false, hudStep: 6.0, showAI: true, aiProvider: "auto", autoUpdateCheck: true, autoUpdateInstall: true, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
+            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, lowBatteryAlert: true, lowBatteryDevices: true, lowBatteryLevel: 20.0, bluetoothBatteries: true, headerDeviceBattery: true, bannerBluetooth: true, privacyIndicator: true, focusIndicator: false, downloadIndicator: false, weatherEnabled: false, hudVolume: true, hudBrightness: true, hudKeyboard: true, hudStyle: "bar", hudDuration: 1.6, hudHideSystem: false, hudStep: 6.0, showAI: true, aiProvider: "auto", autoUpdateCheck: true, autoUpdateInstall: true, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
             showCalendar: true, calDate: true, calEvent: true, qbCaffeinate: true, qbTimer: true, qbCapture: true, qbColor: true, showArtwork: true, captureMode: "area", captureClipboard: true, bgStyle: "black", bgColor: "#1F2A44",
         ])
     }

@@ -18,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         UpdateService.shared.start()
         HUDService.shared.start()
         PrivacyService.shared.start()
+        DeviceBatteryService.shared.start()
         FocusService.shared.start()
         DownloadService.shared.start()
         WeatherService.shared.start()

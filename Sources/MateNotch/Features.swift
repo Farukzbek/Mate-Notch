@@ -56,10 +56,14 @@ final class BluetoothService {
         guard UserDefaults.standard.bool(forKey: Pref.bannerBluetooth) else { return }
         let dev = HUDService.defaultOutput()
         guard let (name, isBT) = Self.nameAndTransport(dev), isBT else { return }
-        DispatchQueue.global(qos: .utility).async {
-            let battery = Self.batteryText(forDeviceNamed: name)
-            BannerService.shared.post(NotchBanner(icon: Self.icon(for: name), title: name,
-                                                  subtitle: battery.map { "Bağlandı · \($0)" } ?? "Bağlandı", tint: .green))
+        // Pil bilgisi bağlantıdan hemen sonra gelmeyebilir: 2 sn bekleyip oku
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DeviceBatteryService.shared.refresh { list in
+                let dev = list.first { $0.name == name }
+                let battery = dev?.detail ?? dev?.percent.map { "%\($0)" }
+                BannerService.shared.post(NotchBanner(icon: Self.icon(for: name), title: name,
+                                                      subtitle: battery.map { "Bağlandı · \($0)" } ?? "Bağlandı", tint: .green))
+            }
         }
     }
 

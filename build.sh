@@ -53,6 +53,7 @@ cat > "$APP/Contents/Info.plist" <<EOT
   <key>NSHumanReadableCopyright</key><string>© 2026 Mate Studios</string>
   <key>NSAppleEventsUsageDescription</key><string>Mate Notch, Apple Music ve Spotify'ı kontrol etmek için gerekli.</string>
   <key>NSDesktopFolderUsageDescription</key><string>Ekran görüntülerini ve kayıtları Masaüstü'ne kaydetmek için.</string>
+  <key>NSBluetoothAlwaysUsageDescription</key><string>Bağlı Bluetooth cihazlarının (kulaklık, fare, klavye) pil seviyesini göstermek için.</string>
   <key>NSFocusStatusUsageDescription</key><string>Odak (Rahatsız Etmeyin) açıkken notch'ta küçük bir ay simgesi göstermek için.</string>
   <key>NSDownloadsFolderUsageDescription</key><string>İndirmelerin ilerlemesini göstermek için İndirilenler klasörüne bakar.</string>
   <key>NSCalendarsFullAccessUsageDescription</key><string>Sıradaki etkinliği göstermek için takvime erişim gerekli.</string>

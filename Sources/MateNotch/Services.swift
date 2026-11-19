@@ -196,6 +196,7 @@ final class BatteryService: ObservableObject {
             level = cap; charging = ch; pluggedIn = ac
             if !initial && ac && !wasPlugged { showFlash() }
         }
+        PowerAlertService.shared.check()
     }
 
     private func showFlash() {

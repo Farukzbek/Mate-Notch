@@ -93,6 +93,10 @@ struct RootView: View {
                             HUDBanner().frame(height: 30).fixedSize(horizontal: true, vertical: false)
                                 .background(Capsule().fill(.black.opacity(0.6)))
                                 .padding(.bottom, 10).transition(.opacity)
+                        } else if banner {
+                            BannerView().frame(height: 30).fixedSize(horizontal: true, vertical: false)
+                                .background(Capsule().fill(.black.opacity(0.6)))
+                                .padding(.bottom, 10).transition(.opacity)
                         }
                     }
                     .transition(.asymmetric(insertion: .opacity.animation(.easeOut(duration: 0.22).delay(0.08)),
@@ -305,9 +309,11 @@ struct OpenContent: View {
     @AppStorage(Pref.showTimer) var showTimer = true
     @AppStorage(Pref.showStats) var showStats = true
     @AppStorage(Pref.showAI) var showAI = true
+    @AppStorage(Pref.headerDeviceBattery) var headerDeviceBattery = true
+    @ObservedObject var deviceBattery = DeviceBatteryService.shared
     @AppStorage(Pref.uiScale) var uiScale = 1.0
 
-    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI); return Tab.visible().filter { $0 != .ai } }
+    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI); return Tab.visible().filter { $0 != .ai && $0 != .batteries } }
 
     var body: some View {
         let g = state.geometry
@@ -333,12 +339,21 @@ struct OpenContent: View {
                     Button { SettingsWindow.show() } label: {
                         Image(systemName: "gearshape.fill").foregroundStyle(.white.opacity(0.5))
                     }.buttonStyle(.plain).morph("Ayarlar")
-                    HStack(spacing: 3) {
-                        Image(systemName: battery.pluggedIn ? "battery.100.bolt" : "battery.75")
-                        Text("\(battery.level)%").monospacedDigit()
-                    }
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(battery.pluggedIn ? .green : .white.opacity(0.6))
+                    Button { withAnimation(.snappy(duration: 0.25)) { state.tab = .batteries } } label: {
+                        HStack(spacing: 6) {
+                            HStack(spacing: 3) {
+                                Image(systemName: battery.pluggedIn ? "battery.100.bolt" : "battery.75")
+                                Text("\(battery.level)%").monospacedDigit()
+                            }
+                            .foregroundStyle(battery.pluggedIn ? .green : .white.opacity(0.6))
+                            // Bağlı kulaklık / cihaz pili (ilk pil bilgisi veren cihaz)
+                            if headerDeviceBattery, let d = deviceBattery.devices.first(where: { $0.percent != nil }), let p = d.percent {
+                                HStack(spacing: 3) { Image(systemName: d.icon); Text("\(p)%").monospacedDigit() }
+                                    .foregroundStyle(p <= 20 ? .red : .white.opacity(0.6))
+                            }
+                        }
+                        .font(.system(size: 11, weight: .medium))
+                    }.buttonStyle(.plain).tip("Piller")
                 }
                 .font(.system(size: 12))
             }
@@ -350,6 +365,7 @@ struct OpenContent: View {
                 switch state.tab {
                 case .home: HomeView()
                 case .ai: AIView()
+                case .batteries: BatteriesView()
                 case .shelf: ShelfView()
                 case .clipboard: ClipboardView()
                 case .timer: TimerView()
@@ -1058,6 +1074,11 @@ struct SettingsView: View {
     @AppStorage(Pref.hudHideSystem) var hudHideSystem = false
     @AppStorage(Pref.hudStep) var hudStep = 6.0
     @ObservedObject var hud = HUDService.shared
+    @AppStorage(Pref.lowBatteryAlert) var lowBatteryAlert = true
+    @AppStorage(Pref.lowBatteryDevices) var lowBatteryDevices = true
+    @AppStorage(Pref.lowBatteryLevel) var lowBatteryLevel = 20.0
+    @AppStorage(Pref.bluetoothBatteries) var bluetoothBatteries = true
+    @AppStorage(Pref.headerDeviceBattery) var headerDeviceBattery = true
     @AppStorage(Pref.bannerBluetooth) var bannerBluetooth = true
     @AppStorage(Pref.privacyIndicator) var privacyIndicator = true
     @AppStorage(Pref.focusIndicator) var focusIndicator = false
@@ -1209,6 +1230,20 @@ struct SettingsView: View {
                 }
                 if !hud.hideStatus.isEmpty { Text(hud.hideStatus).font(.caption).foregroundStyle(hudHideSystem ? .green : .orange) }
                 Text("Bu seçenek açıkken ses, parlaklık ve klavye ışığı tuşlarını Mate Notch işler: macOS'un ekran ortasındaki karesi çıkmaz, ses/parlaklık adımı yukarıdaki yüzdeyle değişir (⇧⌥ ile dörtte biri). Klavye ışığı macOS'un kendi adımında (≈%6) kalır. Klavye ışığının boşta kalınca kendiliğinden kısılması/geri açılması için gösterge çıkmaz. Erişilebilirlik izni ister. Kapatınca tuşlar normale döner. Parlaklık ve klavye ışığı için macOS'un özel arayüzleri kullanılır; yerleşik ekranlarda çalışır.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Section("Pil ve düşük pil uyarısı") {
+                Toggle("Düşük pil uyarısı (Mac)", isOn: $lowBatteryAlert)
+                Toggle("Bluetooth cihazlar için de uyar (kulaklık, fare…)", isOn: $lowBatteryDevices).disabled(!bluetoothBatteries)
+                HStack {
+                    Text("Uyarı seviyesi")
+                    Slider(value: $lowBatteryLevel, in: 5...50, step: 5)
+                    Text("%\(Int(lowBatteryLevel))").monospacedDigit().frame(width: 40)
+                }
+                Toggle("Bluetooth cihaz pillerini oku", isOn: $bluetoothBatteries)
+                    .onChange(of: bluetoothBatteries) { _, _ in DeviceBatteryService.shared.refresh() }
+                Toggle("Kulaklık/cihaz pilini açık notch'un başlığında göster", isOn: $headerDeviceBattery)
+                Text("Pil yüzdesine tıklayınca Piller ekranı açılır. Uyarı iki aşamalıdır: seçtiğin seviyede \"Pil azalıyor\", yaklaşık %10'da \"Pil çok düşük\" (Mac için ses de çalar); şarja takılınca ya da seviye yükselince sıfırlanır. Bazı kulaklıklar (ör. bazı yarı kablosuz modeller) pil seviyesini macOS'a bildirmez; onlar için yüzde gösterilemez. iPhone, iPad ve Apple Watch pilleri macOS tarafından üçüncü taraf uygulamalara verilmiyor.")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("Göstergeler ve bildirimler") {
