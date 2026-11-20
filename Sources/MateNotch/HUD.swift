@@ -71,10 +71,12 @@ final class HUDService: ObservableObject {
             case .keyboard: guard d.bool(forKey: Pref.hudKeyboard) else { return }
             }
         }
-        kind = k
-        self.level = min(1, max(0, level))
-        self.muted = muted
-        withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) { visible = true }
+        let lv = min(1, max(0, level))
+        // Aynı tuş basışı birkaç yoldan (tuş yakalama, CoreAudio, yoklama) gelir: aynı değeri tekrar yayınlama, animasyonu yeniden başlatma.
+        if kind != k { kind = k }
+        if abs(self.level - lv) >= 0.002 { self.level = lv }
+        if self.muted != muted { self.muted = muted }
+        if !visible { withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) { visible = true } }
         hideWork?.cancel()
         let w = DispatchWorkItem { [weak self] in
             withAnimation(.easeOut(duration: 0.25)) { self?.visible = false }
@@ -409,11 +411,13 @@ struct HUDBanner: View {
                 Text(hud.muted ? "Sessiz" : "\(Int((hud.level * 100).rounded()))%")
                     .font(.system(size: 11.5, weight: .semibold, design: .rounded)).monospacedDigit()
                     .frame(minWidth: 34, alignment: .trailing)
+                    .contentTransition(.numericText(value: hud.muted ? 0 : (hud.level * 100).rounded()))
             }
         }
         .foregroundStyle(.white)
         .padding(.horizontal, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .animation(.spring(response: 0.25, dampingFraction: 0.85), value: hud.level)
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: hud.level)
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: hud.muted)
     }
 }
