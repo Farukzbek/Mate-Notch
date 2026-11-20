@@ -15,7 +15,7 @@ struct SettingsShell: View {
         Category(id: "behavior", icon: "hand.tap.fill", title: L("Davranış ve sekmeler"), sections: ["behavior", "tabs", "home", "shortcut"]),
         Category(id: "hud", icon: "speaker.wave.2.fill", title: L("Ses ve parlaklık"), sections: ["hud"]),
         Category(id: "music", icon: "music.note", title: L("Müzik ve sözler"), sections: ["lyrics"]),
-        Category(id: "battery", icon: "battery.75percent", title: L("Pil ve bildirimler"), sections: ["battery", "alerts"]),
+        Category(id: "battery", icon: "battery.75percent", title: L("Pil ve bildirimler"), sections: ["battery", "alerts", "focus", "weather"]),
         Category(id: "tools", icon: "sparkles", title: L("Araçlar ve yapay zeka"), sections: ["capture", "ai"]),
         Category(id: "general", icon: "gearshape.fill", title: L("Genel"), sections: ["care", "updates"]),
     ] }
@@ -25,14 +25,16 @@ struct SettingsShell: View {
         "look": "görünüm tema arka plan renk cam cam yoğunluğu ölçek boyut yazı notch genişlik yükseklik appearance theme background color glass scale size width height dil language türkçe english başlangıçta aç giriş login startup",
         "closedicon": "kapalı notch simge ekolayzer ses dalgası animasyon closed icon equalizer wave",
         "buddy": "maskot mate el sallama kulaklık yorgun uyku zıplama mascot buddy wave headphones sleep",
-        "behavior": "davranış hover üzerine gelince aç gecikme titreşim haptik canlı etkinlik canlı aktivite açılış kapanış behavior delay haptics live activities raf pano zamanlayıcı toplantı hatırlatma shelf clipboard timer meeting",
+        "behavior": "davranış pano geçmişi limit otomatik sil clipboard history limit  hover üzerine gelince aç gecikme titreşim haptik canlı etkinlik canlı aktivite açılış kapanış behavior delay haptics live activities raf pano zamanlayıcı toplantı hatırlatma shelf clipboard timer meeting",
         "tabs": "sekmeler raf pano zamanlayıcı istatistik sistem durumu tabs shelf clipboard timer stats",
         "home": "ana sayfa takvim etkinlik tarih albüm kapağı hızlı düğmeler uyanık tut renk seçici kısayollar home calendar artwork quick buttons caffeinate color picker shortcuts",
         "shortcut": "kısayol klavye ⌃⌥space aç kapat shortcut keyboard hotkey",
-        "hud": "ses parlaklık klavye aydınlatma gösterge hud volume brightness keyboard backlight tuş adım erişilebilirlik ince adım stil çubuk yüzde süre fine step accessibility style bar percent duration sistem göstergesi gizle",
+        "hud": "ses parlaklık boyut renk  klavye aydınlatma gösterge hud volume brightness keyboard backlight tuş adım erişilebilirlik ince adım stil çubuk yüzde süre fine step accessibility style bar percent duration sistem göstergesi gizle",
         "lyrics": "şarkı sözleri lyrics söz satırı lrclib notch satır spotify müzik music",
         "battery": "pil düşük pil uyarısı bluetooth cihaz kulaklık fare seviye battery low alert headphones mouse",
-        "alerts": "göstergeler bildirimler gizlilik mikrofon kamera odak indirme hava durumu şehir indicators notifications privacy focus download weather city",
+        "focus": "odak rahatsız etmeyin ay simgesi çalışma uyku focus do not disturb moon",
+        "weather": "hava durumu sıcaklık şehir derece fahrenheit celsius weather temperature city unit",
+        "alerts": "göstergeler bildirimler gizlilik mikrofon kamera indirme indicators notifications privacy focus download weather city",
         "capture": "ekran görüntüsü kayıt alan pencere panoya screenshot capture area window clipboard",
         "ai": "yapay zeka claude openai gemini anahtar sağlayıcı ai provider api key",
         "care": "bakım izinler izinleri kontrol özellik turu önbellek temizleyici yedek dışa aktar içe aktar ayarlar permissions tour cache cleaner backup export import settings",
@@ -46,7 +48,7 @@ struct SettingsShell: View {
     private func sectionTitle(_ id: String) -> String {
         let t: [String: String] = ["look": "Görünüm", "behavior": "Davranış", "buddy": "Maskot", "ai": "Yapay Zeka", "care": "Bakım",
             "updates": "Güncellemeler", "closedicon": "Kapalı notch simgesi", "hud": "Ses ve parlaklık göstergesi",
-            "battery": "Pil ve düşük pil uyarısı", "alerts": "Göstergeler ve bildirimler", "home": "Ana Sayfa",
+            "battery": "Pil ve düşük pil uyarısı", "alerts": "Göstergeler ve bildirimler", "focus": "Odak (Rahatsız Etmeyin)", "weather": "Hava durumu", "home": "Ana Sayfa",
             "capture": "Ekran görüntüsü butonu", "lyrics": "Mate Lyrics", "tabs": "Sekmeler", "shortcut": "Kısayol"]
         return t[id] ?? id
     }
@@ -65,28 +67,46 @@ struct SettingsShell: View {
     private static let tint: [String: Color] = ["look": .purple, "behavior": .blue, "hud": .pink, "music": .red, "battery": .green, "tools": .orange, "general": .gray]
 
     var body: some View {
-        NavigationSplitView(columnVisibility: .constant(.all)) {
-            List(selection: $selection) {
-                ForEach(Self.categories) { c in
-                    Label {
-                        Text(c.title)
-                    } icon: {
-                        Image(systemName: c.icon).font(.system(size: 12, weight: .semibold)).foregroundStyle(.white)
-                            .frame(width: 24, height: 24)
-                            .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill((Self.tint[c.id] ?? .accentColor).gradient))
+        HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                HStack(spacing: 6) {
+                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                    TextField("Ayarlarda ara", text: $query).textFieldStyle(.plain)
+                    if !query.isEmpty {
+                        Button { query = "" } label: { Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary) }.buttonStyle(.plain)
                     }
-                    .tag(c.id)
-                    .padding(.vertical, 2)
                 }
+                .padding(.horizontal, 10).padding(.vertical, 7)
+                .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(.primary.opacity(0.08)))
+                .padding(.horizontal, 12).padding(.top, 44).padding(.bottom, 8)
+                List(selection: Binding(get: { query.isEmpty ? selection : nil }, set: { if let v = $0 { query = ""; selection = v } })) {
+                    ForEach(Self.categories) { c in
+                        Label {
+                            Text(c.title).lineLimit(1)
+                        } icon: {
+                            Image(systemName: c.icon).font(.system(size: 12, weight: .semibold)).foregroundStyle(.white)
+                                .frame(width: 24, height: 24)
+                                .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill((Self.tint[c.id] ?? .accentColor).gradient))
+                        }
+                        .tag(c.id)
+                        .padding(.vertical, 2)
+                    }
+                }
+                .listStyle(.sidebar)
+                .scrollContentBackground(.hidden)
             }
-            .listStyle(.sidebar)
-            .navigationSplitViewColumnWidth(250)
-            .toolbar(removing: .sidebarToggle)
-        } detail: {
-            detail
-                .navigationTitle(query.isEmpty ? (Self.categories.first { $0.id == selection }?.title ?? "") : L("Arama sonuçları"))
+            .frame(width: 250)
+            .background(.regularMaterial)
+            Divider()
+            VStack(spacing: 0) {
+                Text(query.isEmpty ? (Self.categories.first { $0.id == selection }?.title ?? "") : L("Arama sonuçları"))
+                    .font(.title2.weight(.semibold))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 24).padding(.top, 14).padding(.bottom, 4)
+                detail
+            }
         }
-        .searchable(text: $query, placement: .sidebar, prompt: Text("Ayarlarda ara"))
+        .ignoresSafeArea()
         .frame(minWidth: 860, maxWidth: 860, minHeight: 360, maxHeight: .infinity)
     }
 

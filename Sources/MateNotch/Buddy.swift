@@ -7,7 +7,7 @@ import Combine
 enum BuddyKey {
     static let on = "buddyOn", wave = "buddyWave", grab = "buddyGrab", music = "buddyMusic"
     static let battery = "buddyBattery", phones = "buddyHeadphones", timer = "buddyTimer", sleep = "buddySleep"
-    static let freq = "buddyFreq", hud = "buddyHud"
+    static let freq = "buddyFreq", hud = "buddyHud", events = "buddyEvents"
     static func flag(_ k: String) -> Bool { UserDefaults.standard.object(forKey: k) as? Bool ?? true }
 }
 
@@ -90,14 +90,38 @@ final class BuddyService: ObservableObject {
 
     func jump() {
         guard active, BuddyKey.flag(BuddyKey.timer) || previewing, !asleep else { return }
+        celebrate(times: 3)
+    }
+
+    enum Event { case meeting, download, focus }
+
+    /// Toplantı yaklaşıyor (!), indirme bitti (zıplar), Odak açıldı (sakin, gözleri kapalı).
+    func event(_ e: Event) {
+        guard active, BuddyKey.flag(BuddyKey.events) || previewing, !asleep else { return }
+        switch e {
+        case .download: celebrate(times: 2)
+        case .meeting: setMood(5, for: 4.5)
+        case .focus: setMood(7, for: 3.5)
+        }
+    }
+
+    private func setMood(_ m: Int, for secs: Double) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { mood = m }
+        moodWork?.cancel()
+        let w = DispatchWorkItem { withAnimation(.easeOut(duration: 0.3)) { self.mood = 0 } }
+        moodWork = w
+        DispatchQueue.main.asyncAfter(deadline: .now() + secs, execute: w)
+    }
+
+    private func celebrate(times: Int) {
         happy = true
-        for i in 0..<3 {
+        for i in 0..<times {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.5) {
                 withAnimation(.easeOut(duration: 0.2)) { self.hop = 7 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { withAnimation(.easeIn(duration: 0.2)) { self.hop = 0 } }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) { self.happy = false }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 * Double(times) + 0.2) { self.happy = false }
     }
 
     func headphones() {
@@ -120,11 +144,7 @@ final class BuddyService: ObservableObject {
         case .keyboard: break
         }
         guard m != 0 else { return }
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { mood = m }
-        moodWork?.cancel()
-        let w = DispatchWorkItem { withAnimation(.easeOut(duration: 0.3)) { self.mood = 0 } }
-        moodWork = w
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.2, execute: w)
+        setMood(m, for: 2.2)
     }
 
     func lowBattery() {
@@ -200,13 +220,17 @@ struct BuddyView: View {
                         .position(x: b.paperHeld ? 36 - 10 * (1 - b.reach) : 42, y: b.paperHeld ? 22 - 5 * (1 - b.reach) : 24)
                 }
                 ZStack {
-                    eyes
+                    eyes(t)
                     mouth
                     if b.phones { headphones }
                     if b.tired { sweat }
                 }
                 .frame(width: 26, height: 22)
                 .position(x: 21 + (b.mood == 2 ? CGFloat(sin(t * 38)) * 0.9 : 0), y: cy)
+                if b.mood == 5 {
+                    Text("!").font(.system(size: 10, weight: .heavy, design: .rounded)).foregroundStyle(Color(red: 1, green: 0.78, blue: 0.3))
+                        .position(x: 37, y: 5 + CGFloat(sin(t * 9)) * 1.2)
+                }
                 hand(t: t)
                 if b.asleep { zzz(t) }
             }
@@ -216,17 +240,18 @@ struct BuddyView: View {
         .allowsHitTesting(false)
     }
 
-    private var eyes: some View {
+    private func eyes(_ t: Double) -> some View {
         let shut = b.blink || b.asleep
-        let open: CGFloat = shut || b.mood == 4 ? 0.12 : (b.tired ? 0.45 : b.mood == 3 ? 0.3 : b.mood == 2 ? 1.25 : 1)
+        let open: CGFloat = shut || b.mood == 4 || b.mood == 7 ? 0.12 : (b.tired ? 0.45 : b.mood == 3 ? 0.3 : b.mood == 2 || b.mood == 5 ? 1.25 : 1)
         return HStack(spacing: 7) {
             ForEach(0..<2, id: \.self) { _ in Capsule().fill(ink).frame(width: 3, height: 5).scaleEffect(y: open) }
         }
-        .offset(x: b.glance * 2, y: -3)
+        .offset(x: (b.mood == 5 ? CGFloat(sin(t * 6)) : b.glance) * 2, y: -3)
     }
 
     @ViewBuilder private var mouth: some View {
         if b.asleep { Circle().fill(ink).frame(width: 2.6, height: 2.6).offset(y: 5) }
+        else if b.mood == 5 { Circle().fill(ink).frame(width: 3.6, height: 3.6).offset(y: 5) }
         else if b.mood == 1 { Capsule().fill(ink).frame(width: 7, height: 1.6).offset(y: 5) }
         else if b.mood == 2 { Capsule().fill(ink).frame(width: 9, height: 6).offset(y: 4.5) }
         else if b.mood == 3 { Capsule().fill(ink).frame(width: 7, height: 1.6).offset(y: 5).rotationEffect(.degrees(-6)) }
@@ -294,6 +319,7 @@ struct BuddySettingsSection: View {
     @AppStorage(BuddyKey.sleep) var sleep = true
     @AppStorage(BuddyKey.freq) var freq = "normal"
     @AppStorage(BuddyKey.hud) var hudReact = true
+    @AppStorage(BuddyKey.events) var events = true
     private let buddy = BuddyService.shared
 
     var body: some View {
@@ -311,6 +337,7 @@ struct BuddySettingsSection: View {
             row("Zamanlayıcı bitince zıplasın", $timer) { buddy.jump() }
             row("Bir süre işlem yapılmayınca uyusun", $sleep, nil)
             row("Ses ve parlaklık uç noktalarında tepki versin", $hudReact) { buddy.hudReact(.volume, level: 1, muted: false) }
+            row("Toplantı, indirme ve Odak olaylarına tepki versin", $events) { buddy.event(.meeting) }
             Picker("Canlılık", selection: $freq) {
                 Text("Az").tag("rare"); Text("Normal").tag("normal"); Text("Sık").tag("often")
             }

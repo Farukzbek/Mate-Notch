@@ -189,6 +189,8 @@ final class FocusService: ObservableObject {
     static let shared = FocusService()
     @Published var active = false
     @Published var status = ""
+    @Published var authorized = false
+    @Published var needsSettings = false
     private var timer: Timer?
 
     func start() {
@@ -203,15 +205,16 @@ final class FocusService: ObservableObject {
     }
 
     func refresh() {
-        guard UserDefaults.standard.bool(forKey: Pref.focusIndicator) else { if active { active = false }; status = ""; return }
+        guard UserDefaults.standard.bool(forKey: Pref.focusIndicator) else { if active { active = false }; status = ""; authorized = false; return }
         switch INFocusStatusCenter.default.authorizationStatus {
         case .authorized:
+            authorized = true; needsSettings = false
             let f = INFocusStatusCenter.default.focusStatus.isFocused ?? false
-            if f != active { active = f }
+            if f != active { active = f; if f { BuddyService.shared.event(.focus) } }
             status = L("İzin verildi ✓")
-        case .denied: active = false; status = L("İzin reddedildi: Sistem Ayarları › Gizlilik ve Güvenlik › Odak'tan aç.")
-        case .restricted: active = false; status = L("Bu Mac'te kısıtlı.")
-        default: active = false; status = L("İzin bekleniyor…")
+        case .denied: active = false; authorized = false; needsSettings = true; status = L("İzin reddedildi: Sistem Ayarları › Gizlilik ve Güvenlik › Odak'tan aç.")
+        case .restricted: active = false; authorized = false; needsSettings = false; status = L("Bu Mac'te kısıtlı.")
+        default: active = false; authorized = false; needsSettings = false; status = L("İzin bekleniyor…")
         }
     }
 }
@@ -257,6 +260,7 @@ final class DownloadService: ObservableObject {
                     if FileManager.default.fileExists(atPath: self.dir.appendingPathComponent(base).path) {
                         BannerService.shared.post(NotchBanner(icon: "checkmark.circle.fill", title: L("İndirme tamamlandı"),
                                                               subtitle: base, tint: .green))
+                        BuddyService.shared.event(.download)
                     }
                 }
             }

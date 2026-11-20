@@ -1644,6 +1644,7 @@
       }
     },
     "Hava durumu": {
+      "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -2354,6 +2355,7 @@
       }
     },
     "Normal": {
+      "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3694,6 +3696,7 @@
       }
     },
     "Yenile": {
+      "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4154,6 +4157,7 @@
       }
     },
     "İzin ver": {
+      "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4601,6 +4605,303 @@
           "stringUnit": {
             "state": "translated",
             "value": "Volume & brightness"
+          }
+        }
+      }
+    },
+    "Pano geçmişi kaç öğe tutsun": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clipboard history size"
+          }
+        }
+      }
+    },
+    "Pano öğeleri otomatik silinsin": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete clipboard items automatically"
+          }
+        }
+      }
+    },
+    "1 saat sonra": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After 1 hour"
+          }
+        }
+      }
+    },
+    "Sabitlenen pano öğeleri hiçbir zaman silinmez.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pinned clipboard items are never deleted."
+          }
+        }
+      }
+    },
+    "Gösterge boyutu": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Indicator size"
+          }
+        }
+      }
+    },
+    "Küçük": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Small"
+          }
+        }
+      }
+    },
+    "Büyük": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large"
+          }
+        }
+      }
+    },
+    "Gösterge rengi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Indicator colour"
+          }
+        }
+      }
+    },
+    "Beyaz": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "White"
+          }
+        }
+      }
+    },
+    "Mavi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blue"
+          }
+        }
+      }
+    },
+    "Yeşil": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Green"
+          }
+        }
+      }
+    },
+    "Turuncu": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orange"
+          }
+        }
+      }
+    },
+    "Pembe": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pink"
+          }
+        }
+      }
+    },
+    "Odak (Rahatsız Etmeyin)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus (Do Not Disturb)"
+          }
+        }
+      }
+    },
+    "Odak açıkken notch'ta ay simgesi göster": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show a moon icon in the notch while Focus is on"
+          }
+        }
+      }
+    },
+    "Şu an: Açık": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now: On"
+          }
+        }
+      }
+    },
+    "Şu an: Kapalı": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now: Off"
+          }
+        }
+      }
+    },
+    "Odak izin ayarlarını aç": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Focus permission settings"
+          }
+        }
+      }
+    },
+    "Mac'inde bir Odak (Rahatsız Etmeyin, Çalışma, Uyku…) açılınca notch'un yanında ay simgesi çıkar, maskot sakinleşir. macOS bir kez izin sorar; yalnızca Odak'ın açık olup olmadığı okunur, hangi Odak olduğu değil.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When a Focus (Do Not Disturb, Work, Sleep…) turns on, a moon icon appears next to the notch and the mascot calms down. macOS asks for permission once; only whether Focus is on is read, not which one."
+          }
+        }
+      }
+    },
+    "Sıcaklık birimi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperature unit"
+          }
+        }
+      }
+    },
+    "Hava durumu Open-Meteo'dan gelir (anahtar gerekmez); yalnızca seçtiğin şehrin adı/konumu gönderilir, Mac'inin konumu kullanılmaz.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weather comes from Open-Meteo (no key needed); only the name/location of the city you pick is sent, never your Mac's location."
+          }
+        }
+      }
+    },
+    "Kamera/mikrofon göstergesi izin gerektirmez. İndirilenler için macOS bir kez izin sorar.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The camera/microphone indicator needs no permission. macOS asks once for Downloads."
+          }
+        }
+      }
+    },
+    "Toplantı, indirme ve Odak olaylarına tepki versin": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "React to meetings, downloads and Focus"
+          }
+        }
+      }
+    },
+    "Aç": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open"
+          }
+        }
+      }
+    },
+    "Hızlı Bakış": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick Look"
+          }
+        }
+      }
+    },
+    "Dosyayı panoya kopyala": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy file to clipboard"
+          }
+        }
+      }
+    },
+    "Yolu kopyala": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy path"
           }
         }
       }

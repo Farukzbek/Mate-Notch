@@ -291,6 +291,7 @@ final class ClipboardService: ObservableObject {
     func start() {
         items = (UserDefaults.standard.stringArray(forKey: Self.pinKey) ?? []).map { ClipItem(text: $0, date: Date(), pinned: true) }
         timer = Timer.scheduledTimer(withTimeInterval: 0.6, repeats: true) { [weak self] _ in self?.check() }
+        Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in self?.prune() }
     }
 
     /// Sabitlenenler listenin başında kalır, en eski silinirken ve "Tümünü sil"de korunur, yeniden başlatınca da durur.
@@ -299,8 +300,19 @@ final class ClipboardService: ObservableObject {
         items.removeAll { $0.text == s }
         let at = items.firstIndex { !$0.pinned } ?? items.count
         items.insert(ClipItem(text: s, date: Date(), pinned: wasPinned), at: wasPinned ? 0 : at)
-        while items.count > 30, let i = items.lastIndex(where: { !$0.pinned }) { items.remove(at: i) }
+        prune()
         savePins()
+    }
+    /// Geçmiş sınırı ve süresi (Ayarlar › Davranış). Sabitlenenler korunur.
+    func prune() {
+        let d = UserDefaults.standard
+        let limit = d.object(forKey: "clipLimit") as? Int ?? 30
+        while items.count > limit, let i = items.lastIndex(where: { !$0.pinned }) { items.remove(at: i) }
+        let hours = d.integer(forKey: "clipExpireHours")
+        if hours > 0 {
+            let cut = Date().addingTimeInterval(-Double(hours) * 3600)
+            items.removeAll { !$0.pinned && $0.date < cut }
+        }
     }
     private func savePins() { UserDefaults.standard.set(items.filter(\.pinned).map(\.text), forKey: Self.pinKey) }
     func togglePin(_ item: ClipItem) {
@@ -453,6 +465,7 @@ final class CalendarService: ObservableObject {
             alerted.insert(key)
             BannerService.shared.post(NotchBanner(icon: "video.fill", title: e.title ?? L("Toplantı"),
                                                   subtitle: L("\(max(1, Int(mins.rounded()))) dk sonra"), tint: .green), duration: 6)
+            BuddyService.shared.event(.meeting)
         }
     }
 

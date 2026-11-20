@@ -24,6 +24,7 @@ struct RootView: View {
     @ObservedObject var buddy = BuddyService.shared
     @AppStorage(BuddyKey.on) var buddyOn = false
     @AppStorage(Pref.hudStyle) var hudStyle = "bar"
+    @AppStorage("hudSize") var hudSize = "normal"
     @AppStorage(Pref.liveActivities) var liveActivities = true
     @AppStorage(Pref.lyricsEnabled) var lyricsOn = false
     @AppStorage(Pref.lyricsInNotch) var lyricsInNotch = true
@@ -64,7 +65,7 @@ struct RootView: View {
         let banner = bn.current != nil
         let pill = !open && (showPill || clip.justCopied || hud.visible || banner)
         let extra = (clip.justCopied || hud.visible || banner) ? Layout.pillExtra(1) : Layout.pillExtra(pillLines)
-        let pillW: CGFloat = hud.visible ? (hudStyle == "bar" ? 250 : hudStyle == "barOnly" ? 200 : 170) : (banner ? 330 : Layout.pillMinW)
+        let pillW: CGFloat = hud.visible ? (hudStyle == "bar" ? 250 : hudStyle == "barOnly" ? 200 : 170) * HUDBanner.scale(hudSize) : (banner ? 330 : Layout.pillMinW)
         let u = open ? CGFloat(uiScale) : 1
         let base0 = max(40, g.notchWidth + CGFloat(exW))
         let ch = max(12, g.notchHeight + CGFloat(exH))
@@ -520,6 +521,7 @@ struct PressStyle: ButtonStyle {
 struct SideColumn: View {
     @ObservedObject var weather = WeatherService.shared
     @AppStorage(Pref.weatherEnabled) var weatherOn = false
+    @AppStorage("weatherUnit") var weatherUnit = "c"
     @ObservedObject var capture = CaptureService.shared
     @AppStorage(Pref.captureMode) var captureMode = "area"
     @AppStorage(Pref.showCalendar) var showCalendar = true
@@ -570,7 +572,7 @@ struct SideColumn: View {
                 HStack(spacing: 9) {
                     Image(systemName: weather.symbol).symbolRenderingMode(.multicolor).font(.system(size: 20))
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("\(t)°").font(.system(size: 18, weight: .bold, design: .rounded)).monospacedDigit()
+                        Text("\(weatherUnit == "f" ? Int((Double(t) * 9 / 5 + 32).rounded()) : t)°").font(.system(size: 18, weight: .bold, design: .rounded)).monospacedDigit()
                         Text([weather.city.components(separatedBy: ",").first ?? "", weather.text].filter { !$0.isEmpty }.joined(separator: " · "))
                             .font(.system(size: 10)).foregroundStyle(.white.opacity(0.55)).lineLimit(1)
                     }
@@ -832,8 +834,14 @@ struct ShelfItem: View {
         }
         .onDrag { NSItemProvider(object: url as NSURL) }
         .contextMenu {
+            Button("Aç") { NSWorkspace.shared.open(url) }
+            Button("Hızlı Bakış") { QuickLook.preview(url) }
+            Divider()
+            Button("Dosyayı panoya kopyala") { NSPasteboard.general.clearContents(); NSPasteboard.general.writeObjects([url as NSURL]) }
+            Button("Yolu kopyala") { NSPasteboard.general.clearContents(); NSPasteboard.general.setString(url.path, forType: .string) }
             Button("Finder'da göster") { NSWorkspace.shared.activateFileViewerSelecting([url]) }
             Button("AirDrop ile gönder") { AirDrop.send([url]) }
+            Divider()
             Button("Raftan kaldır") { shelf.remove(url) }
         }
     }
@@ -1109,6 +1117,12 @@ struct SettingsView: View {
     @AppStorage(Pref.showTimer) var showTimer = true
     @AppStorage(Pref.meetingAlert) var meetingAlert = true
     @AppStorage("shelfExpireDays") var shelfExpire = 0
+    @AppStorage("clipLimit") var clipLimit = 30
+    @AppStorage("clipExpireHours") var clipExpireHours = 0
+    @AppStorage("hudSize") var hudSize = "normal"
+    @AppStorage("hudTint") var hudTint = "white"
+    @AppStorage("weatherUnit") var weatherUnit = "c"
+    @AppStorage(Pref.weatherCity) var weatherCity = ""
     @AppStorage(Pref.showStats) var showStats = true
     @AppStorage(Pref.lyricsEnabled) var lyricsOn = false
     @AppStorage(Pref.lyricsInNotch) var lyricsInNotch = true
@@ -1230,6 +1244,15 @@ struct SettingsView: View {
                 Picker("Raf içeriği otomatik temizlensin", selection: $shelfExpire) {
                     Text("Hiçbir zaman").tag(0); Text("1 gün sonra").tag(1); Text("7 gün sonra").tag(7); Text("30 gün sonra").tag(30)
                 }
+                Picker("Pano geçmişi kaç öğe tutsun", selection: $clipLimit) {
+                    Text("10").tag(10); Text("30").tag(30); Text("50").tag(50); Text("100").tag(100)
+                }
+                .onChange(of: clipLimit) { _, _ in ClipboardService.shared.prune() }
+                Picker("Pano öğeleri otomatik silinsin", selection: $clipExpireHours) {
+                    Text("Hiçbir zaman").tag(0); Text("1 saat sonra").tag(1); Text("1 gün sonra").tag(24); Text("7 gün sonra").tag(168)
+                }
+                .onChange(of: clipExpireHours) { _, _ in ClipboardService.shared.prune() }
+                Text("Sabitlenen pano öğeleri hiçbir zaman silinmez.").font(.caption).foregroundStyle(.secondary)
                 Toggle("Girişte otomatik başlat", isOn: Binding(get: { loginItem }, set: { loginItem = $0; LaunchAtLogin.set($0) }))
                 Picker("Dil", selection: $language) {
                     Text("Otomatik (sistem)").tag("auto")
@@ -1298,6 +1321,17 @@ struct SettingsView: View {
                 }
                 .collapsesNotch()
                 .onChange(of: hudStyle) { _, _ in NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.volume) }
+                Picker("Gösterge boyutu", selection: $hudSize) {
+                    Text("Küçük").tag("small"); Text("Normal").tag("normal"); Text("Büyük").tag("large")
+                }
+                .collapsesNotch()
+                .onChange(of: hudSize) { _, _ in NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.volume) }
+                Picker("Gösterge rengi", selection: $hudTint) {
+                    Text("Beyaz").tag("white"); Text("Mavi").tag("blue"); Text("Yeşil").tag("green")
+                    Text("Turuncu").tag("orange"); Text("Pembe").tag("pink")
+                }
+                .collapsesNotch()
+                .onChange(of: hudTint) { _, _ in NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.volume) }
                 HStack {
                     Text("Gösterge süresi")
                     Slider(value: $hudDuration, in: 0.8...4, step: 0.1)
@@ -1354,20 +1388,55 @@ struct SettingsView: View {
             Section("Göstergeler ve bildirimler") {
                 Toggle("Bluetooth kulaklık bağlanınca bildir (AirPods pil durumu dahil)", isOn: $bannerBluetooth)
                 Toggle("Kamera / mikrofon kullanımdayken göster", isOn: $privacyIndicator).collapsesNotch()
-                Toggle("Odak (Rahatsız Etmeyin) açıkken ay simgesi göster", isOn: $focusIndicator).collapsesNotch()
-                    .onChange(of: focusIndicator) { _, on in if on { FocusService.shared.enable() } else { FocusService.shared.refresh() } }
-                if focusIndicator && !focusSvc.status.isEmpty { Text(focusSvc.status).font(.caption).foregroundStyle(.secondary) }
                 Toggle("İndirme ilerlemesini göster (İndirilenler klasörü)", isOn: $downloadIndicator).collapsesNotch()
+                Text("Kamera/mikrofon göstergesi izin gerektirmez. İndirilenler için macOS bir kez izin sorar.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        case "focus":
+            Section("Odak (Rahatsız Etmeyin)") {
+                Toggle("Odak açıkken notch'ta ay simgesi göster", isOn: $focusIndicator).collapsesNotch()
+                    .onChange(of: focusIndicator) { _, on in if on { FocusService.shared.enable() } else { FocusService.shared.refresh() } }
+                if focusIndicator {
+                    HStack(spacing: 8) {
+                        Circle().fill(focusSvc.authorized ? Color.green : Color.orange).frame(width: 8, height: 8)
+                        Text(focusSvc.status.isEmpty ? L("İzin bekleniyor…") : focusSvc.status).font(.callout)
+                        Spacer()
+                        if focusSvc.authorized { Text(focusSvc.active ? "Şu an: Açık" : "Şu an: Kapalı").foregroundStyle(.secondary).font(.callout) }
+                    }
+                    if focusSvc.needsSettings {
+                        Button("Odak izin ayarlarını aç") { NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Focus")!) }
+                    } else if !focusSvc.authorized {
+                        Button("İzin ver") { FocusService.shared.enable() }
+                    }
+                }
+                Text("Mac'inde bir Odak (Rahatsız Etmeyin, Çalışma, Uyku…) açılınca notch'un yanında ay simgesi çıkar, maskot sakinleşir. macOS bir kez izin sorar; yalnızca Odak'ın açık olup olmadığı okunur, hangi Odak olduğu değil.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        case "weather":
+            Section("Hava durumu") {
                 Toggle("Hava durumunu göster (Ana Sayfa)", isOn: $weatherEnabled)
                     .onChange(of: weatherEnabled) { _, _ in WeatherService.shared.refresh() }
                 if weatherEnabled {
+                    Picker("Sıcaklık birimi", selection: $weatherUnit) { Text("°C").tag("c"); Text("°F").tag("f") }
+                        .pickerStyle(.segmented)
                     HStack {
                         TextField("Şehir (ör. İstanbul)", text: $cityQuery).onSubmit { WeatherService.shared.search(cityQuery) }
                         Button("Ara") { WeatherService.shared.search(cityQuery) }
                     }
+                    if !weatherCity.isEmpty {
+                        HStack {
+                            Label(weatherCity, systemImage: "mappin.and.ellipse")
+                            Spacer()
+                            if let t = weatherSvc.temp {
+                                Image(systemName: weatherSvc.symbol).symbolRenderingMode(.multicolor)
+                                Text("\(weatherUnit == "f" ? Int((Double(t) * 9 / 5 + 32).rounded()) : t)°").monospacedDigit().bold()
+                            }
+                            Button("Yenile") { WeatherService.shared.refresh() }.buttonStyle(.borderless)
+                        }
+                    }
                     if !weatherSvc.searchStatus.isEmpty { Text(weatherSvc.searchStatus).font(.caption).foregroundStyle(.secondary) }
                 }
-                Text("Kamera/mikrofon göstergesi izin gerektirmez. Odak ve İndirilenler için macOS bir kez izin sorar. Hava durumu Open-Meteo'dan gelir (anahtar gerekmez); yalnızca seçtiğin şehrin adı/konumu gönderilir, Mac'inin konumu kullanılmaz.")
+                Text("Hava durumu Open-Meteo'dan gelir (anahtar gerekmez); yalnızca seçtiğin şehrin adı/konumu gönderilir, Mac'inin konumu kullanılmaz.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         case "home":

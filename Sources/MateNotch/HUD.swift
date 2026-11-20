@@ -391,6 +391,14 @@ final class SystemKeys {
 struct HUDBanner: View {
     @ObservedObject var hud = HUDService.shared
     @AppStorage(Pref.hudStyle) var style = "bar"
+    @AppStorage("hudSize") var size = "normal"
+    @AppStorage("hudTint") var tint = "white"
+
+    static func scale(_ s: String) -> CGFloat { s == "small" ? 0.88 : s == "large" ? 1.12 : 1 }
+    var tintColor: Color {
+        switch tint { case "blue": return Color(red: 0.35, green: 0.68, blue: 1); case "green": return Color(red: 0.4, green: 0.9, blue: 0.55)
+        case "orange": return Color(red: 1, green: 0.66, blue: 0.3); case "pink": return Color(red: 1, green: 0.5, blue: 0.7); default: return .white }
+    }
 
     var icon: String {
         switch hud.kind {
@@ -410,7 +418,7 @@ struct HUDBanner: View {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Capsule().fill(.white.opacity(0.22))
-                        Capsule().fill(.white).frame(width: max(5, geo.size.width * (hud.muted ? 0 : hud.level)))
+                        Capsule().fill(tintColor).frame(width: max(5, geo.size.width * (hud.muted ? 0 : hud.level)))
                     }
                     .frame(height: 5).frame(maxHeight: .infinity)
                 }
@@ -423,7 +431,8 @@ struct HUDBanner: View {
                     .contentTransition(.numericText(value: hud.muted ? 0 : -(hud.level * 100).rounded()))
             }
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(tint == "white" ? Color.white : tintColor)
+        .scaleEffect(Self.scale(size))
         .padding(.horizontal, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: hud.level)
