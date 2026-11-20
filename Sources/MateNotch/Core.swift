@@ -41,9 +41,14 @@ enum Layout {
 /// Arayüz metni (SwiftUI dışında kullanılan String'ler için). Anahtar Türkçe metnin kendisi; İngilizce karşılık Localizable.strings'te.
 func L(_ key: String.LocalizationValue) -> String { String(localized: key) }
 
-/// Çalışan arayüz dili: "tr" ya da "en" (Ayarlar'daki dil seçimi / sistem dili). Tarih biçimi, hava durumu ve yapay zeka yanıt dili için.
+/// Çalışan arayüz dili: "tr", "en", "de", "es", "fr", "pt" (Ayarlar'daki dil seçimi / sistem dili). Tarih biçimi, hava durumu ve yapay zeka yanıt dili için.
 enum Loc {
-    static var code: String { (Bundle.main.preferredLocalizations.first ?? "tr").hasPrefix("tr") ? "tr" : "en" }
+    static let supported: Set<String> = ["tr", "en", "de", "es", "fr", "pt"]
+    /// "tr", "en", "de", "es", "fr" ya da "pt" (bölge eki atılır); desteklenmeyen dilde "en".
+    static var code: String {
+        let l = (Bundle.main.preferredLocalizations.first ?? "tr").split(separator: "-").first.map(String.init) ?? "tr"
+        return supported.contains(l) ? l : "en"
+    }
 }
 
 enum Tab: String, CaseIterable, Identifiable {

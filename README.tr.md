@@ -1,4 +1,4 @@
-<p align="center"><b>Türkçe</b> · <a href="README.md">English</a></p>
+<p align="center"><b>Türkçe</b> · <a href="README.md">English</a> · <a href="README.de.md">Deutsch</a> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · <a href="README.pt-BR.md">Português (Brasil)</a></p>
 
 <p align="center">
   <img src="docs/icon.png" width="110" alt="Mate Notch icon">
@@ -26,8 +26,8 @@
 - **Müzik (Apple Music + Spotify):** Albüm kapağı, ilerleme çubuğu, oynat/duraklat/ileri/geri. Kapak rengi arka plana yansır.
 - **Senkron şarkı sözleri (Mate Lyrics altyapısı):** Müzik kartında 3 satır (önceki sönük, anlık parlak, sonraki sönük), kapalı notch'un altında 1 veya 2 satır. Sözü olmayan şarkıda alan hiç açılmaz. [lrclib.net](https://lrclib.net) kullanır.
 - **Canlı etkinlikler (kapalıyken):** müzik göstergesi, zamanlayıcı, şarj, ekran kaydı. Gösterge simgesi seçilebilir (equalizer, ses dalgası, AirPods, HomePod, Apple logosu…).
-- **Raf:** Dosyayı notch'a sürükle, sonra istediğin yere geri sürükle.
-- **Pano geçmişi:** Kopyalayınca "Kopyalandı" bandı; arama, sabitleme (yeniden başlatınca da durur), tek tek veya toplu silme. Şifre yöneticisi kopyaları kaydedilmez.
+- **Raf:** Dosyayı notch'a sürükle, sonra istediğin yere geri sürükle. Sağ tık: Aç, Hızlı Bakış, panoya kopyala, yolu kopyala, Finder'da göster, AirDrop ile gönder.
+- **Pano geçmişi:** Kopyalayınca "Kopyalandı" bandı; arama, sabitleme (yeniden başlatınca da durur), tek tek veya toplu silme, ayarlanabilir boyut ve otomatik silme. Şifre yöneticisi kopyaları kaydedilmez.
 - **Renk seçici:** Ekrandan bir rengi seç, hex kodu panoya kopyalansın.
 - **Ekran görüntüsü düğmesi:** Seçilen alan, tam ekran, video kaydı veya sistem çekim aracı.
 - **Yapay zeka:** Panodaki veya yazdığın metni özetle, düzelt, yeniden yaz, çevir, açıkla; takvimden günlük özet; serbest soru. Varsayılan olarak **cihaz içi Apple modeliyle** çalışır (anahtar gerekmez, veri Mac'inden çıkmaz; Apple Intelligence gerekir). İstersen Ayarlar'dan **Claude, ChatGPT veya Gemini** hesabını (kendi API anahtarınla) bağlarsın; anahtar Anahtarlık'ta saklanır.
@@ -35,13 +35,14 @@
 - **Önbellek temizleyici:** Gereksiz önbellek ve günlük dosyalarını neye ait olduklarını yazarak listeler; sen onaylamadan hiçbir şey silmez.
 - **Otomatik güncelleme:** GitHub Releases'te yeni sürüm çıkınca denetler, doğrular (SHA-256 + imza) ve kendini günceller (ayarlardan kapatılabilir).
 - **Günlük kullanım:** Apple **Kısayollar** düğmesi, toplantı bağlantısı varsa **Katıl** düğmesi ve 5 dk önce uyarı (Zoom, Meet, Teams…), **Pomodoro** (25/5, her 4. molada 15), ses çıkışı seçici, rafın belirli günde bir otomatik temizlenmesi.
+- **Odak ve hava durumu:** Odak açıkken ay simgesi; Ana Sayfa'da seçtiğin şehrin hava durumu (°C/°F), konum erişimi olmadan.
 - **Piller ve uyarılar:** Mac, kulaklık, fare ve klavye pilleri; iki aşamalı düşük pil uyarısı; kulaklık bağlanınca bant.
 - **İzin sihirbazı ve özellik turu:** İlk açılışta dil seçimi, izinler ve her özelliği tek tek açıp deneme/atlama; sonradan menüden açılır. Güncellemeden sonra **Yenilikler** penceresi.
-- **Maskot (isteğe bağlı):** Kapalı notch'un sağ kanadında küçük bir arkadaş; kopyaladığında uzanıp alır, el sallar, müzikle ritim tutar, pil azalınca yorulur, kulaklık takar, boşta uyur. Her davranış ayrı kapatılabilir (Ayarlar › Maskot).
+- **Maskot (isteğe bağlı):** Kapalı notch'un sağ kanadında küçük bir arkadaş; kopyaladığında uzanıp alır, el sallar, müzikle ritim tutar, pil azalınca yorulur, kulaklık takar, ses/parlaklık uç noktalarına, toplantı, indirme ve Odak olaylarına tepki verir, boşta uyur. Her davranış ayrı kapatılabilir (Ayarlar › Maskot).
 
 <p align="center"><img src="docs/buddy.gif" width="440" alt="Maskot kopyalanan metni alıyor"></p>
 
-- **Türkçe ve İngilizce arayüz** (Ayarlar › Görünüm ve maskot › Dil).
+- **Diller:** Türkçe, İngilizce, Almanca, İspanyolca, Fransızca ve Brezilya Portekizcesi (Ayarlar › Davranış ve sekmeler › Dil ya da kenar çubuğunun altındaki 🌐 düğmesi).
 - **Ses ve parlaklık göstergesi:** macOS'un ortadaki karesi yerine notch'ta şık bir gösterge (Erişilebilirlik izniyle sistem göstergesi gizlenir); stil, süre ve tuş adımı ayarlanır.
 - **Ayarları yedekle:** Ayarlar › Genel'den dışa/içe aktar.
 - **Zamanlayıcı, sistem durumu (CPU / bellek / disk), uyanık tut, takvimde sıradaki etkinlik.**

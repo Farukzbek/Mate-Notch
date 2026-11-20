@@ -40,7 +40,7 @@ cat > "$APP/Contents/Info.plist" <<EOT
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
   <key>CFBundleDevelopmentRegion</key><string>tr</string>
-  <key>CFBundleLocalizations</key><array><string>tr</string><string>en</string></array>
+  <key>CFBundleLocalizations</key><array><string>tr</string><string>en</string><string>de</string><string>es</string><string>fr</string><string>pt-BR</string></array>
   <key>CFBundleName</key><string>Mate Notch</string>
   <key>CFBundleDisplayName</key><string>Mate Notch</string>
   <key>CFBundleIdentifier</key><string>online.matestudios.matenotch</string>
@@ -71,6 +71,39 @@ cat > "$APP/Contents/Resources/en.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "To show a small moon icon in the notch while Focus (Do Not Disturb) is on.";
 "NSDownloadsFolderUsageDescription" = "Looks at the Downloads folder to show download progress.";
 "NSCalendarsFullAccessUsageDescription" = "Calendar access is needed to show your next event.";
+EOS
+mkdir -p "$APP/Contents/Resources/de.lproj" "$APP/Contents/Resources/es.lproj" "$APP/Contents/Resources/fr.lproj" "$APP/Contents/Resources/pt-BR.lproj"
+cat > "$APP/Contents/Resources/de.lproj/InfoPlist.strings" <<'EOS'
+"NSAppleEventsUsageDescription" = "Mate Notch benötigt dies, um Apple Music und Spotify zu steuern.";
+"NSDesktopFolderUsageDescription" = "Um Bildschirmfotos und Aufnahmen auf deinem Schreibtisch zu sichern.";
+"NSBluetoothAlwaysUsageDescription" = "Um den Akkustand verbundener Bluetooth-Geräte (Kopfhörer, Maus, Tastatur) anzuzeigen.";
+"NSFocusStatusUsageDescription" = "Um ein kleines Mondsymbol im Notch zu zeigen, solange Fokus (Nicht stören) aktiv ist.";
+"NSDownloadsFolderUsageDescription" = "Sieht in den Download-Ordner, um den Download-Fortschritt anzuzeigen.";
+"NSCalendarsFullAccessUsageDescription" = "Der Kalenderzugriff wird benötigt, um deinen nächsten Termin anzuzeigen.";
+EOS
+cat > "$APP/Contents/Resources/es.lproj/InfoPlist.strings" <<'EOS'
+"NSAppleEventsUsageDescription" = "Mate Notch lo necesita para controlar Apple Music y Spotify.";
+"NSDesktopFolderUsageDescription" = "Para guardar capturas y grabaciones en tu Escritorio.";
+"NSBluetoothAlwaysUsageDescription" = "Para mostrar el nivel de batería de los dispositivos Bluetooth conectados (auriculares, ratón, teclado).";
+"NSFocusStatusUsageDescription" = "Para mostrar un pequeño icono de luna en el notch mientras el Enfoque (No molestar) esté activado.";
+"NSDownloadsFolderUsageDescription" = "Consulta la carpeta Descargas para mostrar el progreso de las descargas.";
+"NSCalendarsFullAccessUsageDescription" = "Se necesita acceso al calendario para mostrar tu próximo evento.";
+EOS
+cat > "$APP/Contents/Resources/fr.lproj/InfoPlist.strings" <<'EOS'
+"NSAppleEventsUsageDescription" = "Mate Notch en a besoin pour contrôler Apple Music et Spotify.";
+"NSDesktopFolderUsageDescription" = "Pour enregistrer les captures et enregistrements sur votre Bureau.";
+"NSBluetoothAlwaysUsageDescription" = "Pour afficher le niveau de batterie des appareils Bluetooth connectés (casque, souris, clavier).";
+"NSFocusStatusUsageDescription" = "Pour afficher une petite icône de lune dans le notch tant que la Concentration (Ne pas déranger) est activée.";
+"NSDownloadsFolderUsageDescription" = "Consulte le dossier Téléchargements pour afficher la progression des téléchargements.";
+"NSCalendarsFullAccessUsageDescription" = "L'accès au calendrier est nécessaire pour afficher votre prochain événement.";
+EOS
+cat > "$APP/Contents/Resources/pt-BR.lproj/InfoPlist.strings" <<'EOS'
+"NSAppleEventsUsageDescription" = "O Mate Notch precisa disto para controlar o Apple Music e o Spotify.";
+"NSDesktopFolderUsageDescription" = "Para salvar capturas de tela e gravações na sua Mesa.";
+"NSBluetoothAlwaysUsageDescription" = "Para mostrar o nível de bateria de dispositivos Bluetooth conectados (fones, mouse, teclado).";
+"NSFocusStatusUsageDescription" = "Para mostrar um pequeno ícone de lua no notch enquanto o Foco (Não perturbe) estiver ativado.";
+"NSDownloadsFolderUsageDescription" = "Olha a pasta Downloads para mostrar o progresso dos downloads.";
+"NSCalendarsFullAccessUsageDescription" = "O acesso ao calendário é necessário para mostrar seu próximo evento.";
 EOS
 # İmza kimliği (sırayla): SIGN_ID ortam değişkeni → "Developer ID Application" → "Apple Development" → ad-hoc.
 # KALICI bir kimlik şart: ad-hoc imzada macOS izinleri (Erişilebilirlik, Takvim…) derlemenin parmak iziyle (cdhash)

@@ -338,7 +338,7 @@ enum SettingsWindow {
             ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
         let top: CGFloat = NotchController.shared.panelSize.height + 8
         let h = max(320, min(900, vis.height - top - 10))
-        window?.setFrame(NSRect(x: vis.midX - 430, y: vis.maxY - top - h, width: 860, height: h), display: true)
+        window?.setFrame(NSRect(x: vis.midX - 445, y: vis.maxY - top - h, width: 890, height: h), display: true)
 
         NotchState.shared.previewHold = true            // ayar yaparken notch açık kalır
         NotchController.shared.open()

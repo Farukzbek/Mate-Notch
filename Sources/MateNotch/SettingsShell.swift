@@ -22,10 +22,10 @@ struct SettingsShell: View {
 
     /// Arama için: bölüm başlığı + Türkçe/İngilizce anahtar sözcükler (dilden bağımsız aranır).
     private static let keywords: [String: String] = [
-        "look": "görünüm tema arka plan renk cam cam yoğunluğu ölçek boyut yazı notch genişlik yükseklik appearance theme background color glass scale size width height dil language türkçe english başlangıçta aç giriş login startup",
+        "look": "görünüm tema arka plan renk cam cam yoğunluğu ölçek boyut yazı notch genişlik yükseklik appearance theme background color glass scale size width height",
         "closedicon": "kapalı notch simge ekolayzer ses dalgası animasyon closed icon equalizer wave",
         "buddy": "maskot mate el sallama kulaklık yorgun uyku zıplama mascot buddy wave headphones sleep",
-        "behavior": "davranış pano geçmişi limit otomatik sil clipboard history limit  hover üzerine gelince aç gecikme titreşim haptik canlı etkinlik canlı aktivite açılış kapanış behavior delay haptics live activities raf pano zamanlayıcı toplantı hatırlatma shelf clipboard timer meeting",
+        "behavior": "dil language sprache idioma langue lingua língua taal türkçe english deutsch español français português globe başlangıçta aç giriş login startup davranış pano geçmişi limit otomatik sil clipboard history limit  hover üzerine gelince aç gecikme titreşim haptik canlı etkinlik canlı aktivite açılış kapanış behavior delay haptics live activities raf pano zamanlayıcı toplantı hatırlatma shelf clipboard timer meeting",
         "tabs": "sekmeler raf pano zamanlayıcı istatistik sistem durumu tabs shelf clipboard timer stats",
         "home": "ana sayfa takvim etkinlik tarih albüm kapağı hızlı düğmeler uyanık tut renk seçici kısayollar home calendar artwork quick buttons caffeinate color picker shortcuts",
         "shortcut": "kısayol klavye ⌃⌥space aç kapat shortcut keyboard hotkey",
@@ -82,7 +82,7 @@ struct SettingsShell: View {
                 List(selection: Binding(get: { query.isEmpty ? selection : nil }, set: { if let v = $0 { query = ""; selection = v } })) {
                     ForEach(Self.categories) { c in
                         Label {
-                            Text(c.title).lineLimit(1)
+                            Text(c.title).lineLimit(1).minimumScaleFactor(0.8)
                         } icon: {
                             Image(systemName: c.icon).font(.system(size: 12, weight: .semibold)).foregroundStyle(.white)
                                 .frame(width: 24, height: 24)
@@ -94,8 +94,9 @@ struct SettingsShell: View {
                 }
                 .listStyle(.sidebar)
                 .scrollContentBackground(.hidden)
+                languageMenu
             }
-            .frame(width: 250)
+            .frame(width: 280)
             .background(.regularMaterial)
             Divider()
             VStack(spacing: 0) {
@@ -107,7 +108,25 @@ struct SettingsShell: View {
             }
         }
         .ignoresSafeArea()
-        .frame(minWidth: 860, maxWidth: 860, minHeight: 360, maxHeight: .infinity)
+        .frame(minWidth: 890, maxWidth: 890, minHeight: 360, maxHeight: .infinity)
+    }
+
+    /// Dil ne olursa olsun bulunabilsin diye: dünya simgeli düğme, dil adları kendi dillerinde.
+    private var languageMenu: some View {
+        let names: [(String, String)] = [("auto", "Auto"), ("tr", "Türkçe"), ("en", "English"), ("de", "Deutsch"), ("es", "Español"), ("fr", "Français"), ("pt-BR", "Português (Brasil)")]
+        let cur = AppLanguage.current
+        return Menu {
+            ForEach(names, id: \.0) { code, name in
+                Button { if code != cur { AppLanguage.apply(code) } } label: {
+                    if code == cur { Label(name, systemImage: "checkmark") } else { Text(verbatim: name) }
+                }
+            }
+        } label: {
+            Label { Text(verbatim: names.first { $0.0 == cur }?.1 ?? "Auto") } icon: { Image(systemName: "globe") }
+        }
+        .menuStyle(.borderlessButton)
+        .padding(.horizontal, 16).padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder private var detail: some View {

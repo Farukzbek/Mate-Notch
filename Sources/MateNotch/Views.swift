@@ -1257,7 +1257,11 @@ struct SettingsView: View {
                 Picker("Dil", selection: $language) {
                     Text("Otomatik (sistem)").tag("auto")
                     Text("Türkçe").tag("tr")
-                    Text("English").tag("en")
+                    Text(verbatim: "English").tag("en")
+                    Text(verbatim: "Deutsch").tag("de")
+                    Text(verbatim: "Español").tag("es")
+                    Text(verbatim: "Français").tag("fr")
+                    Text(verbatim: "Português (Brasil)").tag("pt-BR")
                 }
                 .onChange(of: language) { _, v in AppLanguage.apply(v) }
             }

@@ -307,7 +307,9 @@ enum AIAction: String, CaseIterable, Identifiable {
         }
     }
     /// Arayüz dili (Turkish / English): model yanıtını bu dilde verir.
-    static var responseLanguage: String { Loc.code == "tr" ? "Turkish" : "English" }
+    static var responseLanguage: String {
+        switch Loc.code { case "tr": return "Turkish"; case "de": return "German"; case "es": return "Spanish"; case "fr": return "French"; case "pt": return "Brazilian Portuguese"; default: return "English" }
+    }
 
     var system: String {
         // Talimatlar İngilizce; model, arayüz dilinde (veya metnin dilinde) yanıt verir.

@@ -151,21 +151,21 @@ struct LanguageChooser: View {
         VStack(spacing: 18) {
             Image(systemName: "globe").font(.system(size: 34, weight: .medium)).foregroundStyle(.secondary)
             VStack(spacing: 4) {
-                Text(verbatim: "Dil seçin · Choose your language").font(.title3.weight(.semibold))
+                Text(verbatim: "Dil seçin · Choose your language · Sprache · Idioma · Langue").font(.title3.weight(.semibold))
                 Text(verbatim: "Sonra Ayarlar'dan değiştirebilirsin · You can change it later in Settings")
                     .font(.callout).foregroundStyle(.secondary)
             }
-            HStack(spacing: 12) {
-                langButton("Türkçe", "tr")
-                langButton("English", "en")
+            VStack(spacing: 10) {
+                HStack(spacing: 10) { langButton("Türkçe", "tr"); langButton("English", "en"); langButton("Deutsch", "de") }
+                HStack(spacing: 10) { langButton("Español", "es"); langButton("Français", "fr"); langButton("Português", "pt-BR") }
             }
             Button { pick("auto") } label: { Text(verbatim: "Sistem diliyle devam et · Use system language") }
                 .buttonStyle(.link)
         }
-        .padding(28).frame(width: 460)
+        .padding(28).frame(width: 480)
     }
     private func langButton(_ title: String, _ code: String) -> some View {
-        Button { pick(code) } label: { Text(verbatim: title).font(.system(size: 15, weight: .semibold)).frame(width: 150, height: 40) }
+        Button { pick(code) } label: { Text(verbatim: title).font(.system(size: 15, weight: .semibold)).frame(width: 120, height: 36) }
             .buttonStyle(.borderedProminent).controlSize(.large)
     }
 }
@@ -177,7 +177,7 @@ enum LanguageWindow {
             UserDefaults.standard.set(true, forKey: "langChosen")
             window?.close()
             if code == "auto" { AppLanguage.clearOverride(); next() }
-            else if code == AppLanguage.effective { AppLanguage.setOverride(code); next() }   // zaten bu dilde: yeniden başlatmaya gerek yok
+            else if code.split(separator: "-").first.map(String.init) == AppLanguage.effective { AppLanguage.setOverride(code); next() }   // zaten bu dilde: yeniden başlatmaya gerek yok
             else { AppLanguage.apply(code) }                                                    // yeniden başlar, sihirbaz seçilen dilde açılır
         }
         let w = NSWindow(contentViewController: NSHostingController(rootView: v))

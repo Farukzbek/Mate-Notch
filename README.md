@@ -1,4 +1,4 @@
-<p align="center"><a href="README.tr.md">Türkçe</a> · <b>English</b></p>
+<p align="center"><a href="README.tr.md">Türkçe</a> · <b>English</b> · <a href="README.de.md">Deutsch</a> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · <a href="README.pt-BR.md">Português (Brasil)</a></p>
 
 <p align="center">
   <img src="docs/icon.png" width="110" alt="Mate Notch icon">
@@ -25,8 +25,8 @@
 - **Music (Apple Music + Spotify):** Artwork, progress bar, play/pause/next/previous. The artwork colour tints the background.
 - **Synced lyrics (Mate Lyrics engine):** Three lines on the music card (previous dim, current bright, next dim) and one or two lines under the closed notch. The area never opens for a song without lyrics. Uses [lrclib.net](https://lrclib.net).
 - **Live activities (while closed):** music indicator, timer, charging, screen recording. The indicator icon is selectable (equalizer, sound wave, AirPods, HomePod, Apple logo…).
-- **Shelf:** Drag a file onto the notch, then drag it back out wherever you need it.
-- **Clipboard history:** A "Copied" banner on copy; search, pinning (persists across restarts), delete one or many. Password-manager copies are never stored.
+- **Shelf:** Drag a file onto the notch, then drag it back out wherever you need it. Right-click: Open, Quick Look, copy to clipboard, copy path, show in Finder, send with AirDrop.
+- **Clipboard history:** A "Copied" banner on copy; search, pinning (persists across restarts), delete one or many, adjustable size and automatic expiry. Password-manager copies are never stored.
 - **Colour picker:** Pick a colour from the screen and its hex code is copied to the clipboard.
 - **Screenshot button:** Selected area, full screen, screen recording or the system capture tool.
 - **AI:** Summarize, fix, rewrite, translate or explain clipboard or typed text; a daily summary from your calendar; free-form questions. Runs on the **on-device Apple model** by default (no key needed, data never leaves your Mac; requires Apple Intelligence). Optionally connect **Claude, ChatGPT or Gemini** with your own API key in Settings; keys are stored in the Keychain.
@@ -34,14 +34,15 @@
 - **Cache cleaner:** Lists unneeded cache and log files and what each belongs to; nothing is deleted without your confirmation.
 - **Auto-update:** Checks GitHub Releases for new versions, verifies them (SHA-256 + signature) and updates itself (can be turned off in Settings).
 - **Everyday use:** An Apple **Shortcuts** button, a **Join** button and a 5-minute alert for meetings with a link (Zoom, Meet, Teams…), **Pomodoro** (25/5, 15 every 4th break), an audio output picker, and automatic shelf clean-up after a chosen number of days.
-- **Volume & brightness indicator:** A sleek indicator in the notch instead of macOS's square overlay (with Accessibility access the system overlay is hidden); style, duration and key step are adjustable.
+- **Volume & brightness indicator:** A sleek indicator in the notch instead of macOS's square overlay (with Accessibility access the system overlay is hidden); style, size, colour, duration and key step are adjustable.
+- **Focus and weather:** A moon icon while a Focus is on; the weather for your chosen city (°C/°F) on Home, with no location access.
 - **Batteries and alerts:** Mac, headphone, mouse and keyboard batteries; a two-stage low-battery alert; a banner when headphones connect.
 - **Permission wizard and feature tour:** On first launch you choose a language, grant permissions and try each feature one by one or skip; reopen it later from the menu. A **What's New** window appears after an update.
-- **Mascot (optional):** A small buddy on the right wing of the closed notch: it reaches out when you copy, waves, bobs to the music, gets tired when the battery is low, puts on headphones, reacts when volume or brightness hits an extreme, and sleeps when idle. Every behaviour can be turned off separately (Settings › Appearance & mascot).
+- **Mascot (optional):** A small buddy on the right wing of the closed notch: it reaches out when you copy, waves, bobs to the music, gets tired when the battery is low, puts on headphones, reacts when volume or brightness hits an extreme and to meetings, downloads and Focus, and sleeps when idle. Every behaviour can be turned off separately (Settings › Appearance & mascot).
 
 <p align="center"><img src="docs/buddy.gif" width="440" alt="The mascot grabbing copied text"></p>
 
-- **Turkish and English interface** (Settings › Appearance & mascot › Language).
+- **Languages:** Turkish, English, German, Spanish, French and Brazilian Portuguese (Settings › Behavior & tabs › Language, or the 🌐 button at the bottom of the sidebar).
 - **Timer, system status (CPU / memory / disk), keep awake, next event from your calendar.**
 - **Appearance:** Black, solid colour, album colour or **Liquid Glass** (adjustable density and glass type); open/closed size, hover area and delays are adjustable.
 - **Back up settings:** Export and import from Settings › General.
