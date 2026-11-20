@@ -411,7 +411,7 @@ struct HUDBanner: View {
                 Text(hud.muted ? "Sessiz" : "\(Int((hud.level * 100).rounded()))%")
                     .font(.system(size: 11.5, weight: .semibold, design: .rounded)).monospacedDigit()
                     .frame(minWidth: 34, alignment: .trailing)
-                    .contentTransition(.numericText(value: hud.muted ? 0 : (hud.level * 100).rounded()))
+                    .contentTransition(.numericText(value: hud.muted ? 0 : -(hud.level * 100).rounded()))
             }
         }
         .foregroundStyle(.white)
