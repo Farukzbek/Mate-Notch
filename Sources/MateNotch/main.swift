@@ -27,6 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         WeatherService.shared.start()
 
         // İlk açılışta izin sihirbazı (bir kez); `--permissions` ile her zaman açılır
+        if CommandLine.arguments.contains("--settings") { DispatchQueue.main.asyncAfter(deadline: .now() + 1) { SettingsWindow.show() } }
         if CommandLine.arguments.contains("--tour") { DispatchQueue.main.asyncAfter(deadline: .now() + 1) { TourWindow.show() } }
         let firstRun = !UserDefaults.standard.bool(forKey: Pref.wizardShown)
         let needLang = !UserDefaults.standard.bool(forKey: "langChosen") && firstRun

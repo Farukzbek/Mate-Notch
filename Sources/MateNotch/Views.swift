@@ -64,7 +64,7 @@ struct RootView: View {
         let banner = bn.current != nil
         let pill = !open && (showPill || clip.justCopied || hud.visible || banner)
         let extra = (clip.justCopied || hud.visible || banner) ? Layout.pillExtra(1) : Layout.pillExtra(pillLines)
-        let pillW: CGFloat = hud.visible ? (hudStyle == "bar" ? 250 : 170) : (banner ? 330 : Layout.pillMinW)
+        let pillW: CGFloat = hud.visible ? (hudStyle == "bar" ? 250 : hudStyle == "barOnly" ? 200 : 170) : (banner ? 330 : Layout.pillMinW)
         let u = open ? CGFloat(uiScale) : 1
         let base0 = max(40, g.notchWidth + CGFloat(exW))
         let ch = max(12, g.notchHeight + CGFloat(exH))
@@ -1142,6 +1142,7 @@ struct SettingsView: View {
     @AppStorage(Pref.hudDuration) var hudDuration = 1.6
     @AppStorage(Pref.hudHideSystem) var hudHideSystem = false
     @AppStorage(Pref.hudStep) var hudStep = 6.0
+    @AppStorage(Pref.hudFineKey) var hudFineKey = "shiftOption"
     @ObservedObject var hud = HUDService.shared
     @AppStorage(Pref.lowBatteryAlert) var lowBatteryAlert = true
     @AppStorage(Pref.lowBatteryDevices) var lowBatteryDevices = true
@@ -1163,8 +1164,9 @@ struct SettingsView: View {
     @State private var loginItem = LaunchAtLogin.enabled
     @State private var language = AppLanguage.current
 
-    var body: some View {
-        Form {
+    @ViewBuilder func sectionView(_ id: String) -> some View {
+        switch id {
+        case "look":
             Section("Görünüm") {
                 HStack {
                     Text("Boyut")
@@ -1214,6 +1216,7 @@ struct SettingsView: View {
                 Text("Kapalıyken notch varsayılan olarak siyah kalır (donanım notch'uyla bütünleşir); bu seçenek açılırsa seçtiğin stil kapalı hâle de uygulanır. Fiziksel notch'un olduğu kısım her zaman siyah görünür.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+        case "behavior":
             Section("Davranış") {
                 Toggle("Üzerine gelince aç (kapalıysa tıkla)", isOn: $openOnHover)
                 HStack { Text("Açılma gecikmesi"); Slider(value: $hoverDelay, in: 0...0.6); Text("\(Int(hoverDelay * 1000)) ms").monospacedDigit().frame(width: 60) }
@@ -1235,15 +1238,23 @@ struct SettingsView: View {
                 }
                 .onChange(of: language) { _, v in AppLanguage.apply(v) }
             }
+        case "buddy":
             Section("Maskot") { BuddySettingsSection() }
+        case "ai":
             Section("Yapay Zeka") { AISettingsSection() }
+        case "care":
             Section("Bakım") {
                 Button("İzinleri kontrol et…") { WizardWindow.show() }
                 Button("Özellik turu…") { TourWindow.show() }
+                Button("Ayarları dışa aktar…") { SettingsBackup.export() }
+                Button("Ayarları içe aktar…") { SettingsBackup.import() }
+                Text("Tüm ayarlarını bir dosyaya kaydeder ya da bir dosyadan geri yükler. İçe aktarınca uygulama yeniden açılır.")
+                    .font(.caption).foregroundStyle(.secondary)
                 Button("Önbellek Temizleyiciyi aç…") { CleanerWindow.show() }
                 Text("Gereksiz önbellek ve günlük dosyalarını neye ait olduklarıyla listeler; sen onaylamadan hiçbir şey silmez.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+        case "updates":
             Section("Güncellemeler") {
                 HStack {
                     Text("Sürüm \(updater.current)")
@@ -1259,6 +1270,7 @@ struct SettingsView: View {
                 Text("Sürümler GitHub'dan (Farukzbek/Mate-Notch) denetlenir. İndirilen paketin sağlama toplamı ve imzası doğrulanır. Kayıt sürerken veya notch açıkken kurulum beklenir.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+        case "closedicon":
             Section("Kapalı notch simgesi") {
                 Picker("Müzik göstergesi", selection: $closedIcon) {
                     ForEach(ClosedIcon.allCases) { i in Label(i.title, systemImage: i.symbol).tag(i.rawValue) }
@@ -1272,6 +1284,7 @@ struct SettingsView: View {
                 Text("Müzik çalarken notch'un sağında görünür; ses dalgası ve diğer simgeler çalarken hareket eder. Sözler açık ya da kapalı olsun gösterge her zaman görünür. Bu ayarlarla uğraşırken notch kapalı hâlde gösterilir.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+        case "hud":
             Section("Ses ve parlaklık göstergesi") {
                 Toggle("Ses değişikliklerini notch'ta göster", isOn: $hudVolume).collapsesNotch()
                 Toggle("Parlaklık değişikliklerini notch'ta göster", isOn: $hudBrightness).collapsesNotch()
@@ -1279,6 +1292,7 @@ struct SettingsView: View {
                     .disabled(!hud.keyboardAvailable).collapsesNotch()
                 Picker("Gösterge stili", selection: $hudStyle) {
                     Text("Çubuk + yüzde").tag("bar")
+                    Text("Yalnızca çubuk").tag("barOnly")
                     Text("Yalnızca yüzde").tag("percent")
                     Text("Yalnızca simge").tag("icon")
                 }
@@ -1303,6 +1317,13 @@ struct SettingsView: View {
                     Text("%\(Int(hudStep))").monospacedDigit().frame(width: 40)
                 }
                 .disabled(!hudHideSystem).opacity(hudHideSystem ? 1 : 0.5)
+                Picker("İnce adım tuşu", selection: $hudFineKey) {
+                    Text("⇧⌥ (Shift + Option)").tag("shiftOption")
+                    Text("⌥ (Option)").tag("option")
+                    Text("⇧ (Shift)").tag("shift")
+                    Text("⌃ (Control)").tag("control")
+                }
+                .disabled(!hudHideSystem).opacity(hudHideSystem ? 1 : 0.5)
                 if !hudHideSystem {
                     Text("Ses açma/kısma ve parlaklık açma/kısma tuşlarının her basışta kaç yüzde değişeceği. Bu ayar yalnızca yukarıdaki seçenek açıkken geçerli (tuşları Mate Notch işlediği için).")
                         .font(.caption).foregroundStyle(.orange)
@@ -1311,9 +1332,10 @@ struct SettingsView: View {
                     Button("Erişilebilirlik ayarlarını aç") { NSWorkspace.shared.open(HUDService.accessibilityURL) }
                 }
                 if !hud.hideStatus.isEmpty { Text(hud.hideStatus).font(.caption).foregroundStyle(hudHideSystem ? .green : .orange) }
-                Text("Bu seçenek açıkken ses, parlaklık ve klavye ışığı tuşlarını Mate Notch işler: macOS'un ekran ortasındaki karesi çıkmaz, ses/parlaklık adımı yukarıdaki yüzdeyle değişir (⇧⌥ ile dörtte biri). Klavye ışığı macOS'un kendi adımında (≈%6) kalır. Klavye ışığının boşta kalınca kendiliğinden kısılması/geri açılması için gösterge çıkmaz. Erişilebilirlik izni ister. Kapatınca tuşlar normale döner. Parlaklık ve klavye ışığı için macOS'un özel arayüzleri kullanılır; yerleşik ekranlarda çalışır.")
+                Text("Bu seçenek açıkken ses, parlaklık ve klavye ışığı tuşlarını Mate Notch işler: macOS'un ekran ortasındaki karesi çıkmaz, ses/parlaklık adımı yukarıdaki yüzdeyle değişir (ince adım tuşuyla dörtte biri). Klavye ışığı macOS'un kendi adımında (≈%6) kalır. Klavye ışığının boşta kalınca kendiliğinden kısılması/geri açılması için gösterge çıkmaz. Erişilebilirlik izni ister. Kapatınca tuşlar normale döner. Parlaklık ve klavye ışığı için macOS'un özel arayüzleri kullanılır; yerleşik ekranlarda çalışır.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+        case "battery":
             Section("Pil ve düşük pil uyarısı") {
                 Toggle("Düşük pil uyarısı (Mac)", isOn: $lowBatteryAlert)
                 Toggle("Bluetooth cihazlar için de uyar (kulaklık, fare…)", isOn: $lowBatteryDevices).disabled(!bluetoothBatteries)
@@ -1328,6 +1350,7 @@ struct SettingsView: View {
                 Text("Pil yüzdesine tıklayınca Piller ekranı açılır. Uyarı iki aşamalıdır: seçtiğin seviyede \"Pil azalıyor\", yaklaşık %10'da \"Pil çok düşük\" (Mac için ses de çalar); şarja takılınca ya da seviye yükselince sıfırlanır. Bazı kulaklıklar (ör. bazı yarı kablosuz modeller) pil seviyesini macOS'a bildirmez; onlar için yüzde gösterilemez. iPhone, iPad ve Apple Watch pilleri macOS tarafından üçüncü taraf uygulamalara verilmiyor.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+        case "alerts":
             Section("Göstergeler ve bildirimler") {
                 Toggle("Bluetooth kulaklık bağlanınca bildir (AirPods pil durumu dahil)", isOn: $bannerBluetooth)
                 Toggle("Kamera / mikrofon kullanımdayken göster", isOn: $privacyIndicator).collapsesNotch()
@@ -1347,6 +1370,7 @@ struct SettingsView: View {
                 Text("Kamera/mikrofon göstergesi izin gerektirmez. Odak ve İndirilenler için macOS bir kez izin sorar. Hava durumu Open-Meteo'dan gelir (anahtar gerekmez); yalnızca seçtiğin şehrin adı/konumu gönderilir, Mac'inin konumu kullanılmaz.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+        case "home":
             Section("Ana Sayfa") {
                 Toggle("Takvim kartı", isOn: $showCalendar)
                 Toggle("Bugünün tarihini göster", isOn: $calDate).disabled(!showCalendar)
@@ -1358,6 +1382,7 @@ struct SettingsView: View {
                 Toggle("Renk seçici düğmesi (ekrandan renk al, hex kodunu kopyala)", isOn: $qbColor)
                 Toggle("Kısayollar düğmesi (Apple Kısayollar'ı çalıştır)", isOn: $qbShortcuts)
             }
+        case "capture":
             Section("Ekran görüntüsü butonu") {
                 Picker("Buton ne yapsın", selection: $captureMode) {
                     Text("Seçilen alanın görüntüsü").tag("area")
@@ -1370,6 +1395,7 @@ struct SettingsView: View {
                 Text("Video kayıtları her zaman Masaüstü'ne .mov olarak kaydedilir. Kayıt sırasında notch'ta kırmızı \"KAYIT\" görünür. İlk kullanımda macOS Ekran Kaydı izni isteyebilir.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+        case "lyrics":
             Section("Mate Lyrics") {
                 Toggle("Şarkı sözlerini göster", isOn: $lyricsOn)
                 Toggle("Notch'ta anlık söz satırı", isOn: $lyricsInNotch).disabled(!lyricsOn)
@@ -1385,18 +1411,23 @@ struct SettingsView: View {
                 Text("Söz satırı Ana Sayfa'da şarkı adının altında görünür; oradaki 💬 düğmesiyle de açıp kapatabilirsin. Sözler lrclib.net'ten gelir.")
                     .font(.caption).foregroundStyle(.secondary)
             }
+        case "tabs":
             Section("Sekmeler") {
                 Toggle("Raf", isOn: $showShelf)
                 Toggle("Pano geçmişi", isOn: $showClipboard)
                 Toggle("Zamanlayıcı", isOn: $showTimer)
                 Toggle("Sistem durumu", isOn: $showStats)
             }
+        case "shortcut":
             Section("Kısayol") {
                 Text("⌃⌥Space — Mate Notch'u aç / kapat")
             }
+        default: EmptyView()
         }
-        .formStyle(.grouped)
-        .frame(minWidth: 520, maxWidth: 520, minHeight: 320, maxHeight: .infinity)
+    }
+
+    var body: some View {
+        SettingsShell { AnyView(sectionView($0)) }
     }
 }
 

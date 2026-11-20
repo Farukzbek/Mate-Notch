@@ -922,16 +922,6 @@
         }
       }
     },
-    "Bu seçenek açıkken ses, parlaklık ve klavye ışığı tuşlarını Mate Notch işler: macOS'un ekran ortasındaki karesi çıkmaz, ses/parlaklık adımı yukarıdaki yüzdeyle değişir (⇧⌥ ile dörtte biri). Klavye ışığı macOS'un kendi adımında (≈%6) kalır. Klavye ışığının boşta kalınca kendiliğinden kısılması/geri açılması için gösterge çıkmaz. Erişilebilirlik izni ister. Kapatınca tuşlar normale döner. Parlaklık ve klavye ışığı için macOS'un özel arayüzleri kullanılır; yerleşik ekranlarda çalışır.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "While this is on, Mate Notch handles the volume, brightness and keyboard backlight keys: macOS's square in the middle of the screen doesn't appear, and the volume/brightness step follows the percentage above (a quarter of it with ⇧⌥). The keyboard backlight keeps macOS's own step (≈6%). No indicator is shown when the keyboard backlight dims or restores itself on idle. Requires Accessibility permission. Turning it off restores the normal keys. Brightness and keyboard backlight use private macOS interfaces and work on built-in displays."
-          }
-        }
-      }
-    },
     "Bu sürümün notlarına şu an ulaşılamadı. Notlar GitHub'daki sürüm sayfasında.": {
       "localizations": {
         "en": {
@@ -1453,6 +1443,7 @@
       }
     },
     "Geri": {
+      "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -2882,16 +2873,6 @@
         }
       }
     },
-    "Ses, parlaklık ve klavye ışığı değişince macOS'un ortadaki karesi yerine notch'ta şık bir gösterge çıkar.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "When volume, brightness or keyboard backlight change, a sleek indicator appears in the notch instead of macOS's square in the middle of the screen."
-          }
-        }
-      }
-    },
     "Sessiz": {
       "localizations": {
         "en": {
@@ -3568,16 +3549,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "You have no upcoming events. 🎉"
-          }
-        }
-      }
-    },
-    "Yalnızca \"tuşları Mate Notch işlesin\" seçeneği için: ses/parlaklık tuş adımını ayarlar ve sistemin kare göstergesini gizler.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Only for the \"let Mate Notch handle the keys\" option: sets the volume/brightness key step and hides the system square indicator."
           }
         }
       }
@@ -4388,6 +4359,248 @@
           "stringUnit": {
             "state": "translated",
             "value": "⌃⌥Space — Show / hide Mate Notch"
+          }
+        }
+      }
+    },
+    "Yalnızca çubuk": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bar only"
+          }
+        }
+      }
+    },
+    "İnce adım tuşu": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fine-step key"
+          }
+        }
+      }
+    },
+    "Ayarları dışa aktar…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export settings…"
+          }
+        }
+      }
+    },
+    "Ayarları içe aktar…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import settings…"
+          }
+        }
+      }
+    },
+    "Tüm ayarlarını bir dosyaya kaydeder ya da bir dosyadan geri yükler. İçe aktarınca uygulama yeniden açılır.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saves all your settings to a file or restores them from one. The app relaunches after importing."
+          }
+        }
+      }
+    },
+    "Ses ve parlaklık uç noktalarında tepki versin": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "React when volume or brightness hits an extreme"
+          }
+        }
+      }
+    },
+    "Ayarlar kaydedilemedi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't save settings"
+          }
+        }
+      }
+    },
+    "Dosya okunamadı": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read the file"
+          }
+        }
+      }
+    },
+    "Geçerli bir Mate Notch ayar dosyası seç.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a valid Mate Notch settings file."
+          }
+        }
+      }
+    },
+    "Ses ve parlaklık tuşlarını Mate Notch işler: macOS'un ortadaki kare göstergesi çıkmaz, gösterge notch'ta görünür. Vermezsen iki gösterge birlikte çıkar; ayarlardan kapatabilirsin.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mate Notch handles the volume and brightness keys: macOS's square overlay no longer appears and the indicator shows in the notch. If you skip it, both indicators appear together; you can turn this off in Settings."
+          }
+        }
+      }
+    },
+    "Ses, parlaklık ve klavye ışığı değişince macOS'un ortadaki karesi yerine notch'ta şık bir gösterge çıkar. Erişilebilirlik izni verirsen macOS'un kendi göstergesi de gizlenir.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When volume, brightness or keyboard light changes, a sleek indicator appears in the notch. Grant Accessibility access to hide macOS's own overlay too."
+          }
+        }
+      }
+    },
+    "Bu seçenek açıkken ses, parlaklık ve klavye ışığı tuşlarını Mate Notch işler: macOS'un ekran ortasındaki karesi çıkmaz, ses/parlaklık adımı yukarıdaki yüzdeyle değişir (ince adım tuşuyla dörtte biri). Klavye ışığı macOS'un kendi adımında (≈%6) kalır. Klavye ışığının boşta kalınca kendiliğinden kısılması/geri açılması için gösterge çıkmaz. Erişilebilirlik izni ister. Kapatınca tuşlar normale döner. Parlaklık ve klavye ışığı için macOS'un özel arayüzleri kullanılır; yerleşik ekranlarda çalışır.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "While this is on, Mate Notch handles the volume, brightness and keyboard backlight keys: macOS's square in the middle of the screen doesn't appear, and the volume/brightness step follows the percentage above (a quarter of it with the fine-step key). The keyboard backlight keeps macOS's own step (≈6%). No indicator is shown when the keyboard backlight dims or restores itself on idle. Requires Accessibility permission. Turning it off restores the normal keys. Brightness and keyboard backlight use private macOS interfaces and work on built-in displays."
+          }
+        }
+      }
+    },
+    "Görünüm ve maskot": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appearance & mascot"
+          }
+        }
+      }
+    },
+    "Davranış ve sekmeler": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Behavior & tabs"
+          }
+        }
+      }
+    },
+    "Müzik ve sözler": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music & lyrics"
+          }
+        }
+      }
+    },
+    "Pil ve bildirimler": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battery & notifications"
+          }
+        }
+      }
+    },
+    "Araçlar ve yapay zeka": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tools & AI"
+          }
+        }
+      }
+    },
+    "Genel": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "General"
+          }
+        }
+      }
+    },
+    "Ayarlarda ara": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search settings"
+          }
+        }
+      }
+    },
+    "Sonuç bulunamadı": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No results"
+          }
+        }
+      }
+    },
+    "Arama sonuçları": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search results"
+          }
+        }
+      }
+    },
+    "Ses ve parlaklık": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume & brightness"
           }
         }
       }

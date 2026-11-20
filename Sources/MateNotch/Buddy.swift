@@ -7,7 +7,7 @@ import Combine
 enum BuddyKey {
     static let on = "buddyOn", wave = "buddyWave", grab = "buddyGrab", music = "buddyMusic"
     static let battery = "buddyBattery", phones = "buddyHeadphones", timer = "buddyTimer", sleep = "buddySleep"
-    static let freq = "buddyFreq"
+    static let freq = "buddyFreq", hud = "buddyHud"
     static func flag(_ k: String) -> Bool { UserDefaults.standard.object(forKey: k) as? Bool ?? true }
 }
 
@@ -26,12 +26,14 @@ final class BuddyService: ObservableObject {
     @Published var phones = false
     @Published var asleep = false
     @Published var happy = false                // ağız açık
+    @Published var mood = 0                     // 0 yok, 1 sessiz, 2 sesli (coşku), 3 gözü kısık, 4 karanlık
     @Published var previewing = false           // ayar kapalıyken önizleme
 
     private var cancellables = Set<AnyCancellable>()
     private var busy = false
     private var tiredWork: DispatchWorkItem?
     private var phonesWork: DispatchWorkItem?
+    private var moodWork: DispatchWorkItem?
 
     var enabled: Bool { UserDefaults.standard.bool(forKey: BuddyKey.on) }
     var bobbing: Bool { BuddyKey.flag(BuddyKey.music) && MediaService.shared.isPlaying && !asleep }
@@ -106,6 +108,23 @@ final class BuddyService: ObservableObject {
         let w = DispatchWorkItem { withAnimation(.easeOut(duration: 0.3)) { self.phones = false } }
         phonesWork = w
         DispatchQueue.main.asyncAfter(deadline: .now() + 9, execute: w)
+    }
+
+    /// Ses/parlaklık uç noktalarında (sessiz, tam ses, tam/sıfır parlaklık) kısa tepki.
+    func hudReact(_ k: HUDService.Kind, level: Double, muted: Bool) {
+        guard active, BuddyKey.flag(BuddyKey.hud) || previewing, !asleep else { return }
+        var m = 0
+        switch k {
+        case .volume: if muted || level <= 0.001 { m = 1 } else if level >= 0.99 { m = 2 }
+        case .brightness: if level >= 0.99 { m = 3 } else if level <= 0.001 { m = 4 }
+        case .keyboard: break
+        }
+        guard m != 0 else { return }
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { mood = m }
+        moodWork?.cancel()
+        let w = DispatchWorkItem { withAnimation(.easeOut(duration: 0.3)) { self.mood = 0 } }
+        moodWork = w
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.2, execute: w)
     }
 
     func lowBattery() {
@@ -187,7 +206,7 @@ struct BuddyView: View {
                     if b.tired { sweat }
                 }
                 .frame(width: 26, height: 22)
-                .position(x: 21, y: cy)
+                .position(x: 21 + (b.mood == 2 ? CGFloat(sin(t * 38)) * 0.9 : 0), y: cy)
                 hand(t: t)
                 if b.asleep { zzz(t) }
             }
@@ -199,7 +218,7 @@ struct BuddyView: View {
 
     private var eyes: some View {
         let shut = b.blink || b.asleep
-        let open: CGFloat = shut ? 0.12 : (b.tired ? 0.45 : 1)
+        let open: CGFloat = shut || b.mood == 4 ? 0.12 : (b.tired ? 0.45 : b.mood == 3 ? 0.3 : b.mood == 2 ? 1.25 : 1)
         return HStack(spacing: 7) {
             ForEach(0..<2, id: \.self) { _ in Capsule().fill(ink).frame(width: 3, height: 5).scaleEffect(y: open) }
         }
@@ -208,6 +227,9 @@ struct BuddyView: View {
 
     @ViewBuilder private var mouth: some View {
         if b.asleep { Circle().fill(ink).frame(width: 2.6, height: 2.6).offset(y: 5) }
+        else if b.mood == 1 { Capsule().fill(ink).frame(width: 7, height: 1.6).offset(y: 5) }
+        else if b.mood == 2 { Capsule().fill(ink).frame(width: 9, height: 6).offset(y: 4.5) }
+        else if b.mood == 3 { Capsule().fill(ink).frame(width: 7, height: 1.6).offset(y: 5).rotationEffect(.degrees(-6)) }
         else if b.happy { Capsule().fill(ink).frame(width: 8, height: 5).offset(y: 4.5) }
         else if b.tired { Capsule().fill(ink).frame(width: 6, height: 1.6).offset(y: 5) }
         else { SmileShape().stroke(ink, style: StrokeStyle(lineWidth: 1.6, lineCap: .round)).frame(width: 9, height: 3.4).offset(y: 4.4) }
@@ -271,6 +293,7 @@ struct BuddySettingsSection: View {
     @AppStorage(BuddyKey.timer) var timer = true
     @AppStorage(BuddyKey.sleep) var sleep = true
     @AppStorage(BuddyKey.freq) var freq = "normal"
+    @AppStorage(BuddyKey.hud) var hudReact = true
     private let buddy = BuddyService.shared
 
     var body: some View {
@@ -287,6 +310,7 @@ struct BuddySettingsSection: View {
             row("Kulaklık bağlanınca kulaklık taksın", $phones) { buddy.headphones() }
             row("Zamanlayıcı bitince zıplasın", $timer) { buddy.jump() }
             row("Bir süre işlem yapılmayınca uyusun", $sleep, nil)
+            row("Ses ve parlaklık uç noktalarında tepki versin", $hudReact) { buddy.hudReact(.volume, level: 1, muted: false) }
             Picker("Canlılık", selection: $freq) {
                 Text("Az").tag("rare"); Text("Normal").tag("normal"); Text("Sık").tag("often")
             }

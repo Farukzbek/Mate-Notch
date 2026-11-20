@@ -138,6 +138,7 @@ enum Pref {
     static let hudDuration = "hudDuration"
     static let hudHideSystem = "hudHideSystem"
     static let hudStep = "hudStep"
+    static let hudFineKey = "hudFineKey"
     static let showAI = "showAI"
     static let aiProvider = "aiProvider"
     static let autoUpdateCheck = "autoUpdateCheck"
@@ -171,7 +172,7 @@ enum Pref {
             openOnHover: true, hoverDelay: 0.15, liveActivities: true, haptics: true,
             showShelf: true, showClipboard: true, showTimer: true, showStats: true,
             lyricsEnabled: false, lyricsInNotch: true,
-            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, wizardShown: false, lowBatteryAlert: true, lowBatteryDevices: true, lowBatteryLevel: 20.0, bluetoothBatteries: true, headerDeviceBattery: true, bannerBluetooth: true, privacyIndicator: true, focusIndicator: false, downloadIndicator: false, weatherEnabled: false, hudVolume: true, hudBrightness: true, hudKeyboard: true, hudStyle: "bar", hudDuration: 1.6, hudHideSystem: false, hudStep: 6.0, showAI: true, aiProvider: "auto", autoUpdateCheck: true, autoUpdateInstall: true, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
+            closeDelay: 0.18, hotPadding: 0.0, styleCollapsed: false, wizardShown: false, lowBatteryAlert: true, lowBatteryDevices: true, lowBatteryLevel: 20.0, bluetoothBatteries: true, headerDeviceBattery: true, bannerBluetooth: true, privacyIndicator: true, focusIndicator: false, downloadIndicator: false, weatherEnabled: false, hudVolume: true, hudBrightness: true, hudKeyboard: true, hudStyle: "bar", hudDuration: 1.6, hudHideSystem: true, hudFineKey: "shiftOption", hudStep: 6.0, showAI: true, aiProvider: "auto", autoUpdateCheck: true, autoUpdateInstall: true, closedIcon: "equalizer", closedIconIdle: false, glassDensity: 0.35, glassClear: true, collapsedExtraW: 0.0, collapsedExtraH: 0.0, uiScale: 1.0, pillLines: 1,
             showCalendar: true, calDate: true, calEvent: true, meetingAlert: true, qbCaffeinate: true, qbTimer: true, qbCapture: true, qbColor: true, qbShortcuts: true, showArtwork: true, captureMode: "area", captureClipboard: true, bgStyle: "black", bgColor: "#1F2A44",
         ])
     }
@@ -327,6 +328,13 @@ enum AppLanguage {
     }
     static func clearOverride() {
         UserDefaults.standard.removeObject(forKey: "AppleLanguages"); UserDefaults.standard.removeObject(forKey: "mnLangOverride")
+    }
+    static func relaunch() {
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/bin/sh")
+        p.arguments = ["-c", "sleep 0.6; /usr/bin/open \"$1\"", "sh", Bundle.main.bundlePath]
+        try? p.run()
+        NSApp.terminate(nil)
     }
     static func apply(_ code: String) {
         let d = UserDefaults.standard

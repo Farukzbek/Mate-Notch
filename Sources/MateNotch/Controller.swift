@@ -325,7 +325,8 @@ enum SettingsWindow {
         if window == nil {
             let w = NSWindow(contentViewController: NSHostingController(rootView: SettingsView()))
             w.title = L("Mate Notch Ayarları")
-            w.styleMask = [.titled, .closable, .resizable]
+            w.styleMask = [.titled, .closable, .resizable, .fullSizeContentView]
+            w.titlebarAppearsTransparent = true
             w.isReleasedWhenClosed = false
             window = w
             NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: w, queue: .main) { _ in
@@ -337,7 +338,7 @@ enum SettingsWindow {
             ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
         let top: CGFloat = NotchController.shared.panelSize.height + 8
         let h = max(320, min(900, vis.height - top - 10))
-        window?.setFrame(NSRect(x: vis.midX - 260, y: vis.maxY - top - h, width: 520, height: h), display: true)
+        window?.setFrame(NSRect(x: vis.midX - 430, y: vis.maxY - top - h, width: 860, height: h), display: true)
 
         NotchState.shared.previewHold = true            // ayar yaparken notch açık kalır
         NotchController.shared.open()

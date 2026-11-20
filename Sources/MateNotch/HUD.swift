@@ -77,6 +77,7 @@ final class HUDService: ObservableObject {
         if abs(self.level - lv) >= 0.002 { self.level = lv }
         if self.muted != muted { self.muted = muted }
         if !visible { withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) { visible = true } }
+        BuddyService.shared.hudReact(k, level: lv, muted: muted)
         hideWork?.cancel()
         let w = DispatchWorkItem { [weak self] in
             withAnimation(.easeOut(duration: 0.25)) { self?.visible = false }
@@ -323,7 +324,15 @@ final class SystemKeys {
         let data = ns.data1
         let key = (data & 0xFFFF0000) >> 16
         let down = ((data & 0x0000FF00) >> 8) == 0xA
-        let fine = event.flags.contains(.maskAlternate) && event.flags.contains(.maskShift)    // ⇧⌥: ince adım
+        let f = event.flags
+        let fine: Bool = {                                    // ince adım tuşu (Ayarlar'dan seçilir)
+            switch UserDefaults.standard.string(forKey: Pref.hudFineKey) ?? "shiftOption" {
+            case "option": return f.contains(.maskAlternate)
+            case "shift": return f.contains(.maskShift)
+            case "control": return f.contains(.maskControl)
+            default: return f.contains(.maskAlternate) && f.contains(.maskShift)
+            }
+        }()
         // Ses ve ekran parlaklığı: Ayarlar'daki "tuş başına değişim" (%1–%20); ⇧⌥ ile dörtte biri.
         let userStep = Float(max(1, min(20, UserDefaults.standard.double(forKey: Pref.hudStep)))) / 100
         let step: Float = fine ? max(0.005, userStep / 4) : userStep
@@ -397,7 +406,7 @@ struct HUDBanner: View {
         HStack(spacing: 9) {
             Image(systemName: icon).font(.system(size: 13, weight: .semibold)).frame(width: 20)
                 .contentTransition(.symbolEffect(.replace))
-            if style == "bar" {
+            if style == "bar" || style == "barOnly" {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Capsule().fill(.white.opacity(0.22))
@@ -407,7 +416,7 @@ struct HUDBanner: View {
                 }
                 .frame(width: 120, height: 14)
             }
-            if style != "icon" {
+            if style != "icon" && style != "barOnly" {
                 Text(hud.muted ? "Sessiz" : "\(Int((hud.level * 100).rounded()))%")
                     .font(.system(size: 11.5, weight: .semibold, design: .rounded)).monospacedDigit()
                     .frame(minWidth: 34, alignment: .trailing)
