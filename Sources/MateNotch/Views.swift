@@ -1187,18 +1187,18 @@ struct SettingsView: View {
                     Slider(value: $uiScale, in: 0.8...1.3, step: 0.05)
                     Text("\(Int((uiScale * 100).rounded()))%").monospacedDigit().frame(width: 50)
                     Button("Sıfırla") { uiScale = 1.0 }.disabled(uiScale == 1.0)
-                }
-                Toggle("Albüm kapağını göster", isOn: $showArtwork)
+                }.srow("look/Boyut")
+                Toggle("Albüm kapağını göster", isOn: $showArtwork).srow("look/Albüm kapağını göster")
                 HStack {
                     Text("Kapalı notch genişliği")
                     Slider(value: $exW, in: -60...80, step: 2, onEditingChanged: { NotchController.shared.previewCollapsed(editing: $0) })
                     Text(exW == 0 ? "Varsayılan" : (exW > 0 ? "+\(Int(exW)) pt" : "−\(Int(-exW)) pt")).monospacedDigit().frame(width: 70)
-                }
+                }.srow("look/Kapalı notch genişliği")
                 HStack {
                     Text("Kapalı notch yüksekliği")
                     Slider(value: $exH, in: -14...24, step: 1, onEditingChanged: { NotchController.shared.previewCollapsed(editing: $0) })
                     Text(exH == 0 ? "Varsayılan" : (exH > 0 ? "+\(Int(exH)) pt" : "−\(Int(-exH)) pt")).monospacedDigit().frame(width: 70)
-                }
+                }.srow("look/Kapalı notch yüksekliği")
                 Text("Eksi değerler kapalı notch'u küçültür. Notch'lu Mac'lerde ortadaki kısım donanımdır, o küçülmez; küçülme yanlardaki kanatlarda ve notch'suz Mac'lerde görünür. Kaydırırken notch geçici olarak kapalı hâlde gösterilir.")
                     .font(.caption).foregroundStyle(.secondary)
                 Picker("Arka plan", selection: $bgStyle) {
@@ -1206,17 +1206,17 @@ struct SettingsView: View {
                     Text("Düz renk").tag("color")
                     Text("Albüm rengi").tag("album")
                     if #available(macOS 26, *) { Text("Liquid Glass").tag("glass") }
-                }
+                }.srow("look/Arka plan")
                 if bgStyle == "glass" {
                     Picker("Cam tipi", selection: $glassClear) {
                         Text("Şeffaf (iOS Liquid Glass)").tag(true)
                         Text("Buzlu").tag(false)
-                    }.pickerStyle(.segmented)
+                    }.pickerStyle(.segmented).srow("look/Cam tipi")
                     HStack {
                         Text("Cam yoğunluğu")
                         Slider(value: $glassDensity, in: 0...1, step: 0.05)
                         Text("\(Int(glassDensity * 100))%").monospacedDigit().frame(width: 50)
-                    }
+                    }.srow("look/Cam yoğunluğu")
                     Text("Yoğunluk arttıkça cam koyulaşır ve yazılar daha okunaklı olur. Düşük yoğunlukta arkadaki duvar kâğıdı daha çok görünür.")
                         .font(.caption).foregroundStyle(.secondary)
                 }
@@ -1224,7 +1224,7 @@ struct SettingsView: View {
                     ColorPicker("Renk", selection: $pickerColor, supportsOpacity: false)
                         .onChange(of: pickerColor) { _, c in bgHex = c.hexString }
                 }
-                Toggle("Kapalıyken de uygula", isOn: $styleCollapsed).disabled(bgStyle == "black")
+                Toggle("Kapalıyken de uygula", isOn: $styleCollapsed).disabled(bgStyle == "black").srow("look/Kapalıyken de uygula")
                     .collapsesNotch()
                     .onChange(of: styleCollapsed) { _, _ in NotchController.shared.showCollapsedResult() }
                 Text("Kapalıyken notch varsayılan olarak siyah kalır (donanım notch'uyla bütünleşir); bu seçenek açılırsa seçtiğin stil kapalı hâle de uygulanır. Fiziksel notch'un olduğu kısım her zaman siyah görünür.")
@@ -1232,28 +1232,28 @@ struct SettingsView: View {
             }
         case "behavior":
             Section("Davranış") {
-                Toggle("Üzerine gelince aç (kapalıysa tıkla)", isOn: $openOnHover)
-                HStack { Text("Açılma gecikmesi"); Slider(value: $hoverDelay, in: 0...0.6); Text("\(Int(hoverDelay * 1000)) ms").monospacedDigit().frame(width: 60) }
-                HStack { Text("Kapanma gecikmesi"); Slider(value: $closeDelay, in: 0...1.5, step: 0.05); Text("\(Int(closeDelay * 1000)) ms").monospacedDigit().frame(width: 60) }
-                HStack { Text("Açılma alanı"); Slider(value: $hotPadding, in: 0...80, step: 2, onEditingChanged: { NotchController.shared.hotPreview(editing: $0) }); Text(hotPadding == 0 ? "Notch" : "+\(Int(hotPadding)) pt").monospacedDigit().frame(width: 60) }
+                Toggle("Üzerine gelince aç (kapalıysa tıkla)", isOn: $openOnHover).srow("behavior/Üzerine gelince aç (kapalıysa tıkla)")
+                HStack { Text("Açılma gecikmesi"); Slider(value: $hoverDelay, in: 0...0.6); Text("\(Int(hoverDelay * 1000)) ms").monospacedDigit().frame(width: 60) }.srow("behavior/Açılma gecikmesi")
+                HStack { Text("Kapanma gecikmesi"); Slider(value: $closeDelay, in: 0...1.5, step: 0.05); Text("\(Int(closeDelay * 1000)) ms").monospacedDigit().frame(width: 60) }.srow("behavior/Kapanma gecikmesi")
+                HStack { Text("Açılma alanı"); Slider(value: $hotPadding, in: 0...80, step: 2, onEditingChanged: { NotchController.shared.hotPreview(editing: $0) }); Text(hotPadding == 0 ? "Notch" : "+\(Int(hotPadding)) pt").monospacedDigit().frame(width: 60) }.srow("behavior/Açılma alanı")
                 Color.clear.frame(height: 0).onChange(of: hotPadding) { _, _ in NotchController.shared.hotPreview(editing: nil) }
                 Text("Açılma alanı: fare notch'a bu kadar yaklaşınca açılır (yanlara ve aşağıya doğru genişler). Kapanma gecikmesi: fare notch'tan çıktıktan ne kadar sonra kapanacağı.")
                     .font(.caption).foregroundStyle(.secondary)
-                Toggle("Canlı etkinlikler (müzik, zamanlayıcı, şarj)", isOn: $live)
-                Toggle("Dokunsal geri bildirim", isOn: $haptics)
+                Toggle("Canlı etkinlikler (müzik, zamanlayıcı, şarj)", isOn: $live).srow("behavior/Canlı etkinlikler (müzik, zamanlayıcı, şarj)")
+                Toggle("Dokunsal geri bildirim", isOn: $haptics).srow("behavior/Dokunsal geri bildirim")
                 Picker("Raf içeriği otomatik temizlensin", selection: $shelfExpire) {
                     Text("Hiçbir zaman").tag(0); Text("1 gün sonra").tag(1); Text("7 gün sonra").tag(7); Text("30 gün sonra").tag(30)
-                }
+                }.srow("behavior/Raf içeriği otomatik temizlensin")
                 Picker("Pano geçmişi kaç öğe tutsun", selection: $clipLimit) {
                     Text("10").tag(10); Text("30").tag(30); Text("50").tag(50); Text("100").tag(100)
-                }
+                }.srow("behavior/Pano geçmişi kaç öğe tutsun")
                 .onChange(of: clipLimit) { _, _ in ClipboardService.shared.prune() }
                 Picker("Pano öğeleri otomatik silinsin", selection: $clipExpireHours) {
                     Text("Hiçbir zaman").tag(0); Text("1 saat sonra").tag(1); Text("1 gün sonra").tag(24); Text("7 gün sonra").tag(168)
-                }
+                }.srow("behavior/Pano öğeleri otomatik silinsin")
                 .onChange(of: clipExpireHours) { _, _ in ClipboardService.shared.prune() }
                 Text("Sabitlenen pano öğeleri hiçbir zaman silinmez.").font(.caption).foregroundStyle(.secondary)
-                Toggle("Girişte otomatik başlat", isOn: Binding(get: { loginItem }, set: { loginItem = $0; LaunchAtLogin.set($0) }))
+                Toggle("Girişte otomatik başlat", isOn: Binding(get: { loginItem }, set: { loginItem = $0; LaunchAtLogin.set($0) })).srow("behavior/Girişte otomatik başlat")
                 Picker("Dil", selection: $language) {
                     Text("Otomatik (sistem)").tag("auto")
                     Text("Türkçe").tag("tr")
@@ -1262,7 +1262,7 @@ struct SettingsView: View {
                     Text(verbatim: "Español").tag("es")
                     Text(verbatim: "Français").tag("fr")
                     Text(verbatim: "Português (Brasil)").tag("pt-BR")
-                }
+                }.srow("behavior/Dil")
                 .onChange(of: language) { _, v in AppLanguage.apply(v) }
             }
         case "buddy":
@@ -1288,8 +1288,8 @@ struct SettingsView: View {
                     Spacer()
                     Text(updater.status).font(.caption).foregroundStyle(.secondary)
                 }
-                Toggle("Güncellemeleri otomatik denetle", isOn: $autoUpdateCheck)
-                Toggle("Yeni sürümü otomatik kur ve yeniden başlat", isOn: $autoUpdateInstall).disabled(!autoUpdateCheck)
+                Toggle("Güncellemeleri otomatik denetle", isOn: $autoUpdateCheck).srow("updates/Güncellemeleri otomatik denetle")
+                Toggle("Yeni sürümü otomatik kur ve yeniden başlat", isOn: $autoUpdateInstall).disabled(!autoUpdateCheck).srow("updates/Yeni sürümü otomatik kur ve yeniden başlat")
                 HStack {
                     Button("Şimdi denetle") { updater.check() }.disabled(updater.busy)
                     if updater.available != nil { Button("Şimdi kur") { updater.install() } }
@@ -1301,10 +1301,10 @@ struct SettingsView: View {
             Section("Kapalı notch simgesi") {
                 Picker("Müzik göstergesi", selection: $closedIcon) {
                     ForEach(ClosedIcon.allCases) { i in Label(i.title, systemImage: i.symbol).tag(i.rawValue) }
-                }
+                }.srow("closedicon/Müzik göstergesi")
                 .collapsesNotch()
                 .onChange(of: closedIcon) { _, _ in NotchController.shared.showCollapsedResult() }
-                Toggle("İçerik oynatılmıyorken de simgeyi göster", isOn: $closedIconIdle)
+                Toggle("İçerik oynatılmıyorken de simgeyi göster", isOn: $closedIconIdle).srow("closedicon/İçerik oynatılmıyorken de simgeyi göster")
                     .disabled(closedIcon == "none")
                     .collapsesNotch()
                     .onChange(of: closedIconIdle) { _, _ in NotchController.shared.showCollapsedResult() }
@@ -1313,54 +1313,54 @@ struct SettingsView: View {
             }
         case "hud":
             Section("Ses ve parlaklık göstergesi") {
-                Toggle("Ses değişikliklerini notch'ta göster", isOn: $hudVolume).collapsesNotch()
-                Toggle("Parlaklık değişikliklerini notch'ta göster", isOn: $hudBrightness).collapsesNotch()
-                Toggle("Klavye aydınlatması değişikliklerini göster", isOn: $hudKeyboard)
+                Toggle("Ses değişikliklerini notch'ta göster", isOn: $hudVolume).collapsesNotch().srow("hud/Ses değişikliklerini notch'ta göster")
+                Toggle("Parlaklık değişikliklerini notch'ta göster", isOn: $hudBrightness).collapsesNotch().srow("hud/Parlaklık değişikliklerini notch'ta göster")
+                Toggle("Klavye aydınlatması değişikliklerini göster", isOn: $hudKeyboard).srow("hud/Klavye aydınlatması değişikliklerini göster")
                     .disabled(!hud.keyboardAvailable).collapsesNotch()
                 Picker("Gösterge stili", selection: $hudStyle) {
                     Text("Çubuk + yüzde").tag("bar")
                     Text("Yalnızca çubuk").tag("barOnly")
                     Text("Yalnızca yüzde").tag("percent")
                     Text("Yalnızca simge").tag("icon")
-                }
+                }.srow("hud/Gösterge stili")
                 .collapsesNotch()
                 .onChange(of: hudStyle) { _, _ in NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.volume) }
                 Picker("Gösterge boyutu", selection: $hudSize) {
                     Text("Küçük").tag("small"); Text("Normal").tag("normal"); Text("Büyük").tag("large")
-                }
+                }.srow("hud/Gösterge boyutu")
                 .collapsesNotch()
                 .onChange(of: hudSize) { _, _ in NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.volume) }
                 Picker("Gösterge rengi", selection: $hudTint) {
                     Text("Beyaz").tag("white"); Text("Mavi").tag("blue"); Text("Yeşil").tag("green")
                     Text("Turuncu").tag("orange"); Text("Pembe").tag("pink")
-                }
+                }.srow("hud/Gösterge rengi")
                 .collapsesNotch()
                 .onChange(of: hudTint) { _, _ in NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.volume) }
                 HStack {
                     Text("Gösterge süresi")
                     Slider(value: $hudDuration, in: 0.8...4, step: 0.1)
                     Text(String(format: "%.1f sn", hudDuration)).monospacedDigit().frame(width: 50)
-                }.collapsesNotch()
+                }.collapsesNotch().srow("hud/Gösterge süresi")
                 HStack {
                     Text("Önizle")
                     Button("Ses") { NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.volume) }
                     Button("Parlaklık") { NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.brightness) }
                     if hud.keyboardAvailable { Button("Klavye") { NotchController.shared.showCollapsedResult(); HUDService.shared.preview(.keyboard) } }
                 }
-                Toggle("Tuşları Mate Notch işlesin: sistem göstergesi gizlenir, adım ayarlanır (deneysel)", isOn: $hudHideSystem)
+                Toggle("Tuşları Mate Notch işlesin: sistem göstergesi gizlenir, adım ayarlanır (deneysel)", isOn: $hudHideSystem).srow("hud/Tuşları Mate Notch işlesin: sistem göstergesi gizlenir, adım ayarlanır (deneysel)")
                     .onChange(of: hudHideSystem) { _, _ in HUDService.shared.applyHideSystem(userInitiated: true) }
                 HStack {
                     Text("Tuş başına değişim")
                     Slider(value: $hudStep, in: 1...20, step: 1)
                     Text("%\(Int(hudStep))").monospacedDigit().frame(width: 40)
-                }
+                }.srow("hud/Tuş başına değişim")
                 .disabled(!hudHideSystem).opacity(hudHideSystem ? 1 : 0.5)
                 Picker("İnce adım tuşu", selection: $hudFineKey) {
                     Text("⇧⌥ (Shift + Option)").tag("shiftOption")
                     Text("⌥ (Option)").tag("option")
                     Text("⇧ (Shift)").tag("shift")
                     Text("⌃ (Control)").tag("control")
-                }
+                }.srow("hud/İnce adım tuşu")
                 .disabled(!hudHideSystem).opacity(hudHideSystem ? 1 : 0.5)
                 if !hudHideSystem {
                     Text("Ses açma/kısma ve parlaklık açma/kısma tuşlarının her basışta kaç yüzde değişeceği. Bu ayar yalnızca yukarıdaki seçenek açıkken geçerli (tuşları Mate Notch işlediği için).")
@@ -1375,30 +1375,30 @@ struct SettingsView: View {
             }
         case "battery":
             Section("Pil ve düşük pil uyarısı") {
-                Toggle("Düşük pil uyarısı (Mac)", isOn: $lowBatteryAlert)
-                Toggle("Bluetooth cihazlar için de uyar (kulaklık, fare…)", isOn: $lowBatteryDevices).disabled(!bluetoothBatteries)
+                Toggle("Düşük pil uyarısı (Mac)", isOn: $lowBatteryAlert).srow("battery/Düşük pil uyarısı (Mac)")
+                Toggle("Bluetooth cihazlar için de uyar (kulaklık, fare…)", isOn: $lowBatteryDevices).disabled(!bluetoothBatteries).srow("battery/Bluetooth cihazlar için de uyar (kulaklık, fare…)")
                 HStack {
                     Text("Uyarı seviyesi")
                     Slider(value: $lowBatteryLevel, in: 5...50, step: 5)
                     Text("%\(Int(lowBatteryLevel))").monospacedDigit().frame(width: 40)
-                }
-                Toggle("Bluetooth cihaz pillerini oku", isOn: $bluetoothBatteries)
+                }.srow("battery/Uyarı seviyesi")
+                Toggle("Bluetooth cihaz pillerini oku", isOn: $bluetoothBatteries).srow("battery/Bluetooth cihaz pillerini oku")
                     .onChange(of: bluetoothBatteries) { _, _ in DeviceBatteryService.shared.refresh() }
-                Toggle("Kulaklık/cihaz pilini açık notch'un başlığında göster", isOn: $headerDeviceBattery)
+                Toggle("Kulaklık/cihaz pilini açık notch'un başlığında göster", isOn: $headerDeviceBattery).srow("battery/Kulaklık/cihaz pilini açık notch'un başlığında göster")
                 Text("Pil yüzdesine tıklayınca Piller ekranı açılır. Uyarı iki aşamalıdır: seçtiğin seviyede \"Pil azalıyor\", yaklaşık %10'da \"Pil çok düşük\" (Mac için ses de çalar); şarja takılınca ya da seviye yükselince sıfırlanır. Bazı kulaklıklar (ör. bazı yarı kablosuz modeller) pil seviyesini macOS'a bildirmez; onlar için yüzde gösterilemez. iPhone, iPad ve Apple Watch pilleri macOS tarafından üçüncü taraf uygulamalara verilmiyor.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         case "alerts":
             Section("Göstergeler ve bildirimler") {
-                Toggle("Bluetooth kulaklık bağlanınca bildir (AirPods pil durumu dahil)", isOn: $bannerBluetooth)
-                Toggle("Kamera / mikrofon kullanımdayken göster", isOn: $privacyIndicator).collapsesNotch()
-                Toggle("İndirme ilerlemesini göster (İndirilenler klasörü)", isOn: $downloadIndicator).collapsesNotch()
+                Toggle("Bluetooth kulaklık bağlanınca bildir (AirPods pil durumu dahil)", isOn: $bannerBluetooth).srow("alerts/Bluetooth kulaklık bağlanınca bildir (AirPods pil durumu dahil)")
+                Toggle("Kamera / mikrofon kullanımdayken göster", isOn: $privacyIndicator).collapsesNotch().srow("alerts/Kamera / mikrofon kullanımdayken göster")
+                Toggle("İndirme ilerlemesini göster (İndirilenler klasörü)", isOn: $downloadIndicator).collapsesNotch().srow("alerts/İndirme ilerlemesini göster (İndirilenler klasörü)")
                 Text("Kamera/mikrofon göstergesi izin gerektirmez. İndirilenler için macOS bir kez izin sorar.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         case "focus":
             Section("Odak (Rahatsız Etmeyin)") {
-                Toggle("Odak açıkken notch'ta ay simgesi göster", isOn: $focusIndicator).collapsesNotch()
+                Toggle("Odak açıkken notch'ta ay simgesi göster", isOn: $focusIndicator).collapsesNotch().srow("focus/Odak açıkken notch'ta ay simgesi göster")
                     .onChange(of: focusIndicator) { _, on in if on { FocusService.shared.enable() } else { FocusService.shared.refresh() } }
                 if focusIndicator {
                     HStack(spacing: 8) {
@@ -1418,10 +1418,10 @@ struct SettingsView: View {
             }
         case "weather":
             Section("Hava durumu") {
-                Toggle("Hava durumunu göster (Ana Sayfa)", isOn: $weatherEnabled)
+                Toggle("Hava durumunu göster (Ana Sayfa)", isOn: $weatherEnabled).srow("weather/Hava durumunu göster (Ana Sayfa)")
                     .onChange(of: weatherEnabled) { _, _ in WeatherService.shared.refresh() }
                 if weatherEnabled {
-                    Picker("Sıcaklık birimi", selection: $weatherUnit) { Text("°C").tag("c"); Text("°F").tag("f") }
+                    Picker("Sıcaklık birimi", selection: $weatherUnit) { Text("°C").tag("c"); Text("°F").tag("f") }.srow("weather/Sıcaklık birimi")
                         .pickerStyle(.segmented)
                     HStack {
                         TextField("Şehir (ör. İstanbul)", text: $cityQuery).onSubmit { WeatherService.shared.search(cityQuery) }
@@ -1445,15 +1445,15 @@ struct SettingsView: View {
             }
         case "home":
             Section("Ana Sayfa") {
-                Toggle("Takvim kartı", isOn: $showCalendar)
-                Toggle("Bugünün tarihini göster", isOn: $calDate).disabled(!showCalendar)
-                Toggle("Sıradaki etkinliği göster", isOn: $calEvent).disabled(!showCalendar)
-                Toggle("Bağlantılı toplantıdan 5 dk önce uyar (Katıl düğmesi her zaman görünür)", isOn: $meetingAlert)
-                Toggle("Uyanık tut düğmesi", isOn: $qbCaffeinate)
-                Toggle("25 dk odak düğmesi", isOn: $qbTimer)
-                Toggle("Ekran görüntüsü düğmesi", isOn: $qbCapture)
-                Toggle("Renk seçici düğmesi (ekrandan renk al, hex kodunu kopyala)", isOn: $qbColor)
-                Toggle("Kısayollar düğmesi (Apple Kısayollar'ı çalıştır)", isOn: $qbShortcuts)
+                Toggle("Takvim kartı", isOn: $showCalendar).srow("home/Takvim kartı")
+                Toggle("Bugünün tarihini göster", isOn: $calDate).disabled(!showCalendar).srow("home/Bugünün tarihini göster")
+                Toggle("Sıradaki etkinliği göster", isOn: $calEvent).disabled(!showCalendar).srow("home/Sıradaki etkinliği göster")
+                Toggle("Bağlantılı toplantıdan 5 dk önce uyar (Katıl düğmesi her zaman görünür)", isOn: $meetingAlert).srow("home/Bağlantılı toplantıdan 5 dk önce uyar (Katıl düğmesi her zaman görünür)")
+                Toggle("Uyanık tut düğmesi", isOn: $qbCaffeinate).srow("home/Uyanık tut düğmesi")
+                Toggle("25 dk odak düğmesi", isOn: $qbTimer).srow("home/25 dk odak düğmesi")
+                Toggle("Ekran görüntüsü düğmesi", isOn: $qbCapture).srow("home/Ekran görüntüsü düğmesi")
+                Toggle("Renk seçici düğmesi (ekrandan renk al, hex kodunu kopyala)", isOn: $qbColor).srow("home/Renk seçici düğmesi (ekrandan renk al, hex kodunu kopyala)")
+                Toggle("Kısayollar düğmesi (Apple Kısayollar'ı çalıştır)", isOn: $qbShortcuts).srow("home/Kısayollar düğmesi (Apple Kısayollar'ı çalıştır)")
             }
         case "capture":
             Section("Ekran görüntüsü butonu") {
@@ -1462,22 +1462,22 @@ struct SettingsView: View {
                     Text("Tam ekran görüntüsü").tag("full")
                     Text("Video kaydı (tekrar basınca durur)").tag("video")
                     Text("Sistem çekim aracı (⇧⌘5)").tag("tool")
-                }
-                Toggle("Görüntüyü panoya kopyala (kapalıysa Masaüstü'ne kaydet)", isOn: $captureClipboard)
+                }.srow("capture/Buton ne yapsın")
+                Toggle("Görüntüyü panoya kopyala (kapalıysa Masaüstü'ne kaydet)", isOn: $captureClipboard).srow("capture/Görüntüyü panoya kopyala (kapalıysa Masaüstü'ne kaydet)")
                     .disabled(captureMode == "video" || captureMode == "tool")
                 Text("Video kayıtları her zaman Masaüstü'ne .mov olarak kaydedilir. Kayıt sırasında notch'ta kırmızı \"KAYIT\" görünür. İlk kullanımda macOS Ekran Kaydı izni isteyebilir.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         case "lyrics":
             Section("Mate Lyrics") {
-                Toggle("Şarkı sözlerini göster", isOn: $lyricsOn)
-                Toggle("Notch'ta anlık söz satırı", isOn: $lyricsInNotch).disabled(!lyricsOn)
+                Toggle("Şarkı sözlerini göster", isOn: $lyricsOn).srow("lyrics/Şarkı sözlerini göster")
+                Toggle("Notch'ta anlık söz satırı", isOn: $lyricsInNotch).disabled(!lyricsOn).srow("lyrics/Notch'ta anlık söz satırı")
                     .collapsesNotch()
                     .onChange(of: lyricsInNotch) { _, _ in NotchController.shared.showCollapsedResult() }
                 Picker("Notch'ta kaç satır görünsün", selection: $pillLines) {
                     Text("1 satır").tag(1)
                     Text("2 satır (anlık + sonraki)").tag(2)
-                }
+                }.srow("lyrics/Notch'ta kaç satır görünsün")
                 .pickerStyle(.segmented).disabled(!lyricsOn || !lyricsInNotch)
                 .collapsesNotch()
                 .onChange(of: pillLines) { _, _ in NotchController.shared.showCollapsedResult() }
@@ -1486,10 +1486,10 @@ struct SettingsView: View {
             }
         case "tabs":
             Section("Sekmeler") {
-                Toggle("Raf", isOn: $showShelf)
-                Toggle("Pano geçmişi", isOn: $showClipboard)
-                Toggle("Zamanlayıcı", isOn: $showTimer)
-                Toggle("Sistem durumu", isOn: $showStats)
+                Toggle("Raf", isOn: $showShelf).srow("tabs/Raf")
+                Toggle("Pano geçmişi", isOn: $showClipboard).srow("tabs/Pano geçmişi")
+                Toggle("Zamanlayıcı", isOn: $showTimer).srow("tabs/Zamanlayıcı")
+                Toggle("Sistem durumu", isOn: $showStats).srow("tabs/Sistem durumu")
             }
         case "shortcut":
             Section("Kısayol") {

@@ -53,18 +53,39 @@ struct SettingsShell: View {
         return t[id] ?? id
     }
 
-    private var matches: [String] {
+    /// Aranan sözcüklerin hepsini içeren ayar satırları (başlık + tüm dillerdeki karşılıkları + eş anlamlılar).
+    private var rowMatches: [SettingRowItem] {
         let words = Self.fold(query).split(separator: " ").map(String.init)
         guard !words.isEmpty else { return [] }
         let order = Self.categories.flatMap(\.sections)
-        return order.filter { id in
+        return SettingsIndex.rows.filter { r in
+            let hay = Self.fold(r.title + " " + String(localized: String.LocalizationValue(r.title)) + " " + r.search )
+            return words.allSatisfy { hay.contains($0) }
+        }.sorted { (order.firstIndex(of: $0.section) ?? 99) < (order.firstIndex(of: $1.section) ?? 99) }
+    }
+
+    /// Satır bulunamazsa bölüm anahtar sözcüklerine bakılır (ör. "hud").
+    private var sectionMatches: [String] {
+        let words = Self.fold(query).split(separator: " ").map(String.init)
+        guard !words.isEmpty else { return [] }
+        return Self.categories.flatMap(\.sections).filter { id in
             let hay = Self.fold(sectionTitle(id) + " " + String(localized: String.LocalizationValue(sectionTitle(id))) + " " + (Self.keywords[id] ?? ""))
             return words.allSatisfy { hay.contains($0) }
         }
     }
 
     @State private var selection: String? = "look"
+    @ObservedObject private var nav = SettingsNav.shared
     private static let tint: [String: Color] = ["look": .purple, "behavior": .blue, "hud": .pink, "music": .red, "battery": .green, "tools": .orange, "general": .gray]
+
+    private func category(of section: String) -> Category? { Self.categories.first { $0.sections.contains(section) } }
+
+    private func open(section: String, row: String?) {
+        guard let c = category(of: section) else { return }
+        query = ""
+        selection = c.id
+        nav.pending = row ?? "sec:" + section
+    }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -131,19 +152,65 @@ struct SettingsShell: View {
 
     @ViewBuilder private var detail: some View {
         if !query.isEmpty {
-            let m = matches
-            if m.isEmpty {
+            let rows = rowMatches
+            let secs = rows.isEmpty ? sectionMatches : []
+            if rows.isEmpty && secs.isEmpty {
                 VStack(spacing: 6) {
                     Image(systemName: "magnifyingglass").font(.system(size: 26)).foregroundStyle(.tertiary)
                     Text("Sonuç bulunamadı").foregroundStyle(.secondary)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                Form { ForEach(m, id: \.self) { sectionView($0) } }.formStyle(.grouped)
+                Form {
+                    Section {
+                        ForEach(rows, id: \.key) { r in
+                            resultRow(title: String(localized: String.LocalizationValue(r.title)), section: r.section) { open(section: r.section, row: r.key) }
+                        }
+                        ForEach(secs, id: \.self) { id in
+                            resultRow(title: String(localized: String.LocalizationValue(sectionTitle(id))), section: id) { open(section: id, row: nil) }
+                        }
+                    }
+                }.formStyle(.grouped)
             }
         } else if let cat = Self.categories.first(where: { $0.id == selection }) {
-            Form { ForEach(cat.sections, id: \.self) { sectionView($0) } }.formStyle(.grouped)
+            ScrollViewReader { proxy in
+                Form { ForEach(cat.sections, id: \.self) { sectionView($0).id("sec:" + $0) } }
+                    .formStyle(.grouped)
+                    .task(id: nav.pending) { await jump(proxy, cat) }
+            }
         } else {
             Color.clear
         }
+    }
+
+    /// Sonuca tıklanınca: satıra kaydır, kısa süre vurgula.
+    private func jump(_ proxy: ScrollViewProxy, _ cat: Category) async {
+        guard let key = nav.pending else { return }
+        try? await Task.sleep(nanoseconds: 180_000_000)
+        withAnimation(.easeInOut(duration: 0.3)) { proxy.scrollTo(key, anchor: .center) }
+        if !key.hasPrefix("sec:") {
+            nav.highlight = key
+            try? await Task.sleep(nanoseconds: 1_800_000_000)
+            if nav.highlight == key { nav.highlight = nil }
+        }
+        if nav.pending == key { nav.pending = nil }
+    }
+
+    private func resultRow(title: String, section: String, action: @escaping () -> Void) -> some View {
+        let cat = category(of: section)
+        return Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: cat?.icon ?? "gearshape").font(.system(size: 11, weight: .semibold)).foregroundStyle(.white)
+                    .frame(width: 22, height: 22)
+                    .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill((Self.tint[cat?.id ?? ""] ?? .accentColor).gradient))
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(title).foregroundStyle(.primary).lineLimit(2)
+                    Text((cat?.title ?? "") + " › " + String(localized: String.LocalizationValue(sectionTitle(section)))).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.tertiary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
