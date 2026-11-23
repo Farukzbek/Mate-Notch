@@ -1,0 +1,26 @@
+name: Bug report / Hata bildirimi
+description: Something doesn't work as expected / Beklediğin gibi çalışmayan bir şey var
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened? / Ne oldu?
+      description: What did you do, what did you expect, what happened instead? / Ne yaptın, ne bekledin, ne oldu?
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: Mate Notch version / Sürüm
+      placeholder: "1.0.12 (Settings › General › Updates)"
+    validations: { required: true }
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version and Mac model / macOS sürümü ve Mac modeli
+      placeholder: "macOS 26.1, MacBook Pro 14-inch (M3)"
+    validations: { required: true }
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshot or anything else / Ekran görüntüsü ya da ek bilgi

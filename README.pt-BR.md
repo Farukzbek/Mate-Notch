@@ -1,6 +1,15 @@
 <p align="center"><a href="README.tr.md">Türkçe</a> · <a href="README.md">English</a> · <a href="README.de.md">Deutsch</a> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · <b>Português (Brasil)</b></p>
 
 <p align="center">
+  <a href="https://github.com/Farukzbek/Mate-Notch/releases/latest"><img src="https://img.shields.io/github/v/release/Farukzbek/Mate-Notch?style=flat-square&color=8b7cff" alt="Latest release"></a>
+  <a href="https://github.com/Farukzbek/Mate-Notch/releases"><img src="https://img.shields.io/github/downloads/Farukzbek/Mate-Notch/total?style=flat-square&color=5ab0ff" alt="Downloads"></a>
+  <img src="https://img.shields.io/badge/macOS-14%2B-black?style=flat-square&logo=apple" alt="macOS 14+">
+  <img src="https://img.shields.io/badge/notarized-by%20Apple-5be0a0?style=flat-square" alt="Notarized by Apple">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Farukzbek/Mate-Notch?style=flat-square" alt="MIT license"></a>
+  <a href="https://github.com/Farukzbek/Mate-Notch/stargazers"><img src="https://img.shields.io/github/stars/Farukzbek/Mate-Notch?style=flat-square&color=f5b301" alt="Stars"></a>
+</p>
+
+<p align="center">
   <img src="docs/icon.png" width="110" alt="Mate Notch icon">
 </p>
 
@@ -91,6 +100,10 @@ cd Mate-Notch
 Isso compila, assina, notariza, cria a tag, faz push, cria a versão do GitHub com o `Mate-Notch.dmg` e sua soma de verificação, e atualiza o cask do Homebrew. O arquivo deve continuar se chamando `Mate-Notch.dmg`; o link de download acima aponta para ele.
 
 Para assinatura e notarização, veja [docs/IMZA.md](docs/IMZA.md) (em turco).
+
+## Apoie o projeto
+
+Se o Mate Notch é útil para você, uma ⭐ no GitHub ajuda outras pessoas a encontrá-lo, e mostrá-lo a um amigo ajuda ainda mais. Erros e ideias são bem-vindos em [Issues](https://github.com/Farukzbek/Mate-Notch/issues); para ajudar com código ou traduções, veja [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Licença
 

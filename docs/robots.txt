@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://farukzbek.github.io/Mate-Notch/sitemap.xml
