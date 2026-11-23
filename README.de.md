@@ -46,7 +46,11 @@
 - **Timer, Systemstatus (CPU / Speicher / Datenträger), Wach halten, nächster Termin aus deinem Kalender.**
 - **Erscheinungsbild:** Schwarz, einfarbig, Albumfarbe oder **Liquid Glass** (Dichte und Glasart einstellbar); Größe im geöffneten/geschlossenen Zustand, Auslösebereich und Verzögerungen sind einstellbar.
 - **Einstellungen sichern:** Export und Import unter Einstellungen › Allgemein.
-- Kurzbefehl: `⌃⌥Leertaste` blendet ihn ein/aus. Ein lächelndes Symbol in der Menüleiste; er belegt keinen Platz im Dock.
+- **Notizen-Tab:** Ein einzeiliges Notizbuch im Notch. Ein Klick auf eine Notiz kopiert sie; du kannst sie (oder alle) an die Notizen-App senden.
+- **Mehr Musik:** Ein Einschlaf-Timer (Stopp nach 15–90 Min. oder am Songende), ein Herz zum Liken in Apple Music und optionale KI-Übersetzung der Songtexte in deine Oberflächensprache.
+- **Ablage-Werkzeuge:** Echte Vorschaubilder; anklicken zum Auswählen, Leertaste öffnet die macOS-Übersicht (← → zum Blättern). Rechtsklick auf ein Bild: konvertieren (PNG, JPEG, HEIC, TIFF), verkleinern oder mit Pfeilen, Kästen, Stift, Textmarker und schwarzem Schwärzungskasten markieren.
+- **Weltzeituhr und Netzwerktempo:** Bis zu drei Städte unter dem System-Tab mit Zeitunterschied sowie Download-/Upload-Tempo in Echtzeit (Mbit/s oder MB/s).
+- Kürzel: `⌃⌥Leertaste` blendet ihn ein/aus, und du kannst jedem Tab ein eigenes globales Kürzel zuweisen (Einstellungen › Verhalten und Tabs › Kürzel). Ein lächelndes Symbol in der Menüleiste; er belegt keinen Platz im Dock.
 
 ## Installation
 

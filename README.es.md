@@ -46,7 +46,11 @@
 - **Temporizador, estado del sistema (CPU / memoria / disco), mantener activo, próximo evento de tu calendario.**
 - **Apariencia:** Negro, color sólido, color del álbum o **Liquid Glass** (densidad y tipo de cristal ajustables); tamaño abierto/cerrado, zona de activación y retardos ajustables.
 - **Copia de seguridad de ajustes:** Exportar e importar desde Ajustes › General.
-- Atajo: `⌃⌥Espacio` lo muestra/oculta. Un icono sonriente en la barra de menús; no ocupa sitio en el Dock.
+- **Pestaña Notas:** Un bloc de notas de una línea en el notch. Haz clic en una nota para copiarla, o envíala (o todas) a la app Notas.
+- **Más música:** Un temporizador de sueño (detener tras 15–90 min o al acabar la canción), un corazón para marcar la canción como favorita en Apple Music y traducción opcional de la letra con IA al idioma de la interfaz.
+- **Herramientas del estante:** Miniaturas de vista previa reales; haz clic para seleccionar y pulsa Espacio para el panel de Vista rápida de macOS (← → para navegar). Clic derecho en una imagen: convertirla (PNG, JPEG, HEIC, TIFF), reducirla o marcarla con flechas, cuadros, lápiz, resaltador y un cuadro negro para ocultar.
+- **Reloj mundial y velocidad de red:** Hasta tres ciudades bajo la pestaña Sistema con la diferencia horaria, y la velocidad de descarga/subida en vivo (Mbps o MB/s).
+- Atajo: `⌃⌥Espacio` lo muestra/oculta, y puedes asignar un atajo global propio a cada pestaña (Ajustes › Comportamiento y pestañas › Atajo). Un icono sonriente en la barra de menús; no ocupa sitio en el Dock.
 
 ## Instalación
 

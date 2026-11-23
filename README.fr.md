@@ -46,7 +46,11 @@
 - **Minuteur, état du système (CPU / mémoire / disque), rester éveillé, prochain événement de votre calendrier.**
 - **Apparence :** Noir, couleur unie, couleur de l'album ou **Liquid Glass** (densité et type de verre réglables) ; taille ouvert/fermé, zone de déclenchement et délais réglables.
 - **Sauvegarde des réglages :** Exporter et importer depuis Réglages › Général.
-- Raccourci : `⌃⌥Espace` l'affiche/le masque. Une icône souriante dans la barre des menus ; il n'occupe aucune place dans le Dock.
+- **Onglet Notes :** Un bloc-notes d'une ligne dans le notch. Cliquez sur une note pour la copier, ou envoyez-la (ou toutes) vers l'app Notes.
+- **Plus de musique :** Un minuteur de veille (arrêt après 15–90 min ou à la fin du morceau), un cœur pour aimer le morceau dans Apple Music et une traduction facultative des paroles par IA dans la langue de l'interface.
+- **Outils de l'étagère :** De vraies vignettes d'aperçu ; cliquez pour sélectionner, appuyez sur Espace pour le panneau Coup d'œil de macOS (← → pour parcourir). Clic droit sur une image : la convertir (PNG, JPEG, HEIC, TIFF), la réduire ou l'annoter avec flèches, cadres, stylo, surligneur et un cadre noir pour masquer.
+- **Heure mondiale et débit réseau :** Jusqu'à trois villes sous l'onglet Système avec le décalage horaire, et le débit de téléchargement/envoi en direct (Mbit/s ou Mo/s).
+- Raccourci : `⌃⌥Espace` l'affiche/le masque, et vous pouvez attribuer un raccourci global à chaque onglet (Réglages › Comportement et onglets › Raccourci). Une icône souriante dans la barre des menus ; il n'occupe aucune place dans le Dock.
 
 ## Installation
 

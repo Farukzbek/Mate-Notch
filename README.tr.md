@@ -47,7 +47,11 @@
 - **Ayarları yedekle:** Ayarlar › Genel'den dışa/içe aktar.
 - **Zamanlayıcı, sistem durumu (CPU / bellek / disk), uyanık tut, takvimde sıradaki etkinlik.**
 - **Görünüm:** Siyah, düz renk, albüm rengi veya **Liquid Glass** (yoğunluk ve cam tipi ayarlı); açık/kapalı boyut, açılma alanı ve gecikmeleri ayarlanabilir.
-- Kısayol: `⌃⌥Space` aç/kapat. Menü çubuğunda gülen yüzlü simge; Dock'ta yer kaplamaz.
+- **Notlar sekmesi:** Notch'ta tek satırlık not defteri. Notu tıklayınca panoya kopyalanır; notu (ya da hepsini) Notlar uygulamasına aktarabilirsin.
+- **Müzikte ekstralar:** Uyku zamanlayıcısı (15–90 dk sonra ya da şarkı bitince durdur), Apple Music'te şarkıyı beğenme kalbi ve sözlerin arayüz diline yapay zekayla isteğe bağlı çevirisi.
+- **Raf araçları:** Gerçek önizleme küçük resimleri; tıklayıp seç, Boşluk'a basınca macOS Hızlı Bakış paneli açılır (← → ile gezin). Resme sağ tıkla: dönüştür (PNG, JPEG, HEIC, TIFF), küçült ya da ok, kutu, kalem, vurgu ve siyah kutuyla işaretle.
+- **Dünya saati ve ağ hızı:** Sistem sekmesinde saat farkıyla birlikte en fazla üç şehir ve canlı indirme/yükleme hızı (Mbps ya da MB/s).
+- Kısayol: `⌃⌥Space` aç/kapat; her sekmeye kendi genel kısayolunu da atayabilirsin (Ayarlar › Davranış ve sekmeler › Kısayol). Menü çubuğunda gülen yüzlü simge; Dock'ta yer kaplamaz.
 
 ## Kurulum
 

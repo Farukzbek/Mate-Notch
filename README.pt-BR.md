@@ -46,7 +46,11 @@
 - **Timer, status do sistema (CPU / memória / disco), manter ativo, próximo evento do seu calendário.**
 - **Aparência:** Preto, cor sólida, cor do álbum ou **Liquid Glass** (densidade e tipo de vidro ajustáveis); tamanho aberto/fechado, área de ativação e atrasos ajustáveis.
 - **Backup dos ajustes:** Exportar e importar em Ajustes › Geral.
-- Atalho: `⌃⌥Espaço` mostra/oculta. Um ícone sorridente na barra de menus; não ocupa espaço no Dock.
+- **Aba Notas:** Um bloco de notas de uma linha no notch. Clique em uma nota para copiá-la, ou envie-a (ou todas) para o app Notas.
+- **Mais música:** Um timer de sono (parar após 15–90 min ou ao fim da música), um coração para curtir a música no Apple Music e tradução opcional da letra com IA para o idioma da interface.
+- **Ferramentas da prateleira:** Miniaturas de pré-visualização reais; clique para selecionar e pressione Espaço para o painel de Visualização rápida do macOS (← → para navegar). Clique com o botão direito em uma imagem: converter (PNG, JPEG, HEIC, TIFF), reduzir ou marcar com setas, caixas, caneta, marca-texto e uma caixa preta para ocultar.
+- **Relógio mundial e velocidade de rede:** Até três cidades na aba Sistema com a diferença de horário, e a velocidade de download/upload ao vivo (Mbps ou MB/s).
+- Atalho: `⌃⌥Espaço` mostra/oculta, e você pode atribuir um atalho global próprio a cada aba (Ajustes › Comportamento e abas › Atalho). Um ícone sorridente na barra de menus; não ocupa espaço no Dock.
 
 ## Instalação
 
