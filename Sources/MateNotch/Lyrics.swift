@@ -25,17 +25,32 @@ final class LyricsService: ObservableObject {
     private var task: Task<Void, Never>?
     private var bag = Set<AnyCancellable>()
     private let offsetsKey = "lyricOffsets"
+    // Çeviri: satır id → çevrilmiş metin (arayüz diline); şarkı başına önbellek
+    @Published private(set) var translation: [Int: String] = [:]
+    @Published private(set) var translating = false
+    private var translationCache: [String: [Int: String]] = [:]
+    private var translateTask: Task<Void, Never>?
+    var translateOn: Bool { UserDefaults.standard.bool(forKey: Pref.lyricsTranslate) }
+
+    /// Satırın gösterilecek metni: çeviri açıksa ve hazırsa çeviri, değilse özgün söz.
+    func shown(_ l: LyricLine) -> String {
+        guard translateOn, l.text != "♪", let t = translation[l.id], !t.isEmpty else { return l.text }
+        return t
+    }
 
     var enabled: Bool { UserDefaults.standard.bool(forKey: Pref.lyricsEnabled) }
 
     func start() {
         MediaService.shared.$track.removeDuplicates().receive(on: DispatchQueue.main)
             .sink { [weak self] t in self?.load(t) }.store(in: &bag)
+        $state.removeDuplicates().receive(on: DispatchQueue.main).sink { [weak self] _ in self?.translateIfNeeded() }.store(in: &bag)
         // Ayar sonradan açılırsa çalan şarkı için yükle
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                guard let self, self.enabled, self.currentKey == nil else { return }
+                guard let self else { return }
+                self.translateIfNeeded()
+                guard self.enabled, self.currentKey == nil else { return }
                 self.load(MediaService.shared.track)
             }.store(in: &bag)
     }
@@ -69,6 +84,52 @@ final class LyricsService: ObservableObject {
             await MainActor.run { self.state = .notFound }
             self.currentKey = nil   // şarkı tekrar gelince yeniden denensin
         }
+    }
+
+    /// Çeviri açıksa tüm şarkının sözlerini tek istekte (cihaz içi model ya da bağlı bulut model) arayüz diline çevirir.
+    func translateIfNeeded() {
+        guard translateOn, enabled, let k = currentKey, case .synced(let lines) = state else {
+            if !translateOn, !translation.isEmpty { translation = [:] }
+            return
+        }
+        if let c = translationCache[k] { if translation != c { translation = c }; return }
+        guard !translating else { return }
+        translating = true
+        translation = [:]
+        translateTask?.cancel()
+        translateTask = Task { [weak self] in
+            let result = await Self.translate(lines)
+            await MainActor.run {
+                guard let self else { return }
+                self.translating = false
+                guard self.currentKey == k else { self.translateIfNeeded(); return }
+                if !result.isEmpty { self.translationCache[k] = result; self.translation = result }
+            }
+        }
+    }
+
+    private static func translate(_ lines: [LyricLine]) async -> [Int: String] {
+        let target = AIAction.responseLanguage
+        let system = "You translate song lyrics into \(target). The input is numbered lines in the form N|text. Reply with exactly the same lines in the form N|translation, one per input line, same numbers, nothing else. Keep lines that are only ♪ unchanged. If a line is already in \(target), repeat it as is."
+        var out: [Int: String] = [:]
+        var chunk: [String] = []; var size = 0
+        func flush() async {
+            guard !chunk.isEmpty else { return }
+            let prompt = chunk.joined(separator: "\n"); chunk = []; size = 0
+            guard let r = try? await AIService.shared.complete(system: system, prompt: prompt) else { return }
+            for row in r.text.split(separator: "\n") {
+                guard let bar = row.firstIndex(of: "|"), let n = Int(row[..<bar].trimmingCharacters(in: .whitespaces)) else { continue }
+                let t = row[row.index(after: bar)...].trimmingCharacters(in: .whitespaces)
+                if !t.isEmpty { out[n] = t }
+            }
+        }
+        for l in lines where l.text != "♪" && !l.text.trimmingCharacters(in: .whitespaces).isEmpty {
+            let row = "\(l.id)|\(l.text)"
+            if size + row.count > 2800 { await flush() }
+            chunk.append(row); size += row.count + 1
+        }
+        await flush()
+        return out
     }
 
     func adjust(by d: Double) {

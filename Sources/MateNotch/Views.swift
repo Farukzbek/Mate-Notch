@@ -1,6 +1,7 @@
 import SwiftUI
 import EventKit
 import AppKit
+import UniformTypeIdentifiers
 
 // MARK: - Root
 
@@ -321,11 +322,12 @@ struct OpenContent: View {
     @AppStorage(Pref.showTimer) var showTimer = true
     @AppStorage(Pref.showStats) var showStats = true
     @AppStorage(Pref.showAI) var showAI = true
+    @AppStorage("showNotes") var showNotes = true
     @AppStorage(Pref.headerDeviceBattery) var headerDeviceBattery = true
     @ObservedObject var deviceBattery = DeviceBatteryService.shared
     @AppStorage(Pref.uiScale) var uiScale = 1.0
 
-    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI); return Tab.visible().filter { $0 != .ai && $0 != .batteries } }
+    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI, showNotes); return Tab.visible().filter { $0 != .ai && $0 != .batteries && $0 != .notes } }
 
     var body: some View {
         let g = state.geometry
@@ -344,10 +346,12 @@ struct OpenContent: View {
                                 .foregroundStyle(state.tab == .ai ? Color.white : .white.opacity(0.5))
                         }.buttonStyle(.plain).morph(L("Yapay Zeka"))
                     }
-                    Button { state.pinned.toggle() } label: {
-                        Image(systemName: state.pinned ? "pin.fill" : "pin")
-                            .foregroundStyle(state.pinned ? Color.yellow : .white.opacity(0.5))
-                    }.buttonStyle(.plain).morph(state.pinned ? L("Bırak") : L("Sabitle"))
+                    if showNotes {
+                        Button { withAnimation(.snappy(duration: 0.25)) { state.tab = .notes } } label: {
+                            Image(systemName: "note.text")
+                                .foregroundStyle(state.tab == .notes ? Color.white : .white.opacity(0.5))
+                        }.buttonStyle(.plain).morph(L("Notlar"))
+                    }
                     Button { SettingsWindow.show() } label: {
                         Image(systemName: "gearshape.fill").foregroundStyle(.white.opacity(0.5))
                     }.buttonStyle(.plain).morph(L("Ayarlar"))
@@ -382,6 +386,7 @@ struct OpenContent: View {
                 case .clipboard: ClipboardView()
                 case .timer: TimerView()
                 case .stats: StatsView()
+                case .notes: NotesView()
                 }
             }
             .padding(.horizontal, 28)
@@ -451,7 +456,11 @@ struct MediaCard: View {
                     Spacer(minLength: 2)
                     scrubber(t)
                     HStack(spacing: 0) {
-                        OutputPickerButton().frame(width: 24, height: 24)
+                        HStack(spacing: 2) {
+                            OutputPickerButton().frame(width: 24, height: 24)
+                            SleepTimerButton().frame(width: 24, height: 24)
+                            LikeButton().frame(width: 24, height: 24)
+                        }.frame(width: 76, alignment: .leading)
                         Spacer(minLength: 0)
                         HStack(spacing: 22) {
                         Button { media.previous() } label: { Image(systemName: "backward.fill") }.tip(L("Önceki"), .top)
@@ -461,7 +470,7 @@ struct MediaCard: View {
                         Button { media.next() } label: { Image(systemName: "forward.fill") }.tip(L("Sonraki"), .top)
                         }
                         Spacer(minLength: 0)
-                        LyricsToggle()
+                        LyricsToggle().frame(width: 76, alignment: .trailing)
                     }
                     .buttonStyle(PressStyle())
                     .font(.system(size: 15))
@@ -785,6 +794,7 @@ struct AirDropGlyph: View {
 struct ShelfZone: View {
     @ObservedObject var shelf = ShelfService.shared
     @State private var targeted = false
+    @State private var keyMonitor: Any?
 
     var body: some View {
         ZStack {
@@ -821,21 +831,78 @@ struct ShelfZone: View {
             }
         }
         .background(FileDropTarget(onTargeted: { targeted = $0 }, onDrop: { shelf.add($0) }))
+        .contentShape(Rectangle())
+        .onTapGesture { shelf.selected = nil }
+        .onAppear { installKeys() }
+        .onDisappear { if let m = keyMonitor { NSEvent.removeMonitor(m); keyMonitor = nil } }
+    }
+
+    /// Boşluk: seçili dosyanın Hızlı Bakış'ı; ←/→: seçimi kaydır; Esc: seçimi bırak.
+    private func installKeys() {
+        guard keyMonitor == nil else { return }
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { e in
+            guard NotchState.shared.isOpen, NotchState.shared.tab == .shelf, !shelf.urls.isEmpty else { return e }
+            if e.window is NSPanel, e.window?.firstResponder is NSTextView { return e }
+            let list = shelf.urls
+            let i = shelf.selected.flatMap { list.firstIndex(of: $0) }
+            switch e.keyCode {
+            case 49:      // Space
+                guard let s = shelf.selected else { return e }
+                ShelfPreview.shared.toggle(items: list, current: s); return nil
+            case 123, 124:    // ← →
+                let n = e.keyCode == 124 ? (i.map { min(list.count - 1, $0 + 1) } ?? 0) : (i.map { max(0, $0 - 1) } ?? list.count - 1)
+                shelf.selected = list[n]; return nil
+            case 53:
+                if shelf.selected != nil { shelf.selected = nil; return nil }
+                return e
+            default: return e
+            }
+        }
     }
 }
 
 struct ShelfItem: View {
     let url: URL
     @ObservedObject var shelf = ShelfService.shared
+    @State private var thumb: NSImage?
     var body: some View {
         VStack(spacing: 4) {
-            Image(nsImage: NSWorkspace.shared.icon(forFile: url.path)).resizable().frame(width: 46, height: 46)
+            Group {
+                if let t = thumb {
+                    Image(nsImage: t).resizable().scaledToFill().frame(width: 46, height: 46).clipped()
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(.white.opacity(0.18), lineWidth: 0.8))
+                } else {
+                    Image(nsImage: NSWorkspace.shared.icon(forFile: url.path)).resizable().frame(width: 46, height: 46)
+                }
+            }
+            .task(id: url) { thumb = await Thumbnails.image(for: url) }
             Text(url.lastPathComponent).font(.system(size: 10)).lineLimit(1).frame(width: 68)
         }
+        .padding(5)
+        .background(RoundedRectangle(cornerRadius: 11, style: .continuous)
+            .fill(Color.accentColor.opacity(shelf.selected == url ? 0.28 : 0)))
+        .overlay(RoundedRectangle(cornerRadius: 11, style: .continuous)
+            .stroke(Color.accentColor.opacity(shelf.selected == url ? 0.9 : 0), lineWidth: 1.2))
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) { NSWorkspace.shared.open(url) }
+        .onTapGesture { shelf.selected = url }
         .onDrag { NSItemProvider(object: url as NSURL) }
         .contextMenu {
             Button("Aç") { NSWorkspace.shared.open(url) }
             Button("Hızlı Bakış") { QuickLook.preview(url) }
+            if FileTools.isImage(url) {
+                Button("İşaretle…") { MarkupWindow.show(url: url) }
+                Menu("Dönüştür") {
+                    Button("PNG") { FileTools.convert(url, to: .png) }
+                    Button("JPEG") { FileTools.convert(url, to: .jpeg) }
+                    Button("HEIC") { FileTools.convert(url, to: .heic) }
+                    Button("TIFF") { FileTools.convert(url, to: .tiff) }
+                    Divider()
+                    Button("Yarı boyuta küçült") { FileTools.convert(url, to: UTType(filenameExtension: url.pathExtension) ?? .png, scale: 0.5, suffix: " (küçük)") }
+                    Button("Dörtte bire küçült") { FileTools.convert(url, to: UTType(filenameExtension: url.pathExtension) ?? .png, scale: 0.25, suffix: " (çok küçük)") }
+                }
+            }
             Divider()
             Button("Dosyayı panoya kopyala") { NSPasteboard.general.clearContents(); NSPasteboard.general.writeObjects([url as NSURL]) }
             Button("Yolu kopyala") { NSPasteboard.general.clearContents(); NSPasteboard.general.setString(url.path, forType: .string) }
@@ -1052,7 +1119,48 @@ struct TimerView: View {
 struct StatsView: View {
     @ObservedObject var stats = StatsService.shared
     var body: some View {
+        VStack(spacing: 8) {
+            top
+            WorldClockStrip()
+        }
+        .onAppear { stats.retain() }
+        .onDisappear { stats.release() }
+    }
+
+    /// Birim: "bits" (Mbps, hız testleriyle aynı) ya da "bytes" (MB/s).
+    static func speed(_ b: Double) -> String {
+        if UserDefaults.standard.string(forKey: "netUnit") == "bytes" {
+            return b >= 1_048_576 ? String(format: "%.1f MB/s", b / 1_048_576) : String(format: "%.0f KB/s", b / 1024)
+        }
+        let bits = b * 8
+        return bits >= 1_000_000 ? String(format: "%.1f Mbps", bits / 1_000_000) : String(format: "%.0f Kbps", bits / 1000)
+    }
+
+    var network: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("AĞ").font(.system(size: 9, weight: .semibold)).foregroundStyle(.white.opacity(0.4))
+            Spacer(minLength: 4)
+            netRow(icon: "arrow.down", title: L("İndirme"), value: stats.netDown, color: Color(red: 0.4, green: 0.8, blue: 1))
+            Spacer(minLength: 6)
+            netRow(icon: "arrow.up", title: L("Yükleme"), value: stats.netUp, color: Color(red: 1, green: 0.7, blue: 0.4))
+        }
+        .padding(10).frame(width: 128).frame(maxHeight: .infinity, alignment: .topLeading)
+        .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.07)))
+    }
+
+    func netRow(icon: String, title: String, value: Double, color: Color) -> some View {
+        HStack(spacing: 7) {
+            Image(systemName: icon).font(.system(size: 11, weight: .bold)).foregroundStyle(color).frame(width: 14)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title).font(.system(size: 9)).foregroundStyle(.white.opacity(0.45))
+                Text(Self.speed(value)).font(.system(size: 12, weight: .semibold, design: .rounded)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.8)
+            }
+        }
+    }
+
+    var top: some View {
         HStack(spacing: 14) {
+            network
             ring(L("İŞLEMCİ"), stats.cpu, .green)
             ring("BELLEK", stats.mem, .blue)
             ring(L("DİSK"), stats.disk, .purple)
@@ -1072,8 +1180,6 @@ struct StatsView: View {
                 .buttonStyle(PressStyle()).padding(7)
             }
         }
-        .onAppear { stats.retain() }
-        .onDisappear { stats.release() }
     }
 
     func ring(_ title: String, _ v: Double, _ c: Color) -> some View {
@@ -1083,7 +1189,7 @@ struct StatsView: View {
                 Circle().trim(from: 0, to: v).stroke(c, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                     .rotationEffect(.degrees(-90)).animation(.easeOut(duration: 0.6), value: v)
                 Text("\(Int(v * 100))%").font(.system(size: 14, weight: .semibold, design: .rounded)).monospacedDigit()
-            }.frame(width: 72, height: 72)
+            }.frame(width: 66, height: 66)
             Text(title).font(.system(size: 9, weight: .semibold)).foregroundStyle(.white.opacity(0.45))
         }
     }
@@ -1124,8 +1230,14 @@ struct SettingsView: View {
     @AppStorage("weatherUnit") var weatherUnit = "c"
     @AppStorage(Pref.weatherCity) var weatherCity = ""
     @AppStorage(Pref.showStats) var showStats = true
+    @AppStorage("showNotes") var showNotes = true
+    @AppStorage("netUnit") var netUnit = "bits"
+    @AppStorage("clock1") var clock1 = ""
+    @AppStorage("clock2") var clock2 = ""
+    @AppStorage("clock3") var clock3 = ""
     @AppStorage(Pref.lyricsEnabled) var lyricsOn = false
     @AppStorage(Pref.lyricsInNotch) var lyricsInNotch = true
+    @AppStorage(Pref.lyricsTranslate) var lyricsTranslate = false
     @AppStorage(Pref.uiScale) var uiScale = 1.0
     @AppStorage(Pref.pillLines) var pillLines = 1
     @AppStorage(Pref.showArtwork) var showArtwork = true
@@ -1474,6 +1586,10 @@ struct SettingsView: View {
                 Toggle("Notch'ta anlık söz satırı", isOn: $lyricsInNotch).disabled(!lyricsOn).srow("lyrics/Notch'ta anlık söz satırı")
                     .collapsesNotch()
                     .onChange(of: lyricsInNotch) { _, _ in NotchController.shared.showCollapsedResult() }
+                Toggle("Sözleri arayüz diline çevir (yapay zeka)", isOn: $lyricsTranslate).disabled(!lyricsOn).srow("lyrics/Sözleri arayüz diline çevir (yapay zeka)")
+                    .onChange(of: lyricsTranslate) { _, _ in LyricsService.shared.translateIfNeeded() }
+                Text("Şarkının sözleri bir kez, cihaz içi Apple modeliyle (ya da bağladığın bulut modelle) çevrilir; çeviri açıkken özgün söz yerine gösterilir. Bulut model bağlıysa sözler o sağlayıcıya gönderilir. Sağ tık menüsünden de açılıp kapanır.")
+                    .font(.caption).foregroundStyle(.secondary)
                 Picker("Notch'ta kaç satır görünsün", selection: $pillLines) {
                     Text("1 satır").tag(1)
                     Text("2 satır (anlık + sonraki)").tag(2)
@@ -1490,10 +1606,30 @@ struct SettingsView: View {
                 Toggle("Pano geçmişi", isOn: $showClipboard).srow("tabs/Pano geçmişi")
                 Toggle("Zamanlayıcı", isOn: $showTimer).srow("tabs/Zamanlayıcı")
                 Toggle("Sistem durumu", isOn: $showStats).srow("tabs/Sistem durumu")
+                Toggle("Notlar", isOn: $showNotes).srow("tabs/Notlar")
+                Picker("Ağ hızı birimi", selection: $netUnit) {
+                    Text("Mbps (bit, hız testleriyle aynı)").tag("bits")
+                    Text("MB/s (bayt)").tag("bytes")
+                }.srow("tabs/Ağ hızı birimi")
+            }
+        case "clocks":
+            Section("Dünya saati") {
+                ForEach(0..<3, id: \.self) { i in
+                    Picker(L("Saat \(i + 1)"), selection: i == 0 ? $clock1 : (i == 1 ? $clock2 : $clock3)) {
+                        Text("Yok").tag("")
+                        ForEach(WorldClock.cities, id: \.id) { Text($0.name).tag($0.id) }
+                    }
+                }
+                Text("Seçtiğin şehirlerin saati Sistem sekmesinin altında görünür; yanında senin saatinle farkı yazar.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
         case "shortcut":
             Section("Kısayol") {
-                Text("⌃⌥Space — Mate Notch'u aç / kapat")
+                ForEach(HotKeyAction.allCases) { a in
+                    HStack { Text(a.title); Spacer(); ShortcutRecorder(action: a) }
+                }
+                Text("Bir kutuya tıkla, sonra kısayola bas (⌃, ⌥ ya da ⌘ ile birlikte). Esc iptal eder, Sil temizler. Sekme kısayolu o sekmeyi açar; zaten açıksa notch'u kapatır.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
         default: EmptyView()
         }
@@ -1520,7 +1656,7 @@ struct LyricPill: View {
                 ForEach(0..<(pillLines >= 2 ? 2 : 1), id: \.self) { o in
                     let i = idx + o
                     let valid = lines.indices.contains(i)
-                    let raw = valid ? lines[i].text : " "
+                    let raw = valid ? lyrics.shown(lines[i]) : " "
                     let text = raw == "♪" ? "♪  ♪  ♪" : raw
                     Text(text)
                         .font(.system(size: o == 0 ? 12.5 : 11, weight: o == 0 ? .semibold : .medium, design: .rounded))
@@ -1662,6 +1798,9 @@ struct CardLyric: View {
             m.addItem(ActionItem(L("Bu satırı açıkla")) { AIState.shared.start(.explain, text: t) })
             m.addItem(.separator())
         }
+        m.addItem(ActionItem(UserDefaults.standard.bool(forKey: Pref.lyricsTranslate) ? L("Özgün sözleri göster") : L("Sözleri çevir")) {
+            UserDefaults.standard.set(!UserDefaults.standard.bool(forKey: Pref.lyricsTranslate), forKey: Pref.lyricsTranslate)
+        })
         m.addItem(ActionItem(L("Sözleri öne al (+0,25 sn)")) { lyrics.adjust(by: 0.25) })
         m.addItem(ActionItem(L("Sözleri geciktir (−0,25 sn)")) { lyrics.adjust(by: -0.25) })
         let info = NSMenuItem(title: String(format: L("Senkron farkı: %+.2f sn"), lyrics.offset), action: nil, keyEquivalent: "")
@@ -1673,7 +1812,7 @@ struct CardLyric: View {
     /// Çalan satır parlak; gezinirken seçili satır biraz parlar; diğerleri sönük.
     func slot(_ lines: [LyricLine], _ i: Int, current: Bool, browsing: Bool) -> some View {
         let valid = lines.indices.contains(i)
-        let raw = valid ? lines[i].text : " "
+        let raw = valid ? lyrics.shown(lines[i]) : " "
         let text = raw == "♪" ? "♪  ♪  ♪" : raw
         return Text(text)
             .font(.system(size: current ? 13.5 : 11.5, weight: current ? .bold : .medium, design: .rounded))

@@ -25,6 +25,8 @@ final class MediaService: ObservableObject {
     @Published var isPlaying = false
     @Published var artwork: NSImage?
     @Published var accent: Color = .white
+    @Published var liked: Bool?                 // yalnızca Apple Music (Spotify AppleScript'le beğenmeyi desteklemez)
+    @Published var sleepEnd: Date?              // müzik uyku zamanlayıcısı
 
     private var basePos: Double = 0
     private var baseDate = Date()
@@ -43,6 +45,10 @@ final class MediaService: ObservableObject {
     }
 
     func poll() {
+        if let end = sleepEnd, Date() >= end {
+            sleepEnd = nil
+            if isPlaying { togglePlay() }
+        }
         let running = Set(NSWorkspace.shared.runningApplications.compactMap { $0.bundleIdentifier })
         let players = Player.allCases.filter { running.contains($0.rawValue) }
         guard !players.isEmpty else { apply(nil, artURL: nil); return }
@@ -119,6 +125,7 @@ final class MediaService: ObservableObject {
         let key = "\(t.player.rawValue)|\(t.title)|\(t.artist)"
         if key != lastKey {
             lastKey = key
+            refreshLiked()
             artwork = nil
             loadArtwork(t, url: art, key: key)
         }
@@ -141,6 +148,31 @@ final class MediaService: ObservableObject {
                 self.accent = color ?? .white
             }
         }
+    }
+
+    // Beğenme (Apple Music) ve uyku zamanlayıcısı
+    func refreshLiked() {
+        guard track?.player == .music else { liked = nil; return }
+        queue.async {
+            let v = Self.run("tell application id \"com.apple.Music\" to return favorited of current track")?.booleanValue
+            DispatchQueue.main.async { self.liked = v }
+        }
+    }
+
+    func toggleLike() {
+        guard track?.player == .music, let cur = liked else { return }
+        liked = !cur
+        queue.async {
+            _ = Self.run("tell application id \"com.apple.Music\" to set favorited of current track to \(!cur)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.refreshLiked() }
+        }
+    }
+
+    /// nil: iptal. `untilTrackEnds`: çalan şarkı bitince durdur.
+    func setSleep(minutes: Int?, untilTrackEnds: Bool = false) {
+        if untilTrackEnds, let t = track { sleepEnd = Date().addingTimeInterval(max(5, t.duration - position)) }
+        else if let m = minutes { sleepEnd = Date().addingTimeInterval(Double(m) * 60) }
+        else { sleepEnd = nil }
     }
 
     // Controls
@@ -383,6 +415,7 @@ final class ClipboardService: ObservableObject {
 final class ShelfService: ObservableObject {
     static let shared = ShelfService()
     @Published var urls: [URL] = []
+    @Published var selected: URL?          // rafta tıklanıp seçilen dosya (Boşluk: Hızlı Bakış)
     private let key = "shelfPaths"
     private let datesKey = "shelfDates"
     private var dates: [String: Double] = [:]    // yol → rafa eklenme zamanı
@@ -399,8 +432,8 @@ final class ShelfService: ObservableObject {
         for u in new where !urls.contains(u) { urls.insert(u, at: 0); dates[u.path] = Date().timeIntervalSince1970 }
         save()
     }
-    func remove(_ u: URL) { urls.removeAll { $0 == u }; save() }
-    func clear() { urls.removeAll(); save() }
+    func remove(_ u: URL) { urls.removeAll { $0 == u }; if selected == u { selected = nil }; save() }
+    func clear() { urls.removeAll(); selected = nil; save() }
     /// "Rafı şu kadar günde bir temizle" ayarı: yalnızca raftaki kısayol kalkar, dosyaya dokunulmaz.
     func expire() {
         let days = UserDefaults.standard.integer(forKey: "shelfExpireDays")
@@ -489,6 +522,9 @@ final class StatsService: ObservableObject {
     @Published var mem: Double = 0
     @Published var disk: Double = 0
     @Published var cpuHistory: [Double] = Array(repeating: 0, count: 40)
+    @Published var netDown: Double = 0          // bayt/sn
+    @Published var netUp: Double = 0
+    private var netPrev: ([String: (UInt32, UInt32)], Date)?
     private var prev: (Double, Double)?   // (busy, total)
     private var timer: Timer?
     private var users = 0
@@ -501,7 +537,26 @@ final class StatsService: ObservableObject {
     }
     func release() {
         users = max(0, users - 1)
-        if users == 0 { timer?.invalidate(); timer = nil; prev = nil }
+        if users == 0 { timer?.invalidate(); timer = nil; prev = nil; netPrev = nil }
+    }
+
+    private static func netBytes() -> [String: (UInt32, UInt32)] {
+        var out: [String: (UInt32, UInt32)] = [:]
+        var ifa: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&ifa) == 0, let first = ifa else { return [:] }
+        defer { freeifaddrs(ifa) }
+        var p: UnsafeMutablePointer<ifaddrs>? = first
+        while let cur = p {
+            let name = String(cString: cur.pointee.ifa_name)
+            let flags = Int32(cur.pointee.ifa_flags)
+            if name.hasPrefix("en"), flags & IFF_UP != 0, flags & IFF_RUNNING != 0,
+               let a = cur.pointee.ifa_addr, a.pointee.sa_family == UInt8(AF_LINK), let d = cur.pointee.ifa_data {
+                let data = d.assumingMemoryBound(to: if_data.self).pointee
+                out[name] = (data.ifi_ibytes, data.ifi_obytes)
+            }
+            p = cur.pointee.ifa_next
+        }
+        return out
     }
 
     private func sample() {
@@ -523,6 +578,20 @@ final class StatsService: ObservableObject {
             }
             prev = (busy, total)
         }
+        // Ağ (en* arayüzleri; 32 bitlik sayaçlar taşınca fark yine doğru çıkar)
+        let cur = Self.netBytes()
+        let now = Date()
+        if let p = netPrev, now.timeIntervalSince(p.1) > 0.2 {
+            let dt = now.timeIntervalSince(p.1)
+            var d: UInt64 = 0, u: UInt64 = 0
+            for (name, c) in cur {                       // her arayüzün 32 bitlik sayacı ayrı ayrı (taşma doğru hesaplanır)
+                guard let o = p.0[name] else { continue }
+                d += UInt64(c.0 &- o.0); u += UInt64(c.1 &- o.1)
+            }
+            netDown = Double(d) / dt
+            netUp = Double(u) / dt
+        }
+        netPrev = (cur, now)
         // Memory
         var vm = vm_statistics64()
         var vc = mach_msg_type_number_t(MemoryLayout<vm_statistics64>.size / MemoryLayout<integer_t>.size)

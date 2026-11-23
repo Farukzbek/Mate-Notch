@@ -66,7 +66,7 @@ while i < end:
         joined = "\n".join(block)
         tm = re.search(r'Text\("((?:\\.|[^"\\])*)"\)', joined)
         if "Slider(" in joined and tm: kind, title = "HStack", tm.group(1)
-    if not (section and kind and title) or ".srow(" in line and kind != "HStack":
+    if not (section and kind and title):
         i += 1; continue
     # ifadenin bittiği satırı bul
     j, d = i, 0

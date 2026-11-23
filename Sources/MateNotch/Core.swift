@@ -52,13 +52,14 @@ enum Loc {
 }
 
 enum Tab: String, CaseIterable, Identifiable {
-    case home, shelf, clipboard, timer, stats, ai, batteries
+    case home, shelf, clipboard, timer, stats, ai, batteries, notes
     var id: String { rawValue }
     var icon: String {
         switch self {
         case .home: return "house.fill"
         case .ai: return "sparkles"
         case .batteries: return "battery.100"
+        case .notes: return "note.text"
         case .shelf: return "tray.full.fill"
         case .clipboard: return "doc.on.clipboard.fill"
         case .timer: return "timer"
@@ -70,6 +71,7 @@ enum Tab: String, CaseIterable, Identifiable {
         case .home: return L("Ana Sayfa")
         case .ai: return L("Yapay Zeka")
         case .batteries: return L("Piller")
+        case .notes: return L("Notlar")
         case .shelf: return L("Raf")
         case .clipboard: return L("Pano")
         case .timer: return L("Zamanlayıcı")
@@ -90,6 +92,7 @@ extension Tab {
             case .stats: return d.bool(forKey: Pref.showStats)
             case .ai: return d.bool(forKey: Pref.showAI)
             case .batteries: return true
+            case .notes: return d.object(forKey: "showNotes") as? Bool ?? true
             }
         }
     }
@@ -144,6 +147,7 @@ enum Pref {
     static let hudHideSystem = "hudHideSystem"
     static let hudStep = "hudStep"
     static let hudFineKey = "hudFineKey"
+    static let lyricsTranslate = "lyricsTranslate"
     static let showAI = "showAI"
     static let aiProvider = "aiProvider"
     static let autoUpdateCheck = "autoUpdateCheck"

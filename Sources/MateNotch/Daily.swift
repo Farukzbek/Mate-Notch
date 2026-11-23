@@ -66,6 +66,41 @@ enum AudioOutputs {
     }
 }
 
+struct LikeButton: View {
+    @ObservedObject var media = MediaService.shared
+    var body: some View {
+        if let liked = media.liked {
+            Button { media.toggleLike() } label: {
+                Image(systemName: liked ? "heart.fill" : "heart").font(.system(size: 13))
+                    .foregroundStyle(liked ? Color(red: 1, green: 0.35, blue: 0.5) : .white)
+            }
+            .buttonStyle(PressStyle()).tip(liked ? L("Beğenmekten vazgeç") : L("Şarkıyı beğen"), .top)
+        }
+    }
+}
+
+struct SleepTimerButton: View {
+    @ObservedObject var media = MediaService.shared
+    var body: some View {
+        Button { show() } label: {
+            Image(systemName: media.sleepEnd == nil ? "moon.zzz" : "moon.zzz.fill").font(.system(size: 13))
+                .foregroundStyle(media.sleepEnd == nil ? Color.white : Color(red: 0.6, green: 0.7, blue: 1))
+        }
+        .buttonStyle(PressStyle()).tip(media.sleepEnd == nil ? L("Uyku zamanlayıcısı") : L("Müzik kapanacak"), .top)
+    }
+
+    private func show() {
+        var items: [ClosureMenuItem] = []
+        if let end = media.sleepEnd {
+            let m = max(1, Int(end.timeIntervalSinceNow / 60.0 + 0.5))
+            items.append(ClosureMenuItem(L("İptal et (kalan \(m) dk)")) { media.setSleep(minutes: nil) })
+        }
+        for m in [15, 30, 45, 60, 90] { items.append(ClosureMenuItem(L("\(m) dk sonra durdur")) { media.setSleep(minutes: m) }) }
+        items.append(ClosureMenuItem(L("Bu şarkı bitince durdur")) { media.setSleep(minutes: nil, untilTrackEnds: true) })
+        PopMenu.show(items)
+    }
+}
+
 struct OutputPickerButton: View {
     var body: some View {
         Button { AudioOutputs.showMenu() } label: { Image(systemName: "airplayaudio").font(.system(size: 13)) }

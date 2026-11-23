@@ -43,6 +43,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.image = Self.menuIcon()
         let menu = NSMenu()
         menu.addItem(withTitle: L("Aç / Kapat"), action: #selector(toggle), keyEquivalent: "").target = self
+        menu.addItem(withTitle: L("Panodaki görüntüyü işaretle…"), action: #selector(markupClipboard), keyEquivalent: "").target = self
         menu.addItem(withTitle: L("Önbellek Temizleyici…"), action: #selector(cleaner), keyEquivalent: "").target = self
         menu.addItem(withTitle: L("İzinleri kontrol et…"), action: #selector(wizard), keyEquivalent: "").target = self
         menu.addItem(withTitle: L("Özellik turu…"), action: #selector(tour), keyEquivalent: "").target = self
@@ -105,6 +106,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func wizard() { WizardWindow.show() }
     @objc func tour() { TourWindow.show() }
     @objc func whatsNew() { WhatsNew.show() }
+    @objc func markupClipboard() { MarkupWindow.showClipboard() }
     @objc func settings() { SettingsWindow.show() }
 }
 

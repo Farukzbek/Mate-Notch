@@ -59,9 +59,16 @@ final class NotchController {
         }
         installMonitors()
         startDragWatcher()
-        HotKey.register(keyCode: UInt32(kVK_Space), modifiers: UInt32(controlKey | optionKey)) { [weak self] in
-            self?.toggle()
+        HotKeyManager.shared.perform = { [weak self] a in
+            guard let self else { return }
+            if let t = a.tab {
+                guard Tab.visible().contains(t) else { return }       // kapalı bir sekme açılmaz
+                // Sekme kısayolu: o sekme zaten açıksa kapat, değilse o sekmede aç
+                if self.state.isOpen && self.state.tab == t { self.close() }
+                else { withAnimation(.snappy(duration: 0.25)) { self.state.tab = t }; if !self.state.isOpen { self.open() } }
+            } else { self.toggle() }
         }
+        HotKeyManager.shared.start()
     }
 
     /// Panel, açık notch'a sığacak kadar büyük (gölge payıyla). Şeffaf alan başka pencerelerin tıklamasını engellemesin.

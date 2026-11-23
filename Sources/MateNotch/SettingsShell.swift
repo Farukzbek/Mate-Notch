@@ -12,7 +12,7 @@ struct SettingsShell: View {
 
     static var categories: [Category] { [
         Category(id: "look", icon: "paintbrush.fill", title: L("Görünüm ve maskot"), sections: ["look", "closedicon", "buddy"]),
-        Category(id: "behavior", icon: "hand.tap.fill", title: L("Davranış ve sekmeler"), sections: ["behavior", "tabs", "home", "shortcut"]),
+        Category(id: "behavior", icon: "hand.tap.fill", title: L("Davranış ve sekmeler"), sections: ["behavior", "tabs", "clocks", "home", "shortcut"]),
         Category(id: "hud", icon: "speaker.wave.2.fill", title: L("Ses ve parlaklık"), sections: ["hud"]),
         Category(id: "music", icon: "music.note", title: L("Müzik ve sözler"), sections: ["lyrics"]),
         Category(id: "battery", icon: "battery.75percent", title: L("Pil ve bildirimler"), sections: ["battery", "alerts", "focus", "weather"]),
@@ -32,6 +32,7 @@ struct SettingsShell: View {
         "hud": "ses parlaklık boyut renk  klavye aydınlatma gösterge hud volume brightness keyboard backlight tuş adım erişilebilirlik ince adım stil çubuk yüzde süre fine step accessibility style bar percent duration sistem göstergesi gizle",
         "lyrics": "şarkı sözleri lyrics söz satırı lrclib notch satır spotify müzik music",
         "battery": "pil düşük pil uyarısı bluetooth cihaz kulaklık fare seviye battery low alert headphones mouse",
+        "clocks": "dünya saati saat dilimi şehir world clock time zone city",
         "focus": "odak rahatsız etmeyin ay simgesi çalışma uyku focus do not disturb moon",
         "weather": "hava durumu sıcaklık şehir derece fahrenheit celsius weather temperature city unit",
         "alerts": "göstergeler bildirimler gizlilik mikrofon kamera indirme indicators notifications privacy focus download weather city",
@@ -48,7 +49,7 @@ struct SettingsShell: View {
     private func sectionTitle(_ id: String) -> String {
         let t: [String: String] = ["look": "Görünüm", "behavior": "Davranış", "buddy": "Maskot", "ai": "Yapay Zeka", "care": "Bakım",
             "updates": "Güncellemeler", "closedicon": "Kapalı notch simgesi", "hud": "Ses ve parlaklık göstergesi",
-            "battery": "Pil ve düşük pil uyarısı", "alerts": "Göstergeler ve bildirimler", "focus": "Odak (Rahatsız Etmeyin)", "weather": "Hava durumu", "home": "Ana Sayfa",
+            "battery": "Pil ve düşük pil uyarısı", "alerts": "Göstergeler ve bildirimler", "clocks": "Dünya saati", "focus": "Odak (Rahatsız Etmeyin)", "weather": "Hava durumu", "home": "Ana Sayfa",
             "capture": "Ekran görüntüsü butonu", "lyrics": "Mate Lyrics", "tabs": "Sekmeler", "shortcut": "Kısayol"]
         return t[id] ?? id
     }
