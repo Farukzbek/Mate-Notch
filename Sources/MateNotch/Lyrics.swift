@@ -132,11 +132,15 @@ final class LyricsService: ObservableObject {
         return out
     }
 
-    func adjust(by d: Double) {
-        offset = (offset + d * 100).rounded() / 100
+    /// Sözleri `d` saniye kaydırır (+: öne al, −: geciktir); ayar şarkıya özel kaydedilir.
+    func adjust(by d: Double) { setOffset(offset + d) }
+    func resetOffset() { setOffset(0) }
+
+    private func setOffset(_ v: Double) {
+        offset = (min(10, max(-10, v)) * 100).rounded() / 100
         guard let k = currentKey else { return }
         var all = UserDefaults.standard.dictionary(forKey: offsetsKey) ?? [:]
-        all[k] = offset
+        if offset == 0 { all.removeValue(forKey: k) } else { all[k] = offset }
         UserDefaults.standard.set(all, forKey: offsetsKey)
     }
 

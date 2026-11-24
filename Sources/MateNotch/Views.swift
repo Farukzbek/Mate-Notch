@@ -422,7 +422,7 @@ struct HomeView: View {
             if hasSide { SideColumn().frame(width: 176).layoutPriority(1) }
         }
         .frame(maxWidth: .infinity)
-        .clipped()
+        .mask { Rectangle().padding(.bottom, -44) }       // yanlara taşmayı kırpar; alta 44 pt pay: kapağın altındaki eşzamanlama kapsülü görünsün
     }
 }
 
@@ -447,11 +447,19 @@ struct MediaCard: View {
                 .shadow(color: media.accent.opacity(0.5), radius: 14, y: 4)
                 .scaleEffect(media.isPlaying ? 1 : 0.92)
                 .animation(.spring(response: 0.4, dampingFraction: 0.7), value: media.isPlaying)
+                .overlay(alignment: .bottom) {
+                    SyncAdjust(width: 128).offset(y: 32)          // söz eşzamanlama: albüm kapağının altında (yerleşimi değiştirmez)
+                }
                 }
 
                 VStack(alignment: .leading, spacing: 0) {
                     Text(t.title).font(.system(size: 14, weight: .semibold)).lineLimit(1)
-                    Text(t.artist).font(.system(size: 12)).foregroundStyle(.white.opacity(0.6)).lineLimit(1)
+                    HStack(spacing: 6) {
+                        Text(t.artist).font(.system(size: 12)).foregroundStyle(.white.opacity(0.6)).lineLimit(1)
+                        Spacer(minLength: 0)
+                        if !showArtwork { SyncAdjust() }     // kapak kapalıysa söz eşzamanlama burada
+                    }
+                    .frame(height: 16)
                     CardLyric().padding(.top, 5)
                     Spacer(minLength: 2)
                     scrubber(t)
@@ -460,17 +468,17 @@ struct MediaCard: View {
                             OutputPickerButton().frame(width: 24, height: 24)
                             SleepTimerButton().frame(width: 24, height: 24)
                             LikeButton().frame(width: 24, height: 24)
-                        }.frame(width: 76, alignment: .leading)
-                        Spacer(minLength: 0)
-                        HStack(spacing: 22) {
+                        }.frame(width: 74, alignment: .leading)
+                        HStack(spacing: 16) {
                         Button { media.previous() } label: { Image(systemName: "backward.fill") }.tip(L("Önceki"), .top)
                         Button { media.togglePlay() } label: {
                             Image(systemName: media.isPlaying ? "pause.fill" : "play.fill").font(.system(size: 20))
                         }.tip(media.isPlaying ? "Duraklat" : L("Oynat"), .top)
                         Button { media.next() } label: { Image(systemName: "forward.fill") }.tip(L("Sonraki"), .top)
                         }
-                        Spacer(minLength: 0)
-                        LyricsToggle().frame(width: 76, alignment: .trailing)
+                        .padding(.leading, 6)
+                        Spacer(minLength: 6)
+                        LyricsToggle()
                     }
                     .buttonStyle(PressStyle())
                     .font(.system(size: 15))
@@ -1912,6 +1920,38 @@ final class LyricInteractionView: NSView {
 }
 
 /// Sözleri Ana Sayfa'dan aç/kapat.
+/// Söz eşzamanlama ayarı: müzik kartında, notch'un içinde. − sözleri geciktirir, + öne alır (0,25 sn adım); ortadaki değere tıklayınca sıfırlanır.
+struct SyncAdjust: View {
+    var width: CGFloat? = nil          // verilirse kapsül bu genişliğe yayılır (albüm kapağı kadar)
+    @ObservedObject var lyrics = LyricsService.shared
+    @AppStorage(Pref.lyricsEnabled) var on = false
+
+    private var shown: Bool { if on, case .synced = lyrics.state { return true } else { return false } }
+
+    var body: some View {
+        if shown {
+            HStack(spacing: 0) {
+                Button { lyrics.adjust(by: -0.25) } label: { Image(systemName: "minus").frame(width: width == nil ? 16 : nil, height: width == nil ? 18 : 24).frame(maxWidth: width == nil ? nil : .infinity).contentShape(Rectangle()) }
+                    .tip("−0,25 sn", .top, leading: width != nil)
+                Button { lyrics.resetOffset() } label: {
+                    Text(lyrics.offset == 0 ? "0.0s" : String(format: "%+.2fs", lyrics.offset))
+                        .font(.system(size: 9.5, weight: .semibold, design: .rounded)).monospacedDigit()
+                        .foregroundStyle(lyrics.offset == 0 ? .white.opacity(0.45) : Color(red: 0.55, green: 0.8, blue: 1))
+                        .frame(minWidth: 34, minHeight: width == nil ? 18 : 24)
+                }
+                .tip(lyrics.offset == 0 ? L("Söz eşzamanlaması") : L("Sıfırla"), .top)
+                Button { lyrics.adjust(by: 0.25) } label: { Image(systemName: "plus").frame(width: width == nil ? 16 : nil, height: width == nil ? 18 : 24).frame(maxWidth: width == nil ? nil : .infinity).contentShape(Rectangle()) }
+                    .tip("+0,25 sn", .top)
+            }
+            .buttonStyle(PressStyle())
+            .font(.system(size: width == nil ? 9 : 11, weight: .bold))
+            .frame(width: width)
+            .background(Capsule().fill(.white.opacity(0.10)))
+            .transition(.opacity)
+        }
+    }
+}
+
 struct LyricsToggle: View {
     @AppStorage(Pref.lyricsEnabled) var on = false
     var body: some View {
@@ -1976,13 +2016,14 @@ final class TrackerView: NSView {
 struct Tip: ViewModifier {
     let text: String
     let edge: VerticalEdge
+    var leading = false                // true: ipucu düğmenin sol kenarına hizalanır (sol kenara yakın düğmelerde taşmasın)
     @State private var hovering = false
     @State private var show = false
 
     func body(content: Content) -> some View {
         content
             .background(HoverTracker { hovering = $0 })
-            .overlay(alignment: edge == .bottom ? .bottom : .top) {
+            .overlay(alignment: leading ? (edge == .bottom ? .bottomLeading : .topLeading) : (edge == .bottom ? .bottom : .top)) {
                 if show {
                     Text(text)
                         .font(.system(size: 10, weight: .semibold))
@@ -2008,7 +2049,7 @@ struct Tip: ViewModifier {
 }
 
 extension View {
-    func tip(_ text: String, _ edge: VerticalEdge = .bottom) -> some View { modifier(Tip(text: text, edge: edge)) }
+    func tip(_ text: String, _ edge: VerticalEdge = .bottom, leading: Bool = false) -> some View { modifier(Tip(text: text, edge: edge, leading: leading)) }
 }
 
 
