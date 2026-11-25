@@ -47,6 +47,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(withTitle: L("Panodaki görüntüyü işaretle…"), action: #selector(markupClipboard), keyEquivalent: "").target = self
         menu.addItem(withTitle: L("Önbellek Temizleyici…"), action: #selector(cleaner), keyEquivalent: "").target = self
         menu.addItem(withTitle: L("İzinleri kontrol et…"), action: #selector(wizard), keyEquivalent: "").target = self
+        menu.addItem(withTitle: L("Rehber…"), action: #selector(guide), keyEquivalent: "").target = self
         menu.addItem(withTitle: L("Özellik turu…"), action: #selector(tour), keyEquivalent: "").target = self
         menu.addItem(withTitle: L("Yenilikler…"), action: #selector(whatsNew), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Ayarlar…", action: #selector(settings), keyEquivalent: ",").target = self
@@ -107,6 +108,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func wizard() { WizardWindow.show() }
     @objc func tour() { TourWindow.show() }
     @objc func whatsNew() { WhatsNew.show() }
+    @objc func guide() { GuideService.shared.start() }
     func applicationWillTerminate(_ n: Notification) { MixerService.shared.stopAll() }
     @objc func markupClipboard() { MarkupWindow.showClipboard() }
     @objc func settings() { SettingsWindow.show() }

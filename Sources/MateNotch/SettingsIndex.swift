@@ -68,9 +68,11 @@ enum SettingsIndex {
         SettingRowItem(key: "tabs/Pano geçmişi", section: "tabs", title: "Pano geçmişi", search: "Pano geçmişi Clipboard history Zwischenablageverlauf Historial del portapapeles Historique du presse-papiers Histórico da área de transferência "),
         SettingRowItem(key: "tabs/Zamanlayıcı", section: "tabs", title: "Zamanlayıcı", search: "Zamanlayıcı Timer Timer Temporizador Minuteur Timer "),
         SettingRowItem(key: "tabs/Sistem durumu", section: "tabs", title: "Sistem durumu", search: "Sistem durumu System status Systemstatus Estado del sistema État du système Status do sistema "),
+        SettingRowItem(key: "tabs/Yapay zeka sekmesi ve düğmesi", section: "tabs", title: "Yapay zeka sekmesi ve düğmesi", search: "Yapay zeka sekmesi ve düğmesi AI tab and button KI-Tab und -Taste Pestaña y botón de IA Onglet et bouton IA Aba e botão de IA "),
         SettingRowItem(key: "tabs/Notlar", section: "tabs", title: "Notlar", search: "Notlar Notes Notizen Notas Notes Notas "),
         SettingRowItem(key: "tabs/Ses mikseri", section: "tabs", title: "Ses mikseri", search: "Ses mikseri Audio mixer Audio-Mixer Mezclador de audio Mixeur audio Mixer de áudio "),
-        SettingRowItem(key: "tabs/Kamera aynası", section: "tabs", title: "Kamera aynası", search: "Kamera aynası "),
+        SettingRowItem(key: "tabs/Kamera aynası", section: "tabs", title: "Kamera aynası", search: "Kamera aynası Camera mirror Kameraspiegel Espejo de cámara Miroir caméra Espelho da câmera "),
+        SettingRowItem(key: "tabs/Kestirmeler sekmesi", section: "tabs", title: "Kestirmeler sekmesi", search: "Kestirmeler sekmesi Shortcuts tab Kurzbefehle-Tab Pestaña Atajos Onglet Raccourcis Aba Atalhos "),
         SettingRowItem(key: "tabs/Ağ hızı birimi", section: "tabs", title: "Ağ hızı birimi", search: "Ağ hızı birimi Network speed unit Einheit der Netzwerkgeschwindigkeit Unidad de velocidad de red Unité de vitesse réseau Unidade da velocidade de rede "),
     ]
 }

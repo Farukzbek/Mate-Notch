@@ -56,6 +56,10 @@
 - **Apariencia:** Negro, color sólido, color del álbum o **Liquid Glass** (densidad y tipo de cristal ajustables); tamaño abierto/cerrado, zona de activación y retardos ajustables.
 - **Copia de seguridad de ajustes:** Exportar e importar desde Ajustes › General.
 - **Pestaña Notas:** Un bloc de notas de una línea en el notch. Haz clic en una nota para copiarla, o envíala (o todas) a la app Notas.
+- **Mezclador de audio:** Ajusta el volumen de cada app que reproduce sonido con canales verticales; un clic en el icono silencia esa app. Se recuerdan los niveles.
+- **Espejo de cámara:** Usa tu cámara como espejo, haz fotos (se guardan en el Escritorio, el portapapeles y el estante) y enciende una luz anular con nivel, grosor y color ajustables (blanco, amarillo, azul). La cámara solo funciona con la pestaña abierta.
+- **Pestaña Atajos:** Fija Atajos de Apple con tus propios iconos y colores y ejecútalos con un clic.
+- **Guía interactiva:** Tras la configuración, una guía paso a paso resalta cada función en el notch; se reinicia cuando quieras desde el icono de la barra de menús.
 - **Más música:** Un temporizador de sueño (detener tras 15–90 min o al acabar la canción), un corazón para marcar la canción como favorita en Apple Music y traducción opcional de la letra con IA al idioma de la interfaz.
 - **Herramientas del estante:** Miniaturas de vista previa reales; haz clic para seleccionar y pulsa Espacio para el panel de Vista rápida de macOS (← → para navegar). Clic derecho en una imagen: convertirla (PNG, JPEG, HEIC, TIFF), reducirla o marcarla con flechas, cuadros, lápiz, resaltador y un cuadro negro para ocultar.
 - **Reloj mundial y velocidad de red:** Hasta tres ciudades bajo la pestaña Sistema con la diferencia horaria, y la velocidad de descarga/subida en vivo (Mbps o MB/s).

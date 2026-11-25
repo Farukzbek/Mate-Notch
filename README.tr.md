@@ -57,6 +57,10 @@
 - **Zamanlayıcı, sistem durumu (CPU / bellek / disk), uyanık tut, takvimde sıradaki etkinlik.**
 - **Görünüm:** Siyah, düz renk, albüm rengi veya **Liquid Glass** (yoğunluk ve cam tipi ayarlı); açık/kapalı boyut, açılma alanı ve gecikmeleri ayarlanabilir.
 - **Notlar sekmesi:** Notch'ta tek satırlık not defteri. Notu tıklayınca panoya kopyalanır; notu (ya da hepsini) Notlar uygulamasına aktarabilirsin.
+- **Ses mikseri:** Ses çalan her uygulamanın seviyesini dikey kanallarla ayrı ayarla; simgeye tıklayınca o uygulamayı sustur. Seviyeler hatırlanır.
+- **Kamera aynası:** Kameranı ayna gibi kullan, fotoğraf çek (Masaüstü, pano ve rafa kaydedilir) ve seviyesi, kalınlığı ve rengi (beyaz, sarı, mavi) ayarlanabilen halka ışığı aç. Kamera yalnızca sekme açıkken çalışır.
+- **Kestirmeler sekmesi:** Apple Kestirmeler'i kendi simge ve renklerinle sabitle, tek tıkla çalıştır.
+- **Etkileşimli rehber:** Kurulumdan sonra adım adım bir rehber her özelliği notch'ta ışık karesiyle gösterir; menü çubuğu simgesinden istediğin zaman yeniden başlatılır.
 - **Müzikte ekstralar:** Uyku zamanlayıcısı (15–90 dk sonra ya da şarkı bitince durdur), Apple Music'te şarkıyı beğenme kalbi ve sözlerin arayüz diline yapay zekayla isteğe bağlı çevirisi.
 - **Raf araçları:** Gerçek önizleme küçük resimleri; tıklayıp seç, Boşluk'a basınca macOS Hızlı Bakış paneli açılır (← → ile gezin). Resme sağ tıkla: dönüştür (PNG, JPEG, HEIC, TIFF), küçült ya da ok, kutu, kalem, vurgu ve siyah kutuyla işaretle.
 - **Dünya saati ve ağ hızı:** Sistem sekmesinde saat farkıyla birlikte en fazla üç şehir ve canlı indirme/yükleme hızı (Mbps ya da MB/s).

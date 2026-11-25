@@ -94,6 +94,9 @@ struct RootView: View {
                 // Sabit boyutlu içerik: kabuk küçülürken yeniden yerleşim (layout) yapılmaz, sadece kırpılır.
                 OpenContent()
                     .frame(width: Layout.openW, height: g.notchHeight / u + Layout.bodyH + tabExtra, alignment: .top)
+                    .coordinateSpace(name: "notchSpace")
+                    .onPreferenceChange(GuideFramesKey.self) { f in if GuideService.shared.active || GuideService.shared.frames.isEmpty { GuideService.shared.frames = f } }
+                    .overlay { GuideOverlay() }
                     .overlay(alignment: .bottom) {   // notch açıkken de geri bildirim (sistem göstergesi gizliyse)
                         if hud.visible {
                             HUDBanner().frame(height: 30).fixedSize(horizontal: true, vertical: false)
@@ -326,33 +329,38 @@ struct OpenContent: View {
     @AppStorage("showNotes") var showNotes = true
     @AppStorage("showMixer") var showMixer = true
     @AppStorage("showMirror") var showMirror = true
+    @AppStorage("showShortcutsTab") var showShortcutsTab = true
     @AppStorage(Pref.headerDeviceBattery) var headerDeviceBattery = true
     @ObservedObject var deviceBattery = DeviceBatteryService.shared
     @AppStorage(Pref.uiScale) var uiScale = 1.0
 
-    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI, showNotes, showMixer, showMirror); return Tab.visible().filter { $0 != .ai && $0 != .batteries && !Tab.bottomTabs.contains($0) } }
+    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI, showNotes, showMixer, showMirror, showShortcutsTab); return Tab.visible().filter { $0 != .ai && $0 != .batteries && !Tab.bottomTabs.contains($0) } }
 
     var body: some View {
         let g = state.geometry
         VStack(spacing: 0) {
             HStack(spacing: 4) {
-                ForEach(tabs) { t in
-                    TabButton(tab: t, selected: state.tab == t, leading: t == tabs.first) {
-                        withAnimation(.snappy(duration: 0.25)) { state.tab = t }
+                HStack(spacing: 4) {
+                    ForEach(tabs) { t in
+                        TabButton(tab: t, selected: state.tab == t, leading: t == tabs.first) {
+                            withAnimation(.snappy(duration: 0.25)) { state.tab = t }
+                        }
+                        .guideTarget("tab." + t.rawValue)
                     }
                 }
+                .guideTarget("tabs")
                 Spacer(minLength: g.hasNotch ? (g.notchWidth + 8) / CGFloat(uiScale) : 12)
                 HStack(spacing: 10) {
                     if showAI {
                         Button { withAnimation(.snappy(duration: 0.25)) { state.tab = .ai } } label: {
                             Image(systemName: "sparkles")
                                 .foregroundStyle(state.tab == .ai ? Color.white : .white.opacity(0.5))
-                        }.buttonStyle(.plain).morph(L("Yapay Zeka"))
+                        }.buttonStyle(.plain).morph(L("Yapay Zeka")).guideTarget("ai")
                     }
                     Button { SettingsWindow.show() } label: {
                         Image(systemName: "gearshape.fill").foregroundStyle(.white.opacity(0.5))
-                    }.buttonStyle(.plain).morph(L("Ayarlar"))
-                    HeaderBattery()
+                    }.buttonStyle(.plain).morph(L("Ayarlar")).guideTarget("settings")
+                    HeaderBattery().guideTarget("battery")
                 }
                 .font(.system(size: 12))
             }
@@ -372,6 +380,7 @@ struct OpenContent: View {
                 case .notes: NotesView()
                 case .mixer: MixerView()
                 case .mirror: MirrorView()
+                case .shortcuts: ShortcutsTabView()
                 }
             }
             .padding(.horizontal, 28)
@@ -389,6 +398,7 @@ struct OpenContent: View {
                         TabButton(tab: t, selected: state.tab == t) {
                             withAnimation(.snappy(duration: 0.25)) { state.tab = t }
                         }
+                        .guideTarget("bottom." + t.rawValue)
                     }
                 }
                 .frame(maxWidth: .infinity).frame(height: 26)
@@ -418,8 +428,8 @@ struct HomeView: View {
 
     var body: some View {
         HStack(spacing: 20) {
-            MediaCard().frame(maxWidth: .infinity).layoutPriority(0)
-            if hasSide { SideColumn().frame(width: 136).layoutPriority(1) }          // dar yan kolon: sözlere daha çok yer
+            MediaCard().frame(maxWidth: .infinity).layoutPriority(0).guideTarget("media")
+            if hasSide { SideColumn().frame(width: 136).layoutPriority(1).guideTarget("side") }          // dar yan kolon: sözlere daha çok yer
         }
         .frame(maxWidth: .infinity)
         .mask { Rectangle().padding(.bottom, -44) }       // yanlara taşmayı kırpar; alta 44 pt pay: kapağın altındaki eşzamanlama kapsülü görünsün
@@ -1248,6 +1258,8 @@ struct SettingsView: View {
     @AppStorage("showNotes") var showNotes = true
     @AppStorage("showMixer") var showMixer = true
     @AppStorage("showMirror") var showMirror = true
+    @AppStorage("showShortcutsTab") var showShortcutsTab = true
+    @AppStorage(Pref.showAI) var showAI = true
     @AppStorage("netUnit") var netUnit = "bits"
     @AppStorage("clock1") var clock1 = ""
     @AppStorage("clock2") var clock2 = ""
@@ -1401,6 +1413,7 @@ struct SettingsView: View {
         case "care":
             Section("Bakım") {
                 Button("İzinleri kontrol et…") { WizardWindow.show() }
+                Button("Rehberi başlat…") { GuideService.shared.start() }
                 Button("Özellik turu…") { TourWindow.show() }
                 Button("Ayarları dışa aktar…") { SettingsBackup.export() }
                 Button("Ayarları içe aktar…") { SettingsBackup.import() }
@@ -1623,9 +1636,15 @@ struct SettingsView: View {
                 Toggle("Pano geçmişi", isOn: $showClipboard).srow("tabs/Pano geçmişi")
                 Toggle("Zamanlayıcı", isOn: $showTimer).srow("tabs/Zamanlayıcı")
                 Toggle("Sistem durumu", isOn: $showStats).srow("tabs/Sistem durumu")
+                Toggle("Yapay zeka sekmesi ve düğmesi", isOn: $showAI).srow("tabs/Yapay zeka sekmesi ve düğmesi")
                 Toggle("Notlar", isOn: $showNotes).srow("tabs/Notlar")
                 Toggle("Ses mikseri", isOn: $showMixer).srow("tabs/Ses mikseri")
+                if showMixer {
+                    Button("Mikser seviyelerini sıfırla") { MixerService.shared.resetAll() }
+                    Text("Her uygulama için ayarladığın ses seviyesi hatırlanır; bu düğme hepsini %100'e döndürür.").font(.caption).foregroundStyle(.secondary)
+                }
                 Toggle("Kamera aynası", isOn: $showMirror).srow("tabs/Kamera aynası")
+                Toggle("Kestirmeler sekmesi", isOn: $showShortcutsTab).srow("tabs/Kestirmeler sekmesi")
                 Picker("Ağ hızı birimi", selection: $netUnit) {
                     Text("Mbps (bit, hız testleriyle aynı)").tag("bits")
                     Text("MB/s (bayt)").tag("bytes")

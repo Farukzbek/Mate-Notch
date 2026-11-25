@@ -1538,6 +1538,40 @@
         }
       }
     },
+    "Apple Kestirmeler'den seçtiğin kestirmeleri kendi simge ve renklerinle tek tıkla çalıştır.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run the shortcuts you pick from Apple Shortcuts with one click, with your own icons and colours."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Führe die aus Apple Kurzbefehle gewählten Kurzbefehle mit einem Klick aus, mit eigenen Symbolen und Farben."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejecuta con un clic los atajos que elijas de Atajos de Apple, con tus propios iconos y colores."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancez en un clic les raccourcis choisis dans Raccourcis d'Apple, avec vos propres icônes et couleurs."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Execute com um clique os atalhos que escolher no app Atalhos da Apple, com seus próprios ícones e cores."
+          }
+        }
+      }
+    },
     "Apple Music için aynısı. Müzik uygulaması açıkken verilebilir.": {
       "localizations": {
         "de": {
@@ -1602,6 +1636,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Controle do Apple Music"
+          }
+        }
+      }
+    },
+    "Apple Music ve Spotify çalarken şarkı, kontroller ve senkron sözler burada. Sözler kayarsa − / + ile eşzamanla.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Song, controls and synced lyrics show here while Apple Music or Spotify plays. If lyrics drift, fix them with − / +."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Song, Steuerung und synchronisierte Songtexte erscheinen hier, während Apple Music oder Spotify läuft. Laufen Texte auseinander, korrigiere sie mit − / +."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aquí aparecen la canción, los controles y la letra sincronizada mientras suena Apple Music o Spotify. Si la letra se desfasa, corrígela con − / +."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le morceau, les commandes et les paroles synchronisées s'affichent ici pendant la lecture d'Apple Music ou Spotify. Si les paroles dérivent, corrigez-les avec − / +."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A música, os controles e a letra sincronizada aparecem aqui enquanto o Apple Music ou o Spotify toca. Se a letra sair do tempo, corrija com − / +."
           }
         }
       }
@@ -2090,16 +2158,16 @@
     },
     "Ayna": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mirror"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Spiegel"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirror"
           }
         },
         "es": {
@@ -4817,6 +4885,40 @@
         }
       }
     },
+    "Dosyaları notch'a bırak, sonra istediğin yere sürükle. Boşluk ile önizle, AirDrop ile gönder.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop files on the notch, then drag them anywhere. Press Space to preview, send with AirDrop."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zieh Dateien auf den Notch und dann überallhin. Mit der Leertaste ansehen, per AirDrop senden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suelta archivos en el notch y arrástralos adonde quieras. Pulsa Espacio para verlos, envía con AirDrop."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déposez des fichiers sur le notch puis faites-les glisser où vous voulez. Espace pour l'aperçu, AirDrop pour envoyer."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solte arquivos no notch e arraste para onde quiser. Espaço para visualizar, AirDrop para enviar."
+          }
+        }
+      }
+    },
     "Dosyayı panoya kopyala": {
       "extractionState": "manual",
       "localizations": {
@@ -5328,6 +5430,40 @@
         }
       }
     },
+    "Ekle": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinzufügen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adicionar"
+          }
+        }
+      }
+    },
     "Ekran Kaydı": {
       "localizations": {
         "de": {
@@ -5801,6 +5937,111 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar no Finder"
+          }
+        }
+      }
+    },
+    "Fotoğraf kaydedildi": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto gesichert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo saved"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto guardada"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo enregistrée"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto salva"
+          }
+        }
+      }
+    },
+    "Fotoğraf çek": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto aufnehmen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take photo"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tomar foto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prendre une photo"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tirar foto"
+          }
+        }
+      }
+    },
+    "Fotoğraf çekilemedi": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto konnte nicht aufgenommen werden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't take the photo"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo tomar la foto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de prendre la photo"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível tirar a foto"
           }
         }
       }
@@ -6936,6 +7177,40 @@
         }
       }
     },
+    "Hazırsın!": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're all set!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du bist bereit!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Todo listo!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous êtes prêt !"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tudo pronto!"
+          }
+        }
+      }
+    },
     "Henüz denetlenmedi": {
       "localizations": {
         "de": {
@@ -7107,6 +7382,40 @@
         }
       }
     },
+    "Her uygulama için ayarladığın ses seviyesi hatırlanır; bu düğme hepsini %100'e döndürür.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The volume you set for each app is remembered; this button resets them all to 100%."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die für jede App eingestellte Lautstärke wird gemerkt; diese Taste setzt alle auf 100 % zurück."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se recuerda el volumen que ajustas para cada app; este botón los restablece todos al 100 %."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le volume réglé pour chaque app est mémorisé ; ce bouton les remet tous à 100 %."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O volume que você define para cada app é lembrado; este botão redefine todos para 100%."
+          }
+        }
+      }
+    },
     "Her özelliği açıp kapatabilir, deneyebilir ya da atlayabilirsin. Hepsine Ayarlar'dan da ulaşırsın.": {
       "localizations": {
         "de": {
@@ -7137,6 +7446,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ative ou desative cada recurso, experimente ou pule. Você também acessa todos nos Ajustes."
+          }
+        }
+      }
+    },
+    "Her şey burada: arama çubuğu ve 🌐 dil menüsüyle istediğin ayarı hemen bulursun.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything is here: the search bar and the 🌐 language menu help you find any setting fast."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles ist hier: mit der Suchleiste und dem 🌐-Sprachmenü findest du jede Einstellung schnell."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todo está aquí: la barra de búsqueda y el menú de idioma 🌐 te ayudan a encontrar cualquier ajuste."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout est ici : la barre de recherche et le menu de langue 🌐 vous aident à trouver n'importe quel réglage."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tudo está aqui: a barra de busca e o menu de idioma 🌐 ajudam a achar qualquer ajuste."
           }
         }
       }
@@ -7380,6 +7723,213 @@
         }
       }
     },
+    "Hızlı not al; tıklayınca panoya kopyalanır, istersen Notlar uygulamasına aktar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jot quick notes; click one to copy it, or send it to the Notes app."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schreibe schnelle Notizen; ein Klick kopiert sie, oder sende sie an die Notizen-App."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anota notas rápidas; un clic las copia, o envíalas a la app Notas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prenez des notes rapides ; un clic les copie, ou envoyez-les vers l'app Notes."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faça anotações rápidas; um clique copia, ou envie para o app Notas."
+          }
+        }
+      }
+    },
+    "Hızlı notlar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick notes"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schnelle Notizen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notas rápidas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notes rapides"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notas rápidas"
+          }
+        }
+      }
+    },
+    "Hızlı notlarını Apple Notlar'a aktarabilmek için. Yalnızca sen \"Notlar'a aktar\" dediğinde kullanılır.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To send your quick notes to Apple Notes. Only used when you choose \"Send to Notes\"."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um deine schnellen Notizen an Apple Notizen zu senden. Wird nur verwendet, wenn du „An Notizen senden“ wählst."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para enviar tus notas rápidas a Apple Notas. Solo se usa cuando eliges «Enviar a Notas»."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour envoyer vos notes rapides vers Apple Notes. Utilisé uniquement quand vous choisissez « Envoyer vers Notes »."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para enviar suas notas rápidas ao Apple Notas. Só é usado quando você escolhe “Enviar para Notas”."
+          }
+        }
+      }
+    },
+    "Işık": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luz"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lumière"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luz"
+          }
+        }
+      }
+    },
+    "Işık kalınlığı": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lichtbreite"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light thickness"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grosor de la luz"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Épaisseur de la lumière"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espessura da luz"
+          }
+        }
+      }
+    },
+    "Işık seviyesi": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lichtstärke"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light level"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nivel de luz"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niveau de lumière"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nível da luz"
+          }
+        }
+      }
+    },
     "Işıltı": {
       "localizations": {
         "de": {
@@ -7445,6 +7995,74 @@
           "stringUnit": {
             "state": "translated",
             "value": "REC"
+          }
+        }
+      }
+    },
+    "Kaldır": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quitar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remover"
+          }
+        }
+      }
+    },
+    "Kamera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamera"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cámara"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caméra"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Câmera"
           }
         }
       }
@@ -7519,16 +8137,16 @@
     },
     "Kamera ayarlarını aç": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open camera settings"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Kameraeinstellungen öffnen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open camera settings"
           }
         },
         "es": {
@@ -7553,16 +8171,16 @@
     },
     "Kamera aynası": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Camera mirror"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Kameraspiegel"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera mirror"
           }
         },
         "es": {
@@ -7585,18 +8203,52 @@
         }
       }
     },
-    "Kamera bulunamadı": {
+    "Kamera aynası için. Kamera yalnızca Ayna sekmesi açıkken çalışır; görüntü kaydedilmez ve hiçbir yere gönderilmez.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No camera found"
+            "value": "For the camera mirror. The camera only runs while the Mirror tab is open; nothing is recorded or sent anywhere."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
+            "value": "Für den Kameraspiegel. Die Kamera läuft nur, solange der Spiegel-Tab geöffnet ist; nichts wird aufgezeichnet oder gesendet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para el espejo de cámara. La cámara solo funciona con la pestaña Espejo abierta; no se graba ni se envía nada."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour le miroir caméra. La caméra ne fonctionne que lorsque l'onglet Miroir est ouvert ; rien n'est enregistré ni envoyé."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para o espelho da câmera. A câmera só funciona com a aba Espelho aberta; nada é gravado nem enviado."
+          }
+        }
+      }
+    },
+    "Kamera bulunamadı": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
             "value": "Keine Kamera gefunden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No camera found"
           }
         },
         "es": {
@@ -7621,16 +8273,16 @@
     },
     "Kamera izni gerekli": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Camera permission needed"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Kameraberechtigung nötig"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera permission needed"
           }
         },
         "es": {
@@ -7753,6 +8405,74 @@
           "stringUnit": {
             "state": "translated",
             "value": "O indicador de câmera/microfone não precisa de permissão. O macOS pergunta uma vez para Downloads."
+          }
+        }
+      }
+    },
+    "Kameranı ayna gibi kullan, fotoğraf çek, halka ışığı aç. Kamera yalnızca Ayna sekmesi açıkken çalışır.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use your camera as a mirror, take photos, turn on the ring light. The camera only runs while the Mirror tab is open."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutze deine Kamera als Spiegel, mach Fotos, schalte das Ringlicht ein. Die Kamera läuft nur, solange der Spiegel-Tab geöffnet ist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usa tu cámara como espejo, haz fotos, enciende la luz anular. La cámara solo funciona con la pestaña Espejo abierta."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisez votre caméra comme miroir, prenez des photos, allumez l'anneau lumineux. La caméra ne fonctionne que lorsque l'onglet Miroir est ouvert."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use sua câmera como espelho, tire fotos, ligue o anel de luz. A câmera só funciona com a aba Espelho aberta."
+          }
+        }
+      }
+    },
+    "Kameranı ayna gibi kullan, fotoğraf çek, halka ışığı aç. Kamera yalnızca bu sekme açıkken çalışır.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use your camera as a mirror, take photos, turn on the ring light. The camera only runs while this tab is open."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutze deine Kamera als Spiegel, mach Fotos, schalte das Ringlicht ein. Die Kamera läuft nur, solange dieser Tab geöffnet ist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usa tu cámara como espejo, haz fotos, enciende la luz anular. La cámara solo funciona con esta pestaña abierta."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisez votre caméra comme miroir, prenez des photos, allumez l'anneau lumineux. La caméra ne fonctionne que lorsque cet onglet est ouvert."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use sua câmera como espelho, tire fotos, ligue o anel de luz. A câmera só funciona com esta aba aberta."
           }
         }
       }
@@ -8165,6 +8885,74 @@
         }
       }
     },
+    "Kestirmeler": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurzbefehle"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shortcuts"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atajos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raccourcis"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atalhos"
+          }
+        }
+      }
+    },
+    "Kestirmeler sekmesi": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurzbefehle-Tab"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shortcuts tab"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pestaña Atajos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Onglet Raccourcis"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aba Atalhos"
+          }
+        }
+      }
+    },
     "Klavye": {
       "localizations": {
         "de": {
@@ -8297,6 +9085,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "O que você copiar aparece aqui"
+          }
+        }
+      }
+    },
+    "Kopyaladıkların burada. Ara, sabitle, tek tıkla geri kopyala. Şifre yöneticisi kopyaları kaydedilmez.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything you copy is here. Search, pin, copy back with one click. Password-manager copies are never stored."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles, was du kopierst, ist hier. Suchen, anheften, mit einem Klick erneut kopieren. Kopien von Passwortmanagern werden nie gespeichert."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todo lo que copias está aquí. Busca, fija, copia de nuevo con un clic. Las copias de gestores de contraseñas nunca se guardan."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout ce que vous copiez est ici. Recherchez, épinglez, recopiez en un clic. Les copies des gestionnaires de mots de passe ne sont jamais enregistrées."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tudo o que você copia está aqui. Busque, fixe, copie de novo com um clique. Cópias de gerenciadores de senhas nunca são salvas."
           }
         }
       }
@@ -8848,6 +9670,40 @@
         }
       }
     },
+    "Mac'in pili. Üzerine gelince bağlı kulaklık, fare ve klavyenin pilleri görünür.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Mac's battery. Hover it to see connected headphones, mouse and keyboard batteries."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Akku deines Mac. Fahre darüber, um die Akkus verbundener Kopfhörer, Maus und Tastatur zu sehen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La batería de tu Mac. Pasa el puntero para ver la batería de auriculares, ratón y teclado conectados."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La batterie de votre Mac. Survolez-la pour voir celle du casque, de la souris et du clavier connectés."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A bateria do seu Mac. Passe o ponteiro para ver a bateria de fones, mouse e teclado conectados."
+          }
+        }
+      }
+    },
     "Mac'in ya da Bluetooth cihazların (kulaklık, fare…) pili azalınca notch'ta uyarı çıkar.": {
       "localizations": {
         "de": {
@@ -8913,6 +9769,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quando um Foco (Não perturbe, Trabalho, Dormir…) é ativado, um ícone de lua aparece ao lado do notch e o mascote se acalma. O macOS pede permissão uma vez; só se lê se um Foco está ativo, não qual."
+          }
+        }
+      }
+    },
+    "Masaüstü, pano ve raf": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schreibtisch, Zwischenablage und Ablage"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desktop, clipboard and shelf"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escritorio, portapapeles y estante"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bureau, presse-papiers et étagère"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mesa, área de transferência e prateleira"
           }
         }
       }
@@ -9463,6 +10354,40 @@
         }
       }
     },
+    "Metni özetle, düzelt, çevir ya da soru sor. Varsayılan olarak veriler Mac'inden çıkmaz.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summarize, fix, translate or ask. By default your data never leaves your Mac."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zusammenfassen, korrigieren, übersetzen oder fragen. Standardmäßig verlassen deine Daten nie deinen Mac."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume, corrige, traduce o pregunta. Por defecto tus datos nunca salen de tu Mac."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Résumez, corrigez, traduisez ou posez une question. Par défaut, vos données ne quittent jamais votre Mac."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resuma, corrija, traduza ou pergunte. Por padrão seus dados nunca saem do seu Mac."
+          }
+        }
+      }
+    },
     "Mikser": {
       "localizations": {
         "de": {
@@ -9493,6 +10418,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mixer"
+          }
+        }
+      }
+    },
+    "Mikser seviyelerini sıfırla": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset mixer levels"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mixer-Pegel zurücksetzen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restablecer niveles del mezclador"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinitialiser les niveaux du mixeur"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redefinir níveis do mixer"
           }
         }
       }
@@ -10043,6 +11002,40 @@
         }
       }
     },
+    "Notch'ta tek satırlık not defteri. Notu tıklayınca panoya kopyalanır, istersen Notlar uygulamasına aktarırsın.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A one-line notepad in the notch. Click a note to copy it, or send it to the Notes app."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein einzeiliges Notizbuch im Notch. Ein Klick auf eine Notiz kopiert sie, oder du sendest sie an die Notizen-App."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un bloc de notas de una línea en el notch. Haz clic en una nota para copiarla o envíala a la app Notas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un bloc-notes d'une ligne dans le notch. Cliquez sur une note pour la copier ou envoyez-la vers l'app Notes."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um bloco de notas de uma linha no notch. Clique em uma nota para copiá-la ou envie para o app Notas."
+          }
+        }
+      }
+    },
     "Notch'u aç / kapat": {
       "localizations": {
         "de": {
@@ -10141,6 +11134,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Suas notas aparecem aqui"
+          }
+        }
+      }
+    },
+    "Notlar uygulaması": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notes app"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notizen-App"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Notas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Notes"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Notas"
           }
         }
       }
@@ -11174,6 +12201,40 @@
         }
       }
     },
+    "Pil": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battery"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akku"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batería"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batterie"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bateria"
+          }
+        }
+      }
+    },
     "Pil azalınca yorgun görünsün": {
       "localizations": {
         "de": {
@@ -11551,6 +12612,40 @@
         }
       }
     },
+    "Pomodoro ve geri sayım. Süre bitince notch açılır ve maskot zıplar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pomodoro and countdown. When time is up the notch opens and the mascot jumps."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pomodoro und Countdown. Ist die Zeit um, öffnet sich der Notch und das Maskottchen springt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pomodoro y cuenta atrás. Al acabar el tiempo se abre el notch y la mascota salta."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pomodoro et compte à rebours. À la fin, le notch s'ouvre et la mascotte saute."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pomodoro e contagem regressiva. Ao fim do tempo o notch abre e o mascote pula."
+          }
+        }
+      }
+    },
     "Python (pip) paket önbelleği": {
       "localizations": {
         "de": {
@@ -11717,6 +12812,108 @@
           "stringUnit": {
             "state": "translated",
             "value": "Limpar prateleira"
+          }
+        }
+      }
+    },
+    "Rehberi başlat…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start the guide…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rundgang starten …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar la guía…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancer le guide…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar o guia…"
+          }
+        }
+      }
+    },
+    "Rehberi menü çubuğundaki simgeden ya da Ayarlar › Genel'den istediğin zaman yeniden başlatabilirsin.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can restart the guide any time from the menu bar icon or Settings › General."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kannst den Rundgang jederzeit über das Menüleistensymbol oder Einstellungen › Allgemein neu starten."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puedes reiniciar la guía cuando quieras desde el icono de la barra de menús o Ajustes › General."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous pouvez relancer le guide à tout moment depuis l'icône de la barre des menus ou Réglages › Général."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Você pode reiniciar o guia quando quiser pelo ícone da barra de menus ou Ajustes › Geral."
+          }
+        }
+      }
+    },
+    "Rehber…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guide…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rundgang …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guía…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guide…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guia…"
           }
         }
       }
@@ -12028,6 +13225,41 @@
         }
       }
     },
+    "Sarı": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelb"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yellow"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amarillo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jaune"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amarelo"
+          }
+        }
+      }
+    },
     "Sağ %%%lld": {
       "localizations": {
         "de": {
@@ -12098,16 +13330,16 @@
     },
     "Sağ-sol çevir": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flip left–right"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Links–rechts spiegeln"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flip left–right"
           }
         },
         "es": {
@@ -12126,6 +13358,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inverter esquerda–direita"
+          }
+        }
+      }
+    },
+    "Sağa taşı": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach rechts"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move right"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover a la derecha"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer à droite"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover para a direita"
           }
         }
       }
@@ -12504,6 +13770,40 @@
         }
       }
     },
+    "Ses mikseri için: seçtiğin uygulamanın sesini işleyip seviyesini ayarlar. Ses kaydedilmez ve hiçbir yere gönderilmez.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For the audio mixer: processes the audio of the app you pick to change its volume. Nothing is recorded or sent anywhere."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für den Audio-Mixer: verarbeitet den Ton der gewählten App, um deren Lautstärke zu ändern. Nichts wird aufgezeichnet oder gesendet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para el mezclador de audio: procesa el sonido de la app que elijas para cambiar su volumen. No se graba ni se envía nada."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour le mixeur audio : traite le son de l'app choisie pour changer son volume. Rien n'est enregistré ni envoyé."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para o mixer de áudio: processa o som do app escolhido para mudar seu volume. Nada é gravado nem enviado."
+          }
+        }
+      }
+    },
     "Ses mikseri macOS 14.2 veya üstünü gerektirir.": {
       "localizations": {
         "de": {
@@ -12673,6 +13973,74 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reagir quando o volume ou o brilho chega a um extremo"
+          }
+        }
+      }
+    },
+    "Ses çalan her uygulamanın seviyesini ayrı ayarla; simgeye tıklayınca o uygulamayı susturursun. macOS bir kez ses kaydı izni sorar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set the level of every app that plays sound; click an icon to mute that app. macOS asks once for audio recording permission."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stelle die Lautstärke jeder App einzeln ein; ein Klick auf das Symbol schaltet sie stumm. macOS fragt einmal nach der Berechtigung für Tonaufnahme."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajusta el nivel de cada app que reproduce sonido; haz clic en un icono para silenciarla. macOS pide una vez el permiso de grabación de audio."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglez le niveau de chaque app qui joue du son ; cliquez sur une icône pour la couper. macOS demande une fois l'autorisation d'enregistrement audio."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajuste o nível de cada app que toca som; clique em um ícone para silenciá-lo. O macOS pede uma vez a permissão de gravação de áudio."
+          }
+        }
+      }
+    },
+    "Ses çalan her uygulamanın seviyesini ayrı ayarla; simgeye tıklayınca susturur.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set the level of every app that plays sound; click an icon to mute it."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stelle die Lautstärke jeder App einzeln ein; ein Klick auf das Symbol schaltet stumm."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajusta el nivel de cada app que reproduce sonido; haz clic en un icono para silenciarla."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglez le niveau de chaque app qui joue du son ; cliquez sur une icône pour la couper."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajuste o nível de cada app que toca som; clique em um ícone para silenciá-lo."
           }
         }
       }
@@ -13052,6 +14420,40 @@
         }
       }
     },
+    "Simgeyi ve rengi düzenle": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Symbol und Farbe bearbeiten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit icon and colour"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editar icono y color"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier l'icône et la couleur"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editar ícone e cor"
+          }
+        }
+      }
+    },
     "Sistem": {
       "localizations": {
         "de": {
@@ -13120,6 +14522,40 @@
         }
       }
     },
+    "Sistem ses kaydı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System audio recording"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Systemaudioaufnahme"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grabación de audio del sistema"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrement audio système"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gravação de áudio do sistema"
+          }
+        }
+      }
+    },
     "Sistem çekim aracı (⇧⌘5)": {
       "localizations": {
         "de": {
@@ -13184,6 +14620,74 @@
           "stringUnit": {
             "state": "translated",
             "value": "Preto (se funde ao notch)"
+          }
+        }
+      }
+    },
+    "Sola taşı": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach links"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move left"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover a la izquierda"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer à gauche"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover para a esquerda"
+          }
+        }
+      }
+    },
+    "Sonra bu izni tekrar iste": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then request this permission again"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dann diese Berechtigung erneut anfordern"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luego vuelve a pedir este permiso"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puis redemandez cette autorisation"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depois peça esta permissão de novo"
           }
         }
       }
@@ -14042,6 +15546,40 @@
         }
       }
     },
+    "Sıradaki etkinlik, hava durumu ve tek tıkla uyanık tut, odak zamanlayıcısı, ekran görüntüsü, renk seçici.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next event, weather and one-click keep awake, focus timer, screenshot, colour picker."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächster Termin, Wetter und per Klick Wach halten, Fokus-Timer, Screenshot, Farbpipette."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Próximo evento, el tiempo y, con un clic, mantener activo, temporizador de enfoque, captura y selector de color."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prochain événement, météo et, en un clic, rester éveillé, minuteur de concentration, capture d'écran, pipette."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Próximo evento, clima e, com um clique, manter ativo, timer de foco, captura de tela, conta-gotas."
+          }
+        }
+      }
+    },
     "Sıradaki etkinliği göster": {
       "localizations": {
         "de": {
@@ -14175,6 +15713,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cartão do calendário"
+          }
+        }
+      }
+    },
+    "Takvim ve hızlı düğmeler": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calendar and quick buttons"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalender und Schnelltasten"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calendario y botones rápidos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calendrier et boutons rapides"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calendário e botões rápidos"
           }
         }
       }
@@ -14620,6 +16192,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Salva todos os seus ajustes em um arquivo ou os restaura de um. O app reinicia após importar."
+          }
+        }
+      }
+    },
+    "Tüm kestirmeler eklendi": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Kurzbefehle sind hinzugefügt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All shortcuts are added"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todos los atajos están añadidos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les raccourcis sont ajoutés"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todos os atalhos foram adicionados"
           }
         }
       }
@@ -17181,6 +18787,40 @@
         }
       }
     },
+    "Önce bir uygulamada ses çal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play sound in an app first"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spiele zuerst in einer App Ton ab"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reproduce primero sonido en una app"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jouez d'abord du son dans une app"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toque primeiro um som em um app"
+          }
+        }
+      }
+    },
     "Önceki": {
       "localizations": {
         "de": {
@@ -17351,6 +18991,40 @@
         }
       }
     },
+    "Özellikleri kısa bir rehberle tek tek göstereceğim. İstediğin an Atla'ya basabilirsin.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I'll show you the features one by one in a short guide. You can press Skip any time."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ich zeige dir die Funktionen in einem kurzen Rundgang nacheinander. Du kannst jederzeit „Überspringen“ drücken."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Te mostraré las funciones una a una con una guía corta. Puedes pulsar Omitir en cualquier momento."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je vous présente les fonctions une à une dans un court guide. Vous pouvez appuyer sur Passer à tout moment."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vou mostrar os recursos um a um em um guia rápido. Você pode pular a qualquer momento."
+          }
+        }
+      }
+    },
     "Özelliklerin çalışması için macOS'un bazı izinleri istiyor. Hiçbiri zorunlu değil: vermediğin iznin özelliği çalışmaz, diğerleri etkilenmez. Sonra Ayarlar'dan da buraya dönebilirsin.": {
       "localizations": {
         "de": {
@@ -17449,6 +19123,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar letra original"
+          }
+        }
+      }
+    },
+    "Üstteki sekmelerle Ana Sayfa, Raf, Pano, Zamanlayıcı ve Sistem arasında geçersin.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use the tabs at the top to switch between Home, Shelf, Clipboard, Timer and System."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit den Tabs oben wechselst du zwischen Start, Ablage, Zwischenablage, Timer und System."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Con las pestañas de arriba cambias entre Inicio, Estante, Portapapeles, Temporizador y Sistema."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les onglets du haut permettent de passer d'Accueil à Étagère, Presse-papiers, Minuteur et Système."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Com as abas no topo você alterna entre Início, Prateleira, Área de transferência, Timer e Sistema."
           }
         }
       }
@@ -18272,6 +19980,40 @@
         }
       }
     },
+    "İşlemci, bellek, disk, ağ hızı ve seçtiğin şehirlerin saati.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Processor, memory, disk, network speed and the time in the cities you picked."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prozessor, Speicher, Datenträger, Netzwerktempo und die Uhrzeit der gewählten Städte."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Procesador, memoria, disco, velocidad de red y la hora de las ciudades que elijas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Processeur, mémoire, disque, débit réseau et l'heure des villes choisies."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Processador, memória, disco, velocidade de rede e a hora das cidades escolhidas."
+          }
+        }
+      }
+    },
     "Şarj oluyor": {
       "localizations": {
         "de": {
@@ -18993,282 +20735,37 @@
       }
     },
     "⌥ (Option)": {},
-    "Işık seviyesi": {
+    "%lld / %lld": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Light level"
+            "value": "%lld / %lld"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lichtstärke"
+            "value": "%lld / %lld"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nivel de luz"
+            "value": "%lld / %lld"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Niveau de lumière"
+            "value": "%lld / %lld"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nível da luz"
-          }
-        }
-      }
-    },
-    "Işık kalınlığı": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Light thickness"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lichtbreite"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grosor de la luz"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Épaisseur de la lumière"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Espessura da luz"
-          }
-        }
-      }
-    },
-    "Fotoğraf çek": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Take photo"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto aufnehmen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tomar foto"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Prendre une photo"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tirar foto"
-          }
-        }
-      }
-    },
-    "Fotoğraf kaydedildi": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photo saved"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto gesichert"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto guardada"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photo enregistrée"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto salva"
-          }
-        }
-      }
-    },
-    "Masaüstü, pano ve raf": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Desktop, clipboard and shelf"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schreibtisch, Zwischenablage und Ablage"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Escritorio, portapapeles y estante"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bureau, presse-papiers et étagère"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mesa, área de transferência e prateleira"
-          }
-        }
-      }
-    },
-    "Fotoğraf çekilemedi": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Couldn't take the photo"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto konnte nicht aufgenommen werden"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se pudo tomar la foto"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Impossible de prendre la photo"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Não foi possível tirar a foto"
-          }
-        }
-      }
-    },
-    "Sarı": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yellow"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gelb"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Amarillo"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jaune"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Amarelo"
-          }
-        }
-      }
-    },
-    "Işık": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Light"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Licht"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Luz"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lumière"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Luz"
+            "value": "%lld / %lld"
           }
         }
       }

@@ -53,7 +53,7 @@ enum Loc {
 }
 
 enum Tab: String, CaseIterable, Identifiable {
-    case home, shelf, clipboard, timer, stats, ai, batteries, notes, mixer, mirror
+    case home, shelf, clipboard, timer, stats, ai, batteries, notes, mixer, mirror, shortcuts
     var id: String { rawValue }
     var icon: String {
         switch self {
@@ -63,6 +63,7 @@ enum Tab: String, CaseIterable, Identifiable {
         case .notes: return "note.text"
         case .mixer: return "slider.vertical.3"
         case .mirror: return "person.crop.square"
+        case .shortcuts: return "square.grid.2x2.fill"
         case .shelf: return "tray.full.fill"
         case .clipboard: return "doc.on.clipboard.fill"
         case .timer: return "timer"
@@ -77,6 +78,7 @@ enum Tab: String, CaseIterable, Identifiable {
         case .notes: return L("Notlar")
         case .mixer: return L("Mikser")
         case .mirror: return L("Ayna")
+        case .shortcuts: return L("Kestirmeler")
         case .shelf: return L("Raf")
         case .clipboard: return L("Pano")
         case .timer: return L("Zamanlayıcı")
@@ -87,7 +89,7 @@ enum Tab: String, CaseIterable, Identifiable {
 
 extension Tab {
     /// Açık notchun alt çubuğunda gösterilen sekmeler (yeni eklenecek sekmeler de buraya).
-    static let bottomTabs: [Tab] = [.notes, .mixer, .mirror]
+    static let bottomTabs: [Tab] = [.notes, .mixer, .mirror, .shortcuts]
     static func visible() -> [Tab] {
         let d = UserDefaults.standard
         return allCases.filter {
@@ -102,6 +104,7 @@ extension Tab {
             case .notes: return d.object(forKey: "showNotes") as? Bool ?? true
             case .mixer: return d.object(forKey: "showMixer") as? Bool ?? true
             case .mirror: return d.object(forKey: "showMirror") as? Bool ?? true
+            case .shortcuts: return ShortcutsService.available && (d.object(forKey: "showShortcutsTab") as? Bool ?? true)
             }
         }
     }

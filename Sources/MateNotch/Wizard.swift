@@ -5,6 +5,7 @@ import CoreBluetooth
 import Intents
 import ApplicationServices
 import ServiceManagement
+import AVFoundation
 
 // MARK: - İzin durumları
 
@@ -72,6 +73,13 @@ final class PermissionService: ObservableObject {
             default: return .denied
             }
         }()
+        let cam: PermState = {
+            switch AVCaptureDevice.authorizationStatus(for: .video) {
+            case .authorized: return .granted
+            case .notDetermined: return .notAsked
+            default: return .denied
+            }
+        }()
         let new: [PermItem] = [
             PermItem(id: "calendar", icon: "calendar", title: L("Takvim"),
                      why: L("Ana Sayfa'da sıradaki etkinliği ve toplantı hatırlatmasını gösterir."), optional: false, state: cal),
@@ -83,6 +91,15 @@ final class PermissionService: ObservableObject {
             PermItem(id: "music", icon: "music.quarternote.3", title: L("Apple Music kontrolü"),
                      why: L("Apple Music için aynısı. Müzik uygulaması açıkken verilebilir."), optional: false,
                      state: Self.automation("com.apple.Music")),
+            PermItem(id: "notes", icon: "note.text", title: L("Notlar uygulaması"),
+                     why: L("Hızlı notlarını Apple Notlar'a aktarabilmek için. Yalnızca sen \"Notlar'a aktar\" dediğinde kullanılır."), optional: true,
+                     state: Self.automation("com.apple.Notes")),
+            PermItem(id: "camera", icon: "person.crop.square", title: L("Kamera"),
+                     why: L("Kamera aynası için. Kamera yalnızca Ayna sekmesi açıkken çalışır; görüntü kaydedilmez ve hiçbir yere gönderilmez."), optional: true,
+                     state: cam),
+            PermItem(id: "audiocapture", icon: "slider.vertical.3", title: L("Sistem ses kaydı"),
+                     why: L("Ses mikseri için: seçtiğin uygulamanın sesini işleyip seviyesini ayarlar. Ses kaydedilmez ve hiçbir yere gönderilmez."), optional: true,
+                     state: UserDefaults.standard.bool(forKey: "mixerTapOK") ? .granted : .notAsked),
             PermItem(id: "accessibility", icon: "keyboard", title: L("Erişilebilirlik"),
                      why: L("Ses ve parlaklık tuşlarını Mate Notch işler: macOS'un ortadaki kare göstergesi çıkmaz, gösterge notch'ta görünür. Vermezsen iki gösterge birlikte çıkar; ayarlardan kapatabilirsin."),
                      optional: false, state: AXIsProcessTrusted() ? .granted : .notAsked),
@@ -109,8 +126,15 @@ final class PermissionService: ObservableObject {
             asked ? CalendarService.shared.requestAccess { self.refresh() } : Self.openSettings("Privacy_Calendars")
         case "bluetooth":
             if asked { bt = CBCentralManager() } else { Self.openSettings("Privacy_Bluetooth") }
-        case "spotify", "music":
-            let bundle = id == "spotify" ? "com.spotify.client" : "com.apple.Music"
+        case "camera":
+            if asked { AVCaptureDevice.requestAccess(for: .video) { _ in DispatchQueue.main.async { self.refresh() } } } else { Self.openSettings("Privacy_Camera") }
+        case "audiocapture":
+            MixerService.shared.requestPermission { ok in
+                self.refresh()
+                if !ok { Self.openSettings("Privacy_AudioCapture") }
+            }
+        case "spotify", "music", "notes":
+            let bundle = id == "spotify" ? "com.spotify.client" : (id == "notes" ? "com.apple.Notes" : "com.apple.Music")
             if item.state == .appClosed { return }
             if asked {
                 // Bu çağrı, hedef uygulama açıkken macOS'un izin penceresini çıkarır
@@ -168,7 +192,7 @@ struct WizardView: View {
             HStack {
                 Toggle("Girişte otomatik başlat", isOn: Binding(get: { launchAtLogin }, set: { launchAtLogin = $0; LaunchAtLogin.set($0) }))
                 Spacer()
-                Button("Bitti") { onDone() }
+                Button("Bitti") { onDone(); GuideService.shared.startFirstTime() }
                 Button("Özellik turuna geç") { onDone(); TourWindow.show() }.keyboardShortcut(.defaultAction)
             }
             .padding(14)

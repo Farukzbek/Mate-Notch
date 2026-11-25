@@ -56,6 +56,18 @@ enum TourCatalog {
         TourStep(id: "ai", icon: "sparkles", title: L("Yapay zeka"),
                  text: L("Metni özetle, düzelt, çevir ya da bir şey sor. Varsayılan olarak cihaz içi Apple modeli çalışır; istersen bulut model bağlarsın."),
                  keys: [Pref.showAI]),
+        TourStep(id: "notes", icon: "note.text", title: L("Hızlı notlar"),
+                 text: L("Notch'ta tek satırlık not defteri. Notu tıklayınca panoya kopyalanır, istersen Notlar uygulamasına aktarırsın."),
+                 keys: ["showNotes"]),
+        TourStep(id: "mixer", icon: "slider.vertical.3", title: L("Ses mikseri"),
+                 text: L("Ses çalan her uygulamanın seviyesini ayrı ayarla; simgeye tıklayınca o uygulamayı susturursun. macOS bir kez ses kaydı izni sorar."),
+                 keys: ["showMixer"]),
+        TourStep(id: "mirror", icon: "person.crop.square", title: L("Kamera aynası"),
+                 text: L("Kameranı ayna gibi kullan, fotoğraf çek, halka ışığı aç. Kamera yalnızca Ayna sekmesi açıkken çalışır."),
+                 keys: ["showMirror"]),
+        TourStep(id: "shortcutstab", icon: "square.grid.2x2.fill", title: L("Kestirmeler sekmesi"),
+                 text: L("Apple Kestirmeler'den seçtiğin kestirmeleri kendi simge ve renklerinle tek tıkla çalıştır."),
+                 keys: ["showShortcutsTab"]),
         TourStep(id: "updates", icon: "arrow.triangle.2.circlepath", title: L("Otomatik güncelleme"),
                  text: L("Yeni sürüm çıkınca doğrulanıp kendiliğinden kurulur ve uygulama yeniden başlar."),
                  keys: [Pref.autoUpdateInstall]),
@@ -128,7 +140,7 @@ struct TourView: View {
 enum TourWindow {
     private static var window: NSWindow?
     static func show() {
-        let v = TourView { window?.close() }
+        let v = TourView { window?.close(); GuideService.shared.startFirstTime() }
         let w = window ?? NSWindow(contentViewController: NSHostingController(rootView: v))
         w.contentViewController = NSHostingController(rootView: v)    // her açılışta baştan başlar
         w.title = L("Mate Notch — Özellik turu")

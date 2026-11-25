@@ -276,6 +276,41 @@ final class MixerService: ObservableObject {
         if muted.contains(id) { muted.remove(id) } else { muted.insert(id) }
         apply(id)
     }
+    /// Ses kaydı iznini sorar: şu an ses çalan bir uygulamaya SESİNİ DEĞİŞTİRMEYEN (susturmayan) kısa bir tap kurup bırakır.
+    /// Çalan uygulama yoksa `done(false)`: önce bir şey çalıp tekrar denemek gerekir.
+    func requestPermission(_ done: @escaping (Bool) -> Void) {
+        guard #available(macOS 14.2, *) else { done(false); return }
+        var addr = AudioObjectPropertyAddress(mSelector: kAudioHardwarePropertyProcessObjectList, mScope: kAudioObjectPropertyScopeGlobal, mElement: kAudioObjectPropertyElementMain)
+        var size: UInt32 = 0
+        var list: [AudioObjectID] = []
+        if AudioObjectGetPropertyDataSize(AudioObjectID(kAudioObjectSystemObject), &addr, 0, nil, &size) == 0, size > 0 {
+            list = [AudioObjectID](repeating: 0, count: Int(size) / MemoryLayout<AudioObjectID>.size)
+            AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject), &addr, 0, nil, &size, &list)
+        }
+        let running = list.filter { (Self.prop($0, kAudioProcessPropertyIsRunningOutput, UInt32(0)) ?? 0) != 0 && (Self.prop($0, kAudioProcessPropertyPID, Int32(0)) ?? 0) != getpid() }
+        guard let o = running.first else {
+            BannerService.shared.post(NotchBanner(icon: "speaker.wave.2.fill", title: L("Önce bir uygulamada ses çal"), subtitle: L("Sonra bu izni tekrar iste"), tint: .orange))
+            done(false); return
+        }
+        tapQueue.async {
+            let desc = CATapDescription(stereoMixdownOfProcesses: [o])
+            desc.muteBehavior = .unmuted
+            desc.isPrivate = true
+            var id = AudioObjectID(kAudioObjectUnknown)
+            let ok = AudioHardwareCreateProcessTap(desc, &id) == noErr
+            if ok { AudioHardwareDestroyProcessTap(id) }
+            DispatchQueue.main.async {
+                if ok { UserDefaults.standard.set(true, forKey: "mixerTapOK") }
+                done(ok)
+            }
+        }
+    }
+
+    func resetAll() {
+        levels = [:]; muted = []; persistSoon()
+        for id in Array(taps.keys) { apply(id) }
+        requestScan()
+    }
     func reset(_ id: String) { levels[id] = nil; muted.remove(id); persistSoon(); apply(id) }
 
     /// Kaydırırken anlık tepki: tap zaten varsa yalnızca kazancı yazar (ses iş parçacığı hemen okur), ağır tarama yapılmaz.

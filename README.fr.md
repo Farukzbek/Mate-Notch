@@ -56,6 +56,10 @@
 - **Apparence :** Noir, couleur unie, couleur de l'album ou **Liquid Glass** (densité et type de verre réglables) ; taille ouvert/fermé, zone de déclenchement et délais réglables.
 - **Sauvegarde des réglages :** Exporter et importer depuis Réglages › Général.
 - **Onglet Notes :** Un bloc-notes d'une ligne dans le notch. Cliquez sur une note pour la copier, ou envoyez-la (ou toutes) vers l'app Notes.
+- **Mixeur audio :** Réglez le volume de chaque app qui joue du son avec des canaux verticaux ; un clic sur l'icône coupe cette app. Les niveaux sont mémorisés.
+- **Miroir caméra :** Utilisez votre caméra comme miroir, prenez des photos (enregistrées sur le Bureau, dans le presse-papiers et sur l'étagère) et allumez un anneau lumineux dont le niveau, l'épaisseur et la couleur (blanc, jaune, bleu) sont réglables. La caméra ne fonctionne que lorsque l'onglet est ouvert.
+- **Onglet Raccourcis :** Épinglez des Raccourcis Apple avec vos propres icônes et couleurs et lancez-les en un clic.
+- **Guide interactif :** Après la configuration, un guide pas à pas met en lumière chaque fonction dans le notch ; relançable à tout moment depuis l'icône de la barre des menus.
 - **Plus de musique :** Un minuteur de veille (arrêt après 15–90 min ou à la fin du morceau), un cœur pour aimer le morceau dans Apple Music et une traduction facultative des paroles par IA dans la langue de l'interface.
 - **Outils de l'étagère :** De vraies vignettes d'aperçu ; cliquez pour sélectionner, appuyez sur Espace pour le panneau Coup d'œil de macOS (← → pour parcourir). Clic droit sur une image : la convertir (PNG, JPEG, HEIC, TIFF), la réduire ou l'annoter avec flèches, cadres, stylo, surligneur et un cadre noir pour masquer.
 - **Heure mondiale et débit réseau :** Jusqu'à trois villes sous l'onglet Système avec le décalage horaire, et le débit de téléchargement/envoi en direct (Mbit/s ou Mo/s).

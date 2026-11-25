@@ -56,6 +56,10 @@
 - **Appearance:** Black, solid colour, album colour or **Liquid Glass** (adjustable density and glass type); open/closed size, hover area and delays are adjustable.
 - **Back up settings:** Export and import from Settings › General.
 - **Notes tab:** A one-line notepad in the notch. Click a note to copy it, or send it (or all of them) to the Notes app.
+- **Audio mixer:** Set the volume of every app that is playing sound with vertical channels; click an icon to mute that app. Levels are remembered.
+- **Camera mirror:** Use your camera as a mirror, take photos (saved to the Desktop, clipboard and shelf) and turn on a ring light with adjustable level, thickness and colour (white, yellow, blue). The camera only runs while the tab is open.
+- **Shortcuts tab:** Pin Apple Shortcuts with your own icons and colours and run them with one click.
+- **Interactive guide:** After setup a step-by-step guide spotlights each feature in the notch; restart it any time from the menu bar icon.
 - **More music:** A sleep timer (stop after 15–90 min or when the song ends), a heart to like the song in Apple Music, and optional AI translation of the lyrics into your interface language.
 - **Shelf tools:** Real preview thumbnails; click to select, press Space for the macOS Quick Look panel (← → to browse). Right-click an image to convert it (PNG, JPEG, HEIC, TIFF), shrink it or mark it up with arrows, boxes, a pen, a highlighter or a black redaction box.
 - **World clock and network speed:** Up to three cities under the System tab with the time difference, plus live download/upload speed (Mbps or MB/s).

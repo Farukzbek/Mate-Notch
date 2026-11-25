@@ -56,6 +56,10 @@
 - **Aparência:** Preto, cor sólida, cor do álbum ou **Liquid Glass** (densidade e tipo de vidro ajustáveis); tamanho aberto/fechado, área de ativação e atrasos ajustáveis.
 - **Backup dos ajustes:** Exportar e importar em Ajustes › Geral.
 - **Aba Notas:** Um bloco de notas de uma linha no notch. Clique em uma nota para copiá-la, ou envie-a (ou todas) para o app Notas.
+- **Mixer de áudio:** Ajuste o volume de cada app que toca som com canais verticais; um clique no ícone silencia o app. Os níveis são lembrados.
+- **Espelho da câmera:** Use sua câmera como espelho, tire fotos (salvas na Mesa, na área de transferência e na prateleira) e ligue um anel de luz com nível, espessura e cor ajustáveis (branco, amarelo, azul). A câmera só funciona com a aba aberta.
+- **Aba Atalhos:** Fixe Atalhos da Apple com seus próprios ícones e cores e execute com um clique.
+- **Guia interativo:** Após a configuração, um guia passo a passo destaca cada recurso no notch; pode ser reiniciado a qualquer momento pelo ícone da barra de menus.
 - **Mais música:** Um timer de sono (parar após 15–90 min ou ao fim da música), um coração para curtir a música no Apple Music e tradução opcional da letra com IA para o idioma da interface.
 - **Ferramentas da prateleira:** Miniaturas de pré-visualização reais; clique para selecionar e pressione Espaço para o painel de Visualização rápida do macOS (← → para navegar). Clique com o botão direito em uma imagem: converter (PNG, JPEG, HEIC, TIFF), reduzir ou marcar com setas, caixas, caneta, marca-texto e uma caixa preta para ocultar.
 - **Relógio mundial e velocidade de rede:** Até três cidades na aba Sistema com a diferença de horário, e a velocidade de download/upload ao vivo (Mbps ou MB/s).

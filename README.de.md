@@ -56,6 +56,10 @@
 - **Erscheinungsbild:** Schwarz, einfarbig, Albumfarbe oder **Liquid Glass** (Dichte und Glasart einstellbar); Größe im geöffneten/geschlossenen Zustand, Auslösebereich und Verzögerungen sind einstellbar.
 - **Einstellungen sichern:** Export und Import unter Einstellungen › Allgemein.
 - **Notizen-Tab:** Ein einzeiliges Notizbuch im Notch. Ein Klick auf eine Notiz kopiert sie; du kannst sie (oder alle) an die Notizen-App senden.
+- **Audio-Mixer:** Stelle die Lautstärke jeder App, die Ton abspielt, mit senkrechten Kanälen einzeln ein; ein Klick auf das Symbol schaltet die App stumm. Pegel werden gemerkt.
+- **Kameraspiegel:** Nutze deine Kamera als Spiegel, mach Fotos (auf dem Schreibtisch, in der Zwischenablage und in der Ablage gesichert) und schalte ein Ringlicht mit einstellbarer Stärke, Breite und Farbe (Weiß, Gelb, Blau) ein. Die Kamera läuft nur, solange der Tab geöffnet ist.
+- **Kurzbefehle-Tab:** Hefte Apple-Kurzbefehle mit eigenen Symbolen und Farben an und führe sie mit einem Klick aus.
+- **Interaktiver Rundgang:** Nach der Einrichtung zeigt ein Schritt-für-Schritt-Rundgang jede Funktion im Notch mit einem Lichtkasten; jederzeit über das Menüleistensymbol neu startbar.
 - **Mehr Musik:** Ein Einschlaf-Timer (Stopp nach 15–90 Min. oder am Songende), ein Herz zum Liken in Apple Music und optionale KI-Übersetzung der Songtexte in deine Oberflächensprache.
 - **Ablage-Werkzeuge:** Echte Vorschaubilder; anklicken zum Auswählen, Leertaste öffnet die macOS-Übersicht (← → zum Blättern). Rechtsklick auf ein Bild: konvertieren (PNG, JPEG, HEIC, TIFF), verkleinern oder mit Pfeilen, Kästen, Stift, Textmarker und schwarzem Schwärzungskasten markieren.
 - **Weltzeituhr und Netzwerktempo:** Bis zu drei Städte unter dem System-Tab mit Zeitunterschied sowie Download-/Upload-Tempo in Echtzeit (Mbit/s oder MB/s).
