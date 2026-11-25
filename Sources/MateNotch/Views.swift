@@ -72,7 +72,8 @@ struct RootView: View {
         let ch = max(12, g.notchHeight + CGFloat(exH))
         let base = activity != nil ? base0 + Layout.sideW * 2 : base0
         let w = open ? Layout.openW : (pill ? max(base, pillW) : base)
-        let h = open ? g.notchHeight / u + Layout.bodyH : ch + (pill ? extra : 0)
+        let tabExtra: CGFloat = open && state.tab == .mirror ? Layout.mirrorExtra : 0
+        let h = open ? g.notchHeight / u + Layout.bodyH + tabExtra : ch + (pill ? extra : 0)
 
         ZStack(alignment: .top) {
             let shape = NotchShape(top: open ? 16 : 6, bottom: open ? 30 : (pill ? 18 : 11))
@@ -92,7 +93,7 @@ struct RootView: View {
             if open {
                 // Sabit boyutlu içerik: kabuk küçülürken yeniden yerleşim (layout) yapılmaz, sadece kırpılır.
                 OpenContent()
-                    .frame(width: Layout.openW, height: g.notchHeight / u + Layout.bodyH, alignment: .top)
+                    .frame(width: Layout.openW, height: g.notchHeight / u + Layout.bodyH + tabExtra, alignment: .top)
                     .overlay(alignment: .bottom) {   // notch açıkken de geri bildirim (sistem göstergesi gizliyse)
                         if hud.visible {
                             HUDBanner().frame(height: 30).fixedSize(horizontal: true, vertical: false)
@@ -324,11 +325,12 @@ struct OpenContent: View {
     @AppStorage(Pref.showAI) var showAI = true
     @AppStorage("showNotes") var showNotes = true
     @AppStorage("showMixer") var showMixer = true
+    @AppStorage("showMirror") var showMirror = true
     @AppStorage(Pref.headerDeviceBattery) var headerDeviceBattery = true
     @ObservedObject var deviceBattery = DeviceBatteryService.shared
     @AppStorage(Pref.uiScale) var uiScale = 1.0
 
-    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI, showNotes, showMixer); return Tab.visible().filter { $0 != .ai && $0 != .batteries && !Tab.bottomTabs.contains($0) } }
+    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI, showNotes, showMixer, showMirror); return Tab.visible().filter { $0 != .ai && $0 != .batteries && !Tab.bottomTabs.contains($0) } }
 
     var body: some View {
         let g = state.geometry
@@ -369,6 +371,7 @@ struct OpenContent: View {
                 case .stats: StatsView()
                 case .notes: NotesView()
                 case .mixer: MixerView()
+                case .mirror: MirrorView()
                 }
             }
             .padding(.horizontal, 28)
@@ -1244,6 +1247,7 @@ struct SettingsView: View {
     @AppStorage(Pref.showStats) var showStats = true
     @AppStorage("showNotes") var showNotes = true
     @AppStorage("showMixer") var showMixer = true
+    @AppStorage("showMirror") var showMirror = true
     @AppStorage("netUnit") var netUnit = "bits"
     @AppStorage("clock1") var clock1 = ""
     @AppStorage("clock2") var clock2 = ""
@@ -1621,6 +1625,7 @@ struct SettingsView: View {
                 Toggle("Sistem durumu", isOn: $showStats).srow("tabs/Sistem durumu")
                 Toggle("Notlar", isOn: $showNotes).srow("tabs/Notlar")
                 Toggle("Ses mikseri", isOn: $showMixer).srow("tabs/Ses mikseri")
+                Toggle("Kamera aynası", isOn: $showMirror).srow("tabs/Kamera aynası")
                 Picker("Ağ hızı birimi", selection: $netUnit) {
                     Text("Mbps (bit, hız testleriyle aynı)").tag("bits")
                     Text("MB/s (bayt)").tag("bytes")

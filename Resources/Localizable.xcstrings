@@ -2088,6 +2088,40 @@
         }
       }
     },
+    "Ayna": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirror"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spiegel"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espejo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miroir"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espelho"
+          }
+        }
+      }
+    },
     "Az": {
       "localizations": {
         "de": {
@@ -3182,16 +3216,16 @@
     },
     "Bir uygulama ses çalmaya başlayınca burada görünür.": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An app appears here as soon as it starts playing sound."
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Eine App erscheint hier, sobald sie Ton abspielt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An app appears here as soon as it starts playing sound."
           }
         },
         "es": {
@@ -7483,6 +7517,142 @@
         }
       }
     },
+    "Kamera ayarlarını aç": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open camera settings"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kameraeinstellungen öffnen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir ajustes de cámara"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir les réglages de la caméra"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir ajustes da câmera"
+          }
+        }
+      }
+    },
+    "Kamera aynası": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera mirror"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kameraspiegel"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espejo de cámara"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miroir caméra"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espelho da câmera"
+          }
+        }
+      }
+    },
+    "Kamera bulunamadı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No camera found"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Kamera gefunden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se encontró ninguna cámara"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune caméra trouvée"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhuma câmera encontrada"
+          }
+        }
+      }
+    },
+    "Kamera izni gerekli": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera permission needed"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kameraberechtigung nötig"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se necesita permiso de cámara"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autorisation de la caméra requise"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permissão da câmera necessária"
+          }
+        }
+      }
+    },
     "Kamera ya da mikrofon kullanılırken notch'ta küçük bir gösterge çıkar; kimin dinlediğini hep bilirsin.": {
       "localizations": {
         "de": {
@@ -8302,6 +8472,7 @@
       }
     },
     "Kulaklık/cihaz pilini açık notch'un başlığında göster": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -9294,13 +9465,13 @@
     },
     "Mikser": {
       "localizations": {
-        "en": {
+        "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Mixer"
           }
         },
-        "de": {
+        "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Mixer"
@@ -11105,6 +11276,76 @@
         }
       }
     },
+    "Pil bilgisi veren bağlı cihaz yok": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein verbundenes Gerät meldet einen Akkustand"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No connected device reports a battery level"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ningún dispositivo conectado informa de su batería"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun appareil connecté ne signale sa batterie"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum dispositivo conectado informa a bateria"
+          }
+        }
+      }
+    },
+    "Pil simgesinin üstüne gelince bağlı cihazların pilini göster": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akkus verbundener Geräte beim Darüberfahren mit dem Akku-Symbol anzeigen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show connected devices' battery when hovering the battery icon"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar la batería de los dispositivos conectados al pasar sobre el icono de batería"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher la batterie des appareils connectés au survol de l'icône de batterie"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar a bateria dos dispositivos conectados ao passar sobre o ícone de bateria"
+          }
+        }
+      }
+    },
     "Pil ve bildirimler": {
       "extractionState": "manual",
       "localizations": {
@@ -11855,6 +12096,40 @@
         }
       }
     },
+    "Sağ-sol çevir": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flip left–right"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Links–rechts spiegeln"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invertir izquierda–derecha"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inverser gauche–droite"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inverter esquerda–direita"
+          }
+        }
+      }
+    },
     "Sağlama toplamı uyuşmuyor": {
       "localizations": {
         "de": {
@@ -12163,16 +12438,16 @@
     },
     "Ses kaydı izni gerekli: Sistem Ayarları › Gizlilik ve Güvenlik › Ekran ve Sistem Ses Kaydı'nda Mate Notch'u aç.": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Audio recording permission needed: turn on Mate Notch in System Settings › Privacy & Security › Screen & System Audio Recording."
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Berechtigung für Tonaufnahme nötig: Aktiviere Mate Notch in Systemeinstellungen › Datenschutz & Sicherheit › Bildschirm- & Systemaudioaufnahme."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio recording permission needed: turn on Mate Notch in System Settings › Privacy & Security › Screen & System Audio Recording."
           }
         },
         "es": {
@@ -12197,16 +12472,16 @@
     },
     "Ses mikseri": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Audio mixer"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Audio-Mixer"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio mixer"
           }
         },
         "es": {
@@ -12231,16 +12506,16 @@
     },
     "Ses mikseri macOS 14.2 veya üstünü gerektirir.": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The audio mixer needs macOS 14.2 or later."
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Der Audio-Mixer benötigt macOS 14.2 oder neuer."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The audio mixer needs macOS 14.2 or later."
           }
         },
         "es": {
@@ -12473,16 +12748,16 @@
     },
     "Sesi aç": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unmute"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Ton einschalten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unmute"
           }
         },
         "es": {
@@ -13154,16 +13429,16 @@
     },
     "Sustur": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mute"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Stummschalten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute"
           }
         },
         "es": {
@@ -13387,6 +13662,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar letra"
+          }
+        }
+      }
+    },
+    "Sözleri eşzamanla": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Songtext synchronisieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync lyrics"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sincronizar letra"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resynchroniser les paroles"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sincronizar letra"
           }
         }
       }
@@ -18406,16 +18716,16 @@
     },
     "Şu an ses çalan uygulama yok": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No app is playing sound right now"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Zurzeit spielt keine App Ton ab"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No app is playing sound right now"
           }
         },
         "es": {
@@ -18683,107 +18993,282 @@
       }
     },
     "⌥ (Option)": {},
-    "Pil bilgisi veren bağlı cihaz yok": {
+    "Işık seviyesi": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No connected device reports a battery level"
+            "value": "Light level"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kein verbundenes Gerät meldet einen Akkustand"
+            "value": "Lichtstärke"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ningún dispositivo conectado informa de su batería"
+            "value": "Nivel de luz"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aucun appareil connecté ne signale sa batterie"
+            "value": "Niveau de lumière"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nenhum dispositivo conectado informa a bateria"
+            "value": "Nível da luz"
           }
         }
       }
     },
-    "Pil simgesinin üstüne gelince bağlı cihazların pilini göster": {
+    "Işık kalınlığı": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Show connected devices' battery when hovering the battery icon"
+            "value": "Light thickness"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Akkus verbundener Geräte beim Darüberfahren mit dem Akku-Symbol anzeigen"
+            "value": "Lichtbreite"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mostrar la batería de los dispositivos conectados al pasar sobre el icono de batería"
+            "value": "Grosor de la luz"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Afficher la batterie des appareils connectés au survol de l'icône de batterie"
+            "value": "Épaisseur de la lumière"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mostrar a bateria dos dispositivos conectados ao passar sobre o ícone de bateria"
+            "value": "Espessura da luz"
           }
         }
       }
     },
-    "Sözleri eşzamanla": {
+    "Fotoğraf çek": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sync lyrics"
+            "value": "Take photo"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Songtext synchronisieren"
+            "value": "Foto aufnehmen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sincronizar letra"
+            "value": "Tomar foto"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Resynchroniser les paroles"
+            "value": "Prendre une photo"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sincronizar letra"
+            "value": "Tirar foto"
+          }
+        }
+      }
+    },
+    "Fotoğraf kaydedildi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo saved"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto gesichert"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto guardada"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo enregistrée"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto salva"
+          }
+        }
+      }
+    },
+    "Masaüstü, pano ve raf": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desktop, clipboard and shelf"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schreibtisch, Zwischenablage und Ablage"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escritorio, portapapeles y estante"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bureau, presse-papiers et étagère"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mesa, área de transferência e prateleira"
+          }
+        }
+      }
+    },
+    "Fotoğraf çekilemedi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't take the photo"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto konnte nicht aufgenommen werden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo tomar la foto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de prendre la photo"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível tirar a foto"
+          }
+        }
+      }
+    },
+    "Sarı": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yellow"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelb"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amarillo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jaune"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amarelo"
+          }
+        }
+      }
+    },
+    "Işık": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luz"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lumière"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luz"
           }
         }
       }

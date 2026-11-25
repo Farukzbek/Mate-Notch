@@ -4,5 +4,6 @@
   <!-- Sertleştirilmiş çalışma zamanı (hardened runtime) altında gereken izinler; Apple onayı (notarization) için şart -->
   <key>com.apple.security.automation.apple-events</key><true/>                  <!-- Spotify / Apple Music kontrolü -->
   <key>com.apple.security.device.bluetooth</key><true/>                         <!-- Bluetooth cihaz pilleri -->
+  <key>com.apple.security.device.camera</key><true/>                            <!-- Kamera aynası -->
   <key>com.apple.security.personal-information.calendars</key><true/>           <!-- Takvim -->
 </dict></plist>

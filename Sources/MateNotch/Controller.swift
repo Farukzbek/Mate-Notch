@@ -75,7 +75,7 @@ final class NotchController {
     var panelSize: NSSize {
         let sc = max(0.8, min(1.3, CGFloat(UserDefaults.standard.double(forKey: Pref.uiScale))))
         let g = state.geometry
-        return NSSize(width: Layout.openW * sc + 90, height: g.notchHeight + Layout.bodyH * sc + 70)
+        return NSSize(width: Layout.openW * sc + 90, height: g.notchHeight + (Layout.bodyH + Layout.mirrorExtra) * sc + 70)
     }
 
     private func reposition() {
@@ -101,7 +101,7 @@ final class NotchController {
     private var openRect: NSRect {
         let g = state.geometry
         let sc = CGFloat(UserDefaults.standard.double(forKey: Pref.uiScale))
-        let h = g.notchHeight + Layout.bodyH * sc + 24
+        let h = g.notchHeight + (Layout.bodyH + (state.tab == .mirror ? Layout.mirrorExtra : 0)) * sc + 24
         let w = Layout.openW * sc
         return NSRect(x: g.screenFrame.midX - w / 2 - 16, y: g.screenFrame.maxY - h,
                       width: w + 32, height: h + 12)

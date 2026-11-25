@@ -59,6 +59,7 @@ cat > "$APP/Contents/Info.plist" <<EOT
   <key>NSFocusStatusUsageDescription</key><string>Odak (Rahatsız Etmeyin) açıkken notch'ta küçük bir ay simgesi göstermek için.</string>
   <key>NSDownloadsFolderUsageDescription</key><string>İndirmelerin ilerlemesini göstermek için İndirilenler klasörüne bakar.</string>
   <key>NSCalendarsFullAccessUsageDescription</key><string>Sıradaki etkinliği göstermek için takvime erişim gerekli.</string>
+  <key>NSCameraUsageDescription</key><string>Kamera aynası, yüzünü görebilmen için kameranı yalnızca sekme açıkken canlı gösterir. Görüntü kaydedilmez ve hiçbir yere gönderilmez.</string>
   <key>NSAudioCaptureUsageDescription</key><string>Ses mikseri, seçtiğin uygulamanın ses seviyesini ayarlamak için o uygulamanın sesini işler. Ses kaydedilmez ve hiçbir yere gönderilmez.</string>
 </dict></plist>
 EOT
@@ -72,6 +73,7 @@ cat > "$APP/Contents/Resources/en.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "To show a small moon icon in the notch while Focus (Do Not Disturb) is on.";
 "NSDownloadsFolderUsageDescription" = "Looks at the Downloads folder to show download progress.";
 "NSCalendarsFullAccessUsageDescription" = "Calendar access is needed to show your next event.";
+"NSCameraUsageDescription" = "The camera mirror shows your camera live, only while its tab is open, so you can see your face. Nothing is recorded or sent anywhere.";
 "NSAudioCaptureUsageDescription" = "The audio mixer processes the audio of the app you pick to change its volume. Nothing is recorded or sent anywhere.";
 EOS
 mkdir -p "$APP/Contents/Resources/de.lproj" "$APP/Contents/Resources/es.lproj" "$APP/Contents/Resources/fr.lproj" "$APP/Contents/Resources/pt-BR.lproj"
@@ -82,6 +84,7 @@ cat > "$APP/Contents/Resources/de.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "Um ein kleines Mondsymbol im Notch zu zeigen, solange Fokus (Nicht stören) aktiv ist.";
 "NSDownloadsFolderUsageDescription" = "Sieht in den Download-Ordner, um den Download-Fortschritt anzuzeigen.";
 "NSCalendarsFullAccessUsageDescription" = "Der Kalenderzugriff wird benötigt, um deinen nächsten Termin anzuzeigen.";
+"NSCameraUsageDescription" = "Der Kameraspiegel zeigt deine Kamera live, nur solange sein Tab geöffnet ist, damit du dein Gesicht sehen kannst. Nichts wird aufgezeichnet oder irgendwohin gesendet.";
 "NSAudioCaptureUsageDescription" = "Der Audio-Mixer verarbeitet den Ton der gewählten App, um deren Lautstärke zu ändern. Nichts wird aufgezeichnet oder irgendwohin gesendet.";
 EOS
 cat > "$APP/Contents/Resources/es.lproj/InfoPlist.strings" <<'EOS'
@@ -91,6 +94,7 @@ cat > "$APP/Contents/Resources/es.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "Para mostrar un pequeño icono de luna en el notch mientras el Enfoque (No molestar) esté activado.";
 "NSDownloadsFolderUsageDescription" = "Consulta la carpeta Descargas para mostrar el progreso de las descargas.";
 "NSCalendarsFullAccessUsageDescription" = "Se necesita acceso al calendario para mostrar tu próximo evento.";
+"NSCameraUsageDescription" = "El espejo de cámara muestra tu cámara en directo, solo mientras su pestaña está abierta, para que puedas verte la cara. No se graba ni se envía nada.";
 "NSAudioCaptureUsageDescription" = "El mezclador de audio procesa el sonido de la app que elijas para cambiar su volumen. No se graba ni se envía nada.";
 EOS
 cat > "$APP/Contents/Resources/fr.lproj/InfoPlist.strings" <<'EOS'
@@ -100,6 +104,7 @@ cat > "$APP/Contents/Resources/fr.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "Pour afficher une petite icône de lune dans le notch tant que la Concentration (Ne pas déranger) est activée.";
 "NSDownloadsFolderUsageDescription" = "Consulte le dossier Téléchargements pour afficher la progression des téléchargements.";
 "NSCalendarsFullAccessUsageDescription" = "L'accès au calendrier est nécessaire pour afficher votre prochain événement.";
+"NSCameraUsageDescription" = "Le miroir caméra affiche votre caméra en direct, uniquement pendant que son onglet est ouvert, pour que vous puissiez voir votre visage. Rien n'est enregistré ni envoyé.";
 "NSAudioCaptureUsageDescription" = "Le mixeur audio traite le son de l'app choisie pour changer son volume. Rien n'est enregistré ni envoyé.";
 EOS
 cat > "$APP/Contents/Resources/pt-BR.lproj/InfoPlist.strings" <<'EOS'
@@ -109,6 +114,7 @@ cat > "$APP/Contents/Resources/pt-BR.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "Para mostrar um pequeno ícone de lua no notch enquanto o Foco (Não perturbe) estiver ativado.";
 "NSDownloadsFolderUsageDescription" = "Olha a pasta Downloads para mostrar o progresso dos downloads.";
 "NSCalendarsFullAccessUsageDescription" = "O acesso ao calendário é necessário para mostrar seu próximo evento.";
+"NSCameraUsageDescription" = "O espelho da câmera mostra sua câmera ao vivo, apenas enquanto a aba está aberta, para você ver seu rosto. Nada é gravado nem enviado.";
 "NSAudioCaptureUsageDescription" = "O mixer de áudio processa o som do app escolhido para mudar seu volume. Nada é gravado nem enviado.";
 EOS
 # İmza kimliği (sırayla): SIGN_ID ortam değişkeni → "Developer ID Application" → "Apple Development" → ad-hoc.

@@ -27,6 +27,7 @@ struct NotchGeometry: Equatable {
 
 enum Layout {
     static let openW: CGFloat = 640
+    static let mirrorExtra: CGFloat = 80       // Ayna sekmesinde notch bu kadar uzar
     static let bodyH: CGFloat = 222          // 196 içerik + 26 alt sekme çubuğu
     static let panelW: CGFloat = 940
     static let panelH: CGFloat = 440
@@ -52,7 +53,7 @@ enum Loc {
 }
 
 enum Tab: String, CaseIterable, Identifiable {
-    case home, shelf, clipboard, timer, stats, ai, batteries, notes, mixer
+    case home, shelf, clipboard, timer, stats, ai, batteries, notes, mixer, mirror
     var id: String { rawValue }
     var icon: String {
         switch self {
@@ -61,6 +62,7 @@ enum Tab: String, CaseIterable, Identifiable {
         case .batteries: return "battery.100"
         case .notes: return "note.text"
         case .mixer: return "slider.vertical.3"
+        case .mirror: return "person.crop.square"
         case .shelf: return "tray.full.fill"
         case .clipboard: return "doc.on.clipboard.fill"
         case .timer: return "timer"
@@ -74,6 +76,7 @@ enum Tab: String, CaseIterable, Identifiable {
         case .batteries: return L("Piller")
         case .notes: return L("Notlar")
         case .mixer: return L("Mikser")
+        case .mirror: return L("Ayna")
         case .shelf: return L("Raf")
         case .clipboard: return L("Pano")
         case .timer: return L("Zamanlayıcı")
@@ -84,7 +87,7 @@ enum Tab: String, CaseIterable, Identifiable {
 
 extension Tab {
     /// Açık notchun alt çubuğunda gösterilen sekmeler (yeni eklenecek sekmeler de buraya).
-    static let bottomTabs: [Tab] = [.notes, .mixer]
+    static let bottomTabs: [Tab] = [.notes, .mixer, .mirror]
     static func visible() -> [Tab] {
         let d = UserDefaults.standard
         return allCases.filter {
@@ -98,6 +101,7 @@ extension Tab {
             case .batteries: return true
             case .notes: return d.object(forKey: "showNotes") as? Bool ?? true
             case .mixer: return d.object(forKey: "showMixer") as? Bool ?? true
+            case .mirror: return d.object(forKey: "showMirror") as? Bool ?? true
             }
         }
     }
