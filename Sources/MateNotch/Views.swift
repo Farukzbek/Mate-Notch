@@ -323,11 +323,12 @@ struct OpenContent: View {
     @AppStorage(Pref.showStats) var showStats = true
     @AppStorage(Pref.showAI) var showAI = true
     @AppStorage("showNotes") var showNotes = true
+    @AppStorage("showMixer") var showMixer = true
     @AppStorage(Pref.headerDeviceBattery) var headerDeviceBattery = true
     @ObservedObject var deviceBattery = DeviceBatteryService.shared
     @AppStorage(Pref.uiScale) var uiScale = 1.0
 
-    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI, showNotes); return Tab.visible().filter { $0 != .ai && $0 != .batteries && $0 != .notes } }
+    var tabs: [Tab] { _ = (showShelf, showClipboard, showTimer, showStats, showAI, showNotes, showMixer); return Tab.visible().filter { $0 != .ai && $0 != .batteries && !Tab.bottomTabs.contains($0) } }
 
     var body: some View {
         let g = state.geometry
@@ -346,30 +347,10 @@ struct OpenContent: View {
                                 .foregroundStyle(state.tab == .ai ? Color.white : .white.opacity(0.5))
                         }.buttonStyle(.plain).morph(L("Yapay Zeka"))
                     }
-                    if showNotes {
-                        Button { withAnimation(.snappy(duration: 0.25)) { state.tab = .notes } } label: {
-                            Image(systemName: "note.text")
-                                .foregroundStyle(state.tab == .notes ? Color.white : .white.opacity(0.5))
-                        }.buttonStyle(.plain).morph(L("Notlar"))
-                    }
                     Button { SettingsWindow.show() } label: {
                         Image(systemName: "gearshape.fill").foregroundStyle(.white.opacity(0.5))
                     }.buttonStyle(.plain).morph(L("Ayarlar"))
-                    Button { withAnimation(.snappy(duration: 0.25)) { state.tab = .batteries } } label: {
-                        HStack(spacing: 6) {
-                            HStack(spacing: 3) {
-                                Image(systemName: battery.pluggedIn ? "battery.100.bolt" : "battery.75")
-                                Text("\(battery.level)%").monospacedDigit()
-                            }
-                            .foregroundStyle(battery.pluggedIn ? .green : .white.opacity(0.6))
-                            // Bağlı kulaklık / cihaz pili (ilk pil bilgisi veren cihaz)
-                            if headerDeviceBattery, let d = deviceBattery.devices.first(where: { $0.percent != nil }), let p = d.percent {
-                                HStack(spacing: 3) { Image(systemName: d.icon); Text("\(p)%").monospacedDigit() }
-                                    .foregroundStyle(p <= 20 ? .red : .white.opacity(0.6))
-                            }
-                        }
-                        .font(.system(size: 11, weight: .medium))
-                    }.buttonStyle(.plain).tip(L("Piller"))
+                    HeaderBattery()
                 }
                 .font(.system(size: 12))
             }
@@ -387,14 +368,30 @@ struct OpenContent: View {
                 case .timer: TimerView()
                 case .stats: StatsView()
                 case .notes: NotesView()
+                case .mixer: MixerView()
                 }
             }
             .padding(.horizontal, 28)
-            .padding(.bottom, 18)
+            .padding(.bottom, 8)
             .padding(.top, 2)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .id(state.tab)
             .transition(.opacity)
+
+            // Alt sekme çubuğu: Notlar, Mikser ve sonradan eklenecek sekmeler
+            let bottom = Tab.bottomTabs.filter { Tab.visible().contains($0) }
+            if !bottom.isEmpty {
+                HStack(spacing: 6) {
+                    ForEach(bottom) { t in
+                        TabButton(tab: t, selected: state.tab == t) {
+                            withAnimation(.snappy(duration: 0.25)) { state.tab = t }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity).frame(height: 26)
+                .padding(.bottom, 10)
+                .zIndex(5)
+            }
         }
         .foregroundStyle(.white)
     }
@@ -419,7 +416,7 @@ struct HomeView: View {
     var body: some View {
         HStack(spacing: 20) {
             MediaCard().frame(maxWidth: .infinity).layoutPriority(0)
-            if hasSide { SideColumn().frame(width: 176).layoutPriority(1) }
+            if hasSide { SideColumn().frame(width: 136).layoutPriority(1) }          // dar yan kolon: sözlere daha çok yer
         }
         .frame(maxWidth: .infinity)
         .mask { Rectangle().padding(.bottom, -44) }       // yanlara taşmayı kırpar; alta 44 pt pay: kapağın altındaki eşzamanlama kapsülü görünsün
@@ -457,6 +454,7 @@ struct MediaCard: View {
                     HStack(spacing: 6) {
                         Text(t.artist).font(.system(size: 12)).foregroundStyle(.white.opacity(0.6)).lineLimit(1)
                         Spacer(minLength: 0)
+                        ResyncButton()                   // sözler elle kaydırılınca çıkar: çalan satıra döner
                         if !showArtwork { SyncAdjust() }     // kapak kapalıysa söz eşzamanlama burada
                     }
                     .frame(height: 16)
@@ -559,14 +557,14 @@ struct SideColumn: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             if showCalendar && (calDate || calEvent) {
-                VStack(alignment: .leading, spacing: 7) {
+                VStack(alignment: .leading, spacing: 5) {
                     if calDate {
                         TimelineView(.periodic(from: .now, by: 60)) { ctx in
-                            HStack(spacing: 9) {
+                            HStack(spacing: 7) {
                                 Text(Self.fmt(ctx.date, "d"))
-                                    .font(.system(size: 28, weight: .bold, design: .rounded)).monospacedDigit()
+                                    .font(.system(size: 26, weight: .bold, design: .rounded)).monospacedDigit()
                                 VStack(alignment: .leading, spacing: 0) {
                                     Text(Self.fmt(ctx.date, "EEEE")).font(.system(size: 11, weight: .semibold))
                                     Text(Self.fmt(ctx.date, "MMMM yyyy")).font(.system(size: 10))
@@ -579,27 +577,20 @@ struct SideColumn: View {
                             .font(.system(size: 10, weight: .semibold)).foregroundStyle(.white.opacity(0.45))
                     }
                     if calEvent { eventRow }
+                    weatherLine
                 }
-                .padding(10)
+                .padding(9)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.07)))
             }
 
-            if weatherOn, let t = weather.temp {
-                HStack(spacing: 9) {
-                    Image(systemName: weather.symbol).symbolRenderingMode(.multicolor).font(.system(size: 20))
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("\(weatherUnit == "f" ? Int((Double(t) * 9 / 5 + 32).rounded()) : t)°").font(.system(size: 18, weight: .bold, design: .rounded)).monospacedDigit()
-                        Text([weather.city.components(separatedBy: ",").first ?? "", weather.text].filter { !$0.isEmpty }.joined(separator: " · "))
-                            .font(.system(size: 10)).foregroundStyle(.white.opacity(0.55)).lineLimit(1)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .padding(10).frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.07)))
+            if !(showCalendar && (calDate || calEvent)), weatherOn, weather.temp != nil {
+                weatherLine
+                    .padding(9).frame(maxWidth: .infinity, alignment: .leading)
+                    .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.07)))
             }
             if qbCaffeinate || qbTimer || qbCapture || qbColor || qbShortcuts {
-                HStack(spacing: 6) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 5), count: 3), spacing: 5) {
                     if qbCaffeinate {
                         QuickButton(icon: "cup.and.saucer.fill", on: caf.active, tint: .orange, help: L("Uyanık tut")) { caf.toggle() }
                     }
@@ -624,6 +615,18 @@ struct SideColumn: View {
         }
     }
 
+    /// Hava durumu: tek satır (takvim kartının içinde); yan kolonu kısa tutar.
+    @ViewBuilder var weatherLine: some View {
+        if weatherOn, let t = weather.temp {
+            HStack(spacing: 5) {
+                Image(systemName: weather.symbol).symbolRenderingMode(.multicolor).font(.system(size: 12))
+                Text("\(weatherUnit == "f" ? Int((Double(t) * 9 / 5 + 32).rounded()) : t)°").font(.system(size: 12, weight: .bold, design: .rounded)).monospacedDigit()
+                Text(weather.city.components(separatedBy: ",").first ?? "").font(.system(size: 10)).foregroundStyle(.white.opacity(0.55)).lineLimit(1)
+                Spacer(minLength: 0)
+            }
+        }
+    }
+
     @ViewBuilder var eventRow: some View {
         if let e = cal.events.first {
             HStack(spacing: 7) {
@@ -642,7 +645,7 @@ struct SideColumn: View {
             }
         } else {
             Text(cal.denied ? "Takvim izni yok" : "Yaklaşan etkinlik yok")
-                .font(.system(size: 11)).foregroundStyle(.white.opacity(0.35))
+                .font(.system(size: 11)).foregroundStyle(.white.opacity(0.35)).lineLimit(1).minimumScaleFactor(0.8)
         }
     }
 
@@ -660,6 +663,7 @@ struct QuickButton: View {
     let on: Bool
     let tint: Color
     let help: String      // üzerine gelince simgenin yerini alan yazı
+    var height: CGFloat = 30
     let action: () -> Void
     @State private var hovering = false
 
@@ -673,7 +677,7 @@ struct QuickButton: View {
                     .padding(.horizontal, 4)
                     .opacity(hovering ? 1 : 0).scaleEffect(hovering ? 1 : 0.6)
             }
-            .frame(maxWidth: .infinity).frame(height: 34)
+            .frame(maxWidth: .infinity).frame(height: height)
             .foregroundStyle(on ? .black : .white.opacity(0.85))
             .background(RoundedRectangle(cornerRadius: 10).fill(on ? tint : .white.opacity(hovering ? 0.16 : 0.1)))
         }
@@ -1239,6 +1243,7 @@ struct SettingsView: View {
     @AppStorage(Pref.weatherCity) var weatherCity = ""
     @AppStorage(Pref.showStats) var showStats = true
     @AppStorage("showNotes") var showNotes = true
+    @AppStorage("showMixer") var showMixer = true
     @AppStorage("netUnit") var netUnit = "bits"
     @AppStorage("clock1") var clock1 = ""
     @AppStorage("clock2") var clock2 = ""
@@ -1504,7 +1509,7 @@ struct SettingsView: View {
                 }.srow("battery/Uyarı seviyesi")
                 Toggle("Bluetooth cihaz pillerini oku", isOn: $bluetoothBatteries).srow("battery/Bluetooth cihaz pillerini oku")
                     .onChange(of: bluetoothBatteries) { _, _ in DeviceBatteryService.shared.refresh() }
-                Toggle("Kulaklık/cihaz pilini açık notch'un başlığında göster", isOn: $headerDeviceBattery).srow("battery/Kulaklık/cihaz pilini açık notch'un başlığında göster")
+                Toggle("Pil simgesinin üstüne gelince bağlı cihazların pilini göster", isOn: $headerDeviceBattery).srow("battery/Pil simgesinin üstüne gelince bağlı cihazların pilini göster")
                 Text("Pil yüzdesine tıklayınca Piller ekranı açılır. Uyarı iki aşamalıdır: seçtiğin seviyede \"Pil azalıyor\", yaklaşık %10'da \"Pil çok düşük\" (Mac için ses de çalar); şarja takılınca ya da seviye yükselince sıfırlanır. Bazı kulaklıklar (ör. bazı yarı kablosuz modeller) pil seviyesini macOS'a bildirmez; onlar için yüzde gösterilemez. iPhone, iPad ve Apple Watch pilleri macOS tarafından üçüncü taraf uygulamalara verilmiyor.")
                     .font(.caption).foregroundStyle(.secondary)
             }
@@ -1615,6 +1620,7 @@ struct SettingsView: View {
                 Toggle("Zamanlayıcı", isOn: $showTimer).srow("tabs/Zamanlayıcı")
                 Toggle("Sistem durumu", isOn: $showStats).srow("tabs/Sistem durumu")
                 Toggle("Notlar", isOn: $showNotes).srow("tabs/Notlar")
+                Toggle("Ses mikseri", isOn: $showMixer).srow("tabs/Ses mikseri")
                 Picker("Ağ hızı birimi", selection: $netUnit) {
                     Text("Mbps (bit, hız testleriyle aynı)").tag("bits")
                     Text("MB/s (bayt)").tag("bytes")
@@ -1689,7 +1695,7 @@ struct CardLyric: View {
     @ObservedObject var lyrics = LyricsService.shared
     @ObservedObject var media = MediaService.shared
     @AppStorage(Pref.lyricsEnabled) var on = false
-    @State private var browse = 0                 // kaydırarak gezinme: çalan satıra göre kaç satır ötede
+    private var browse: Int { get { lyrics.browse } nonmutating set { lyrics.browse = newValue } }   // kaydırarak gezinme (MediaCard'daki "eşzamanla" düğmesi de bunu okur)
     @State private var lastBrowse = Date.distantPast
     @State private var hoverRow: Int?
     @State private var plainTop = 0               // senkronsuz sözlerde ilk görünen satır
@@ -1710,10 +1716,9 @@ struct CardLyric: View {
         }
         .animation(.smooth(duration: 0.4), value: visible)
         .onChange(of: lyrics.state) { _, _ in browse = 0; plainTop = 0 }
-        // Kaydırmayı bırakınca 3 sn sonra çalan satıra geri dön
-        .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
-            if browse != 0, Date().timeIntervalSince(lastBrowse) > 3 { withAnimation(.snappy) { browse = 0 } }
-        }
+        // Kaydırılan sözler kendiliğinden geri dönmez: yalnızca "Sözleri eşzamanla" düğmesi (ya da bir satıra tıklamak) döndürür.
+        // Notch kapanınca eski kaydırma unutulur, yeniden açılışta sözler çalan satırdan başlar.
+        .onReceive(NotchState.shared.$isOpen) { open in if !open { browse = 0 } }
     }
 
     var block: some View {
@@ -1920,6 +1925,27 @@ final class LyricInteractionView: NSView {
 }
 
 /// Sözleri Ana Sayfa'dan aç/kapat.
+/// Sözler elle kaydırıldığında çıkan "Sözleri eşzamanla" düğmesi; yalnızca eşzamanlı (zaman damgalı) sözlerde, çalan satıra döner.
+struct ResyncButton: View {
+    @ObservedObject var lyrics = LyricsService.shared
+
+    private var shown: Bool { if lyrics.browse != 0, case .synced = lyrics.state { return true } else { return false } }
+
+    var body: some View {
+        if shown {
+            Button { withAnimation(.snappy) { lyrics.browse = 0 } } label: {
+                Label("Sözleri eşzamanla", systemImage: "arrow.triangle.2.circlepath")
+                    .font(.system(size: 9.5, weight: .semibold)).lineLimit(1).fixedSize()
+                    .padding(.horizontal, 8).frame(height: 18)
+                    .background(Capsule().fill(Color(red: 0.4, green: 0.65, blue: 1).opacity(0.28)))
+                    .foregroundStyle(Color(red: 0.62, green: 0.8, blue: 1))
+            }
+            .buttonStyle(PressStyle())
+            .transition(.scale(scale: 0.8, anchor: .trailing).combined(with: .opacity))
+        }
+    }
+}
+
 /// Söz eşzamanlama ayarı: müzik kartında, notch'un içinde. − sözleri geciktirir, + öne alır (0,25 sn adım); ortadaki değere tıklayınca sıfırlanır.
 struct SyncAdjust: View {
     var width: CGFloat? = nil          // verilirse kapsül bu genişliğe yayılır (albüm kapağı kadar)
@@ -2017,13 +2043,14 @@ struct Tip: ViewModifier {
     let text: String
     let edge: VerticalEdge
     var leading = false                // true: ipucu düğmenin sol kenarına hizalanır (sol kenara yakın düğmelerde taşmasın)
+    var trailing = false               // true: sağ kenara hizalanır (sağ kenara yakın düğmelerde)
     @State private var hovering = false
     @State private var show = false
 
     func body(content: Content) -> some View {
         content
             .background(HoverTracker { hovering = $0 })
-            .overlay(alignment: leading ? (edge == .bottom ? .bottomLeading : .topLeading) : (edge == .bottom ? .bottom : .top)) {
+            .overlay(alignment: leading ? (edge == .bottom ? .bottomLeading : .topLeading) : trailing ? (edge == .bottom ? .bottomTrailing : .topTrailing) : (edge == .bottom ? .bottom : .top)) {
                 if show {
                     Text(text)
                         .font(.system(size: 10, weight: .semibold))
@@ -2049,7 +2076,7 @@ struct Tip: ViewModifier {
 }
 
 extension View {
-    func tip(_ text: String, _ edge: VerticalEdge = .bottom, leading: Bool = false) -> some View { modifier(Tip(text: text, edge: edge, leading: leading)) }
+    func tip(_ text: String, _ edge: VerticalEdge = .bottom, leading: Bool = false, trailing: Bool = false) -> some View { modifier(Tip(text: text, edge: edge, leading: leading, trailing: trailing)) }
 }
 
 
@@ -2236,6 +2263,16 @@ struct ProviderRow: View {
     @ObservedObject var svc = AIService.shared
     @State private var key = ""
 
+    /// "Anahtarı console.anthropic.com/... adresinden alabilirsin." cümlesinde adres tıklanabilir bağlantı olur (her dilde).
+    private var keyHint: AttributedString {
+        var s = AttributedString(L("Anahtarı \(provider.keyPage) adresinden alabilirsin."))
+        if let r = s.range(of: provider.keyPage), let u = URL(string: "https://" + provider.keyPage) {
+            s[r].link = u
+            s[r].underlineStyle = .single
+        }
+        return s
+    }
+
     var body: some View {
         let _ = svc.revision
         let connected = svc.hasKey(provider)
@@ -2263,7 +2300,7 @@ struct ProviderRow: View {
                         Task { await svc.connect(provider, key: k) }
                     }.disabled(key.trimmingCharacters(in: .whitespaces).isEmpty || busy)
                 }
-                Text("Anahtarı \(provider.keyPage) adresinden alabilirsin.").font(.caption).foregroundStyle(.secondary)
+                Text(keyHint).font(.caption).foregroundStyle(.secondary).tint(.accentColor)
             }
         }
         .padding(.vertical, 2)

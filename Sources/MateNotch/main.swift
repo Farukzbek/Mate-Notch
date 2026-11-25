@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         UpdateService.shared.start()
         WhatsNew.showIfUpdated()
         BuddyService.shared.start()
+        MixerService.shared.startBackground()          // kayıtlı uygulama seviyeleri uygulanır
         HUDService.shared.start()
         PrivacyService.shared.start()
         DeviceBatteryService.shared.start()
@@ -106,6 +107,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func wizard() { WizardWindow.show() }
     @objc func tour() { TourWindow.show() }
     @objc func whatsNew() { WhatsNew.show() }
+    func applicationWillTerminate(_ n: Notification) { MixerService.shared.stopAll() }
     @objc func markupClipboard() { MarkupWindow.showClipboard() }
     @objc func settings() { SettingsWindow.show() }
 }

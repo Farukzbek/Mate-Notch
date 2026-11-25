@@ -59,6 +59,7 @@ cat > "$APP/Contents/Info.plist" <<EOT
   <key>NSFocusStatusUsageDescription</key><string>Odak (Rahatsız Etmeyin) açıkken notch'ta küçük bir ay simgesi göstermek için.</string>
   <key>NSDownloadsFolderUsageDescription</key><string>İndirmelerin ilerlemesini göstermek için İndirilenler klasörüne bakar.</string>
   <key>NSCalendarsFullAccessUsageDescription</key><string>Sıradaki etkinliği göstermek için takvime erişim gerekli.</string>
+  <key>NSAudioCaptureUsageDescription</key><string>Ses mikseri, seçtiğin uygulamanın ses seviyesini ayarlamak için o uygulamanın sesini işler. Ses kaydedilmez ve hiçbir yere gönderilmez.</string>
 </dict></plist>
 EOT
 # Yerelleştirme: Resources/Localizable.xcstrings (kaynak dil tr, çeviri en) → .lproj/*.strings; izin açıklamaları InfoPlist.strings
@@ -71,6 +72,7 @@ cat > "$APP/Contents/Resources/en.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "To show a small moon icon in the notch while Focus (Do Not Disturb) is on.";
 "NSDownloadsFolderUsageDescription" = "Looks at the Downloads folder to show download progress.";
 "NSCalendarsFullAccessUsageDescription" = "Calendar access is needed to show your next event.";
+"NSAudioCaptureUsageDescription" = "The audio mixer processes the audio of the app you pick to change its volume. Nothing is recorded or sent anywhere.";
 EOS
 mkdir -p "$APP/Contents/Resources/de.lproj" "$APP/Contents/Resources/es.lproj" "$APP/Contents/Resources/fr.lproj" "$APP/Contents/Resources/pt-BR.lproj"
 cat > "$APP/Contents/Resources/de.lproj/InfoPlist.strings" <<'EOS'
@@ -80,6 +82,7 @@ cat > "$APP/Contents/Resources/de.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "Um ein kleines Mondsymbol im Notch zu zeigen, solange Fokus (Nicht stören) aktiv ist.";
 "NSDownloadsFolderUsageDescription" = "Sieht in den Download-Ordner, um den Download-Fortschritt anzuzeigen.";
 "NSCalendarsFullAccessUsageDescription" = "Der Kalenderzugriff wird benötigt, um deinen nächsten Termin anzuzeigen.";
+"NSAudioCaptureUsageDescription" = "Der Audio-Mixer verarbeitet den Ton der gewählten App, um deren Lautstärke zu ändern. Nichts wird aufgezeichnet oder irgendwohin gesendet.";
 EOS
 cat > "$APP/Contents/Resources/es.lproj/InfoPlist.strings" <<'EOS'
 "NSAppleEventsUsageDescription" = "Mate Notch lo necesita para controlar Apple Music y Spotify.";
@@ -88,6 +91,7 @@ cat > "$APP/Contents/Resources/es.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "Para mostrar un pequeño icono de luna en el notch mientras el Enfoque (No molestar) esté activado.";
 "NSDownloadsFolderUsageDescription" = "Consulta la carpeta Descargas para mostrar el progreso de las descargas.";
 "NSCalendarsFullAccessUsageDescription" = "Se necesita acceso al calendario para mostrar tu próximo evento.";
+"NSAudioCaptureUsageDescription" = "El mezclador de audio procesa el sonido de la app que elijas para cambiar su volumen. No se graba ni se envía nada.";
 EOS
 cat > "$APP/Contents/Resources/fr.lproj/InfoPlist.strings" <<'EOS'
 "NSAppleEventsUsageDescription" = "Mate Notch en a besoin pour contrôler Apple Music et Spotify.";
@@ -96,6 +100,7 @@ cat > "$APP/Contents/Resources/fr.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "Pour afficher une petite icône de lune dans le notch tant que la Concentration (Ne pas déranger) est activée.";
 "NSDownloadsFolderUsageDescription" = "Consulte le dossier Téléchargements pour afficher la progression des téléchargements.";
 "NSCalendarsFullAccessUsageDescription" = "L'accès au calendrier est nécessaire pour afficher votre prochain événement.";
+"NSAudioCaptureUsageDescription" = "Le mixeur audio traite le son de l'app choisie pour changer son volume. Rien n'est enregistré ni envoyé.";
 EOS
 cat > "$APP/Contents/Resources/pt-BR.lproj/InfoPlist.strings" <<'EOS'
 "NSAppleEventsUsageDescription" = "O Mate Notch precisa disto para controlar o Apple Music e o Spotify.";
@@ -104,6 +109,7 @@ cat > "$APP/Contents/Resources/pt-BR.lproj/InfoPlist.strings" <<'EOS'
 "NSFocusStatusUsageDescription" = "Para mostrar um pequeno ícone de lua no notch enquanto o Foco (Não perturbe) estiver ativado.";
 "NSDownloadsFolderUsageDescription" = "Olha a pasta Downloads para mostrar o progresso dos downloads.";
 "NSCalendarsFullAccessUsageDescription" = "O acesso ao calendário é necessário para mostrar seu próximo evento.";
+"NSAudioCaptureUsageDescription" = "O mixer de áudio processa o som do app escolhido para mudar seu volume. Nada é gravado nem enviado.";
 EOS
 # İmza kimliği (sırayla): SIGN_ID ortam değişkeni → "Developer ID Application" → "Apple Development" → ad-hoc.
 # KALICI bir kimlik şart: ad-hoc imzada macOS izinleri (Erişilebilirlik, Takvim…) derlemenin parmak iziyle (cdhash)

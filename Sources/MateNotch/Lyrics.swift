@@ -19,6 +19,7 @@ enum LyricsState: Equatable {
 final class LyricsService: ObservableObject {
     static let shared = LyricsService()
     @Published private(set) var state: LyricsState = .idle
+    @Published var browse = 0                  // elle kaydırma: çalan satıra göre kaç satır ötede (0: eşzamanlı)
     @Published var offset: Double = 0          // saniye; + sözleri geciktirir (Mate Lyrics'teki gibi parça başına)
     private var cache: [String: LyricsState] = [:]
     private var currentKey: String?

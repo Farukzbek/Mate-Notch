@@ -27,7 +27,7 @@ struct NotchGeometry: Equatable {
 
 enum Layout {
     static let openW: CGFloat = 640
-    static let bodyH: CGFloat = 196
+    static let bodyH: CGFloat = 222          // 196 içerik + 26 alt sekme çubuğu
     static let panelW: CGFloat = 940
     static let panelH: CGFloat = 440
     static let sideW: CGFloat = 54
@@ -52,7 +52,7 @@ enum Loc {
 }
 
 enum Tab: String, CaseIterable, Identifiable {
-    case home, shelf, clipboard, timer, stats, ai, batteries, notes
+    case home, shelf, clipboard, timer, stats, ai, batteries, notes, mixer
     var id: String { rawValue }
     var icon: String {
         switch self {
@@ -60,6 +60,7 @@ enum Tab: String, CaseIterable, Identifiable {
         case .ai: return "sparkles"
         case .batteries: return "battery.100"
         case .notes: return "note.text"
+        case .mixer: return "slider.vertical.3"
         case .shelf: return "tray.full.fill"
         case .clipboard: return "doc.on.clipboard.fill"
         case .timer: return "timer"
@@ -72,6 +73,7 @@ enum Tab: String, CaseIterable, Identifiable {
         case .ai: return L("Yapay Zeka")
         case .batteries: return L("Piller")
         case .notes: return L("Notlar")
+        case .mixer: return L("Mikser")
         case .shelf: return L("Raf")
         case .clipboard: return L("Pano")
         case .timer: return L("Zamanlayıcı")
@@ -81,6 +83,8 @@ enum Tab: String, CaseIterable, Identifiable {
 }
 
 extension Tab {
+    /// Açık notchun alt çubuğunda gösterilen sekmeler (yeni eklenecek sekmeler de buraya).
+    static let bottomTabs: [Tab] = [.notes, .mixer]
     static func visible() -> [Tab] {
         let d = UserDefaults.standard
         return allCases.filter {
@@ -93,6 +97,7 @@ extension Tab {
             case .ai: return d.bool(forKey: Pref.showAI)
             case .batteries: return true
             case .notes: return d.object(forKey: "showNotes") as? Bool ?? true
+            case .mixer: return d.object(forKey: "showMixer") as? Bool ?? true
             }
         }
     }

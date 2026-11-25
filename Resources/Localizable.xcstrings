@@ -447,16 +447,16 @@
     },
     "%lld dk sonra durdur": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stop after %lld min"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Nach %lld Min. stoppen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop after %lld min"
           }
         },
         "es": {
@@ -2395,6 +2395,76 @@
         }
       }
     },
+    "AĞ": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NETZWERK"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NETWORK"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RED"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RÉSEAU"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "REDE"
+          }
+        }
+      }
+    },
+    "Ağ hızı birimi": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einheit der Netzwerkgeschwindigkeit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network speed unit"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unidad de velocidad de red"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unité de vitesse réseau"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unidade da velocidade de rede"
+          }
+        }
+      }
+    },
     "Bakım": {
       "localizations": {
         "de": {
@@ -2942,16 +3012,16 @@
     },
     "Beğenmekten vazgeç": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unlike"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Gefällt mir nicht mehr"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlike"
           }
         },
         "es": {
@@ -3010,16 +3080,16 @@
     },
     "Bir kutuya tıkla, sonra kısayola bas (⌃, ⌥ ya da ⌘ ile birlikte). Esc iptal eder, Sil temizler. Sekme kısayolu o sekmeyi açar; zaten açıksa notch'u kapatır.": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Click a box, then press the shortcut (with ⌃, ⌥ or ⌘). Esc cancels, Delete clears. A tab shortcut opens that tab; if it's already open it closes the notch."
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Klicke auf ein Feld und drücke dann das Kürzel (mit ⌃, ⌥ oder ⌘). Esc bricht ab, Entf löscht. Ein Tab-Kürzel öffnet diesen Tab; ist er schon offen, schließt es den Notch."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click a box, then press the shortcut (with ⌃, ⌥ or ⌘). Esc cancels, Delete clears. A tab shortcut opens that tab; if it's already open it closes the notch."
           }
         },
         "es": {
@@ -3044,16 +3114,16 @@
     },
     "Bir not yaz, Enter'a bas": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Write a note, press Enter"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Notiz schreiben, Enter drücken"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write a note, press Enter"
           }
         },
         "es": {
@@ -3106,6 +3176,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Adormecer após um tempo de inatividade"
+          }
+        }
+      }
+    },
+    "Bir uygulama ses çalmaya başlayınca burada görünür.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An app appears here as soon as it starts playing sound."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine App erscheint hier, sobald sie Ton abspielt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una app aparece aquí en cuanto empieza a reproducir sonido."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une app apparaît ici dès qu'elle joue du son."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um app aparece aqui assim que começa a tocar som."
           }
         }
       }
@@ -3657,16 +3761,16 @@
     },
     "Bu şarkı bitince durdur": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stop when this song ends"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Stoppen, wenn dieser Song endet"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop when this song ends"
           }
         },
         "es": {
@@ -3895,6 +3999,7 @@
       }
     },
     "Bırak": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -4783,16 +4888,16 @@
     },
     "Dönüştür": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Convert"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Konvertieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Convert"
           }
         },
         "es": {
@@ -4817,16 +4922,16 @@
     },
     "Dönüştürüldü": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Converted"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Konvertiert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Converted"
           }
         },
         "es": {
@@ -4851,16 +4956,16 @@
     },
     "Dönüştürülemedi": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Couldn't convert"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Konvertierung fehlgeschlagen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't convert"
           }
         },
         "es": {
@@ -4885,16 +4990,16 @@
     },
     "Dörtte bire küçült": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shrink to a quarter"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Auf ein Viertel verkleinern"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shrink to a quarter"
           }
         },
         "es": {
@@ -4919,16 +5024,16 @@
     },
     "Dünya saati": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "World clock"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Weltzeituhr"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "World clock"
           }
         },
         "es": {
@@ -5806,16 +5911,16 @@
     },
     "Geri al": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Undo"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Widerrufen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo"
           }
         },
         "es": {
@@ -6079,16 +6184,16 @@
     },
     "Görüntüyü işaretle": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mark up image"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Bild markieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark up image"
           }
         },
         "es": {
@@ -6861,6 +6966,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nenhuma versão publicada ainda"
+          }
+        }
+      }
+    },
+    "Hepsini Notlar'a aktar": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle an Notizen senden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send all to Notes"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviar todo a Notas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout envoyer vers Notes"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviar tudo para Notas"
           }
         }
       }
@@ -7721,16 +7861,16 @@
     },
     "Kaydedildi ve panoya kopyalandı": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saved and copied to clipboard"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Gesichert und in die Zwischenablage kopiert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved and copied to clipboard"
           }
         },
         "es": {
@@ -7755,16 +7895,16 @@
     },
     "Kaydedilemedi": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Couldn't save"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Konnte nicht gesichert werden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't save"
           }
         },
         "es": {
@@ -7789,16 +7929,16 @@
     },
     "Kaydet": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Sichern"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
           }
         },
         "es": {
@@ -8334,16 +8474,16 @@
     },
     "Kısayol kaydet": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Record shortcut"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Kürzel aufnehmen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record shortcut"
           }
         },
         "es": {
@@ -8498,6 +8638,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Liquid Glass"
+          }
+        }
+      }
+    },
+    "MB/s (bayt)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MB/s (Byte)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MB/s (bytes)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MB/s (bytes)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mo/s (octets)"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MB/s (bytes)"
           }
         }
       }
@@ -8980,6 +9155,41 @@
         }
       }
     },
+    "Mbps (bit, hız testleriyle aynı)": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mbit/s (Bit, wie bei Geschwindigkeitstests)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mbps (bits, same as speed tests)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mbps (bits, igual que los test de velocidad)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mbps (bits, comme les tests de débit)"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mbps (bits, igual aos testes de velocidade)"
+          }
+        }
+      }
+    },
     "Metin okunamadı": {
       "localizations": {
         "de": {
@@ -9078,6 +9288,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Resuma, corrija ou traduza textos, ou pergunte algo. Por padrão roda o modelo da Apple no dispositivo; você pode conectar um modelo na nuvem se quiser."
+          }
+        }
+      }
+    },
+    "Mikser": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mixer"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mixer"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mezclador"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mixeur"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mixer"
           }
         }
       }
@@ -9288,16 +9532,16 @@
     },
     "Müzik kapanacak": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Music will stop"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Die Musik wird gestoppt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music will stop"
           }
         },
         "es": {
@@ -9630,16 +9874,16 @@
     },
     "Notch'u aç / kapat": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open / close the notch"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Notch öffnen / schließen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open / close the notch"
           }
         },
         "es": {
@@ -9664,16 +9908,16 @@
     },
     "Notlar": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Notes"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Notizen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notes"
           }
         },
         "es": {
@@ -9698,16 +9942,16 @@
     },
     "Notlar burada görünür": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your notes appear here"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Deine Notizen erscheinen hier"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your notes appear here"
           }
         },
         "es": {
@@ -9732,16 +9976,16 @@
     },
     "Notlar uygulamasına gönder": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Send to the Notes app"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "An die Notizen-App senden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send to the Notes app"
           }
         },
         "es": {
@@ -9764,18 +10008,53 @@
         }
       }
     },
-    "Notlar'a gönderildi": {
+    "Notlar'a aktar": {
+      "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An Notizen senden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sent to Notes"
+            "value": "Send to Notes"
           }
         },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviar a Notas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envoyer vers Notes"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviar para Notas"
+          }
+        }
+      }
+    },
+    "Notlar'a gönderildi": {
+      "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "An Notizen gesendet"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sent to Notes"
           }
         },
         "es": {
@@ -9800,16 +10079,16 @@
     },
     "Notlar'a gönderilemedi": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Couldn't send to Notes"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Senden an Notizen fehlgeschlagen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't send to Notes"
           }
         },
         "es": {
@@ -10453,16 +10732,16 @@
     },
     "Panoda görüntü yok": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No image on the clipboard"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Kein Bild in der Zwischenablage"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No image on the clipboard"
           }
         },
         "es": {
@@ -10487,16 +10766,16 @@
     },
     "Panodaki görüntüyü işaretle…": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mark up clipboard image…"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Bild aus der Zwischenablage markieren …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark up clipboard image…"
           }
         },
         "es": {
@@ -10521,16 +10800,16 @@
     },
     "Panoya kopyala": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Copy to clipboard"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "In die Zwischenablage kopieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy to clipboard"
           }
         },
         "es": {
@@ -10555,16 +10834,16 @@
     },
     "Panoya kopyalandı": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Copied to clipboard"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "In die Zwischenablage kopiert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied to clipboard"
           }
         },
         "es": {
@@ -11305,16 +11584,16 @@
     },
     "Saat %lld": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Clock %lld"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Uhr %lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clock %lld"
           }
         },
         "es": {
@@ -11646,16 +11925,16 @@
     },
     "Sekmeyi aç: %@": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open tab: %@"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Tab öffnen: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open tab: %@"
           }
         },
         "es": {
@@ -11882,6 +12161,108 @@
         }
       }
     },
+    "Ses kaydı izni gerekli: Sistem Ayarları › Gizlilik ve Güvenlik › Ekran ve Sistem Ses Kaydı'nda Mate Notch'u aç.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio recording permission needed: turn on Mate Notch in System Settings › Privacy & Security › Screen & System Audio Recording."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Berechtigung für Tonaufnahme nötig: Aktiviere Mate Notch in Systemeinstellungen › Datenschutz & Sicherheit › Bildschirm- & Systemaudioaufnahme."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se necesita permiso de grabación de audio: activa Mate Notch en Ajustes del Sistema › Privacidad y seguridad › Grabación de pantalla y audio del sistema."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autorisation d'enregistrement audio requise : activez Mate Notch dans Réglages Système › Confidentialité et sécurité › Enregistrement de l'écran et de l'audio système."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permissão de gravação de áudio necessária: ative o Mate Notch em Ajustes do Sistema › Privacidade e Segurança › Gravação de Tela e Áudio do Sistema."
+          }
+        }
+      }
+    },
+    "Ses mikseri": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio mixer"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio-Mixer"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mezclador de audio"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mixeur audio"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mixer de áudio"
+          }
+        }
+      }
+    },
+    "Ses mikseri macOS 14.2 veya üstünü gerektirir.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The audio mixer needs macOS 14.2 or later."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Audio-Mixer benötigt macOS 14.2 oder neuer."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El mezclador de audio requiere macOS 14.2 o posterior."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le mixeur audio nécessite macOS 14.2 ou ultérieur."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O mixer de áudio requer macOS 14.2 ou superior."
+          }
+        }
+      }
+    },
     "Ses ve parlaklık": {
       "extractionState": "manual",
       "localizations": {
@@ -12086,6 +12467,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quando volume, brilho ou luz do teclado mudam, um indicador elegante aparece no notch. Conceda acesso à Acessibilidade para ocultar também o painel do macOS."
+          }
+        }
+      }
+    },
+    "Sesi aç": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unmute"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ton einschalten"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activar sonido"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rétablir le son"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reativar som"
           }
         }
       }
@@ -12296,16 +12711,16 @@
     },
     "Seçtiğin şehirlerin saati Sistem sekmesinin altında görünür; yanında senin saatinle farkı yazar.": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The time in your chosen cities shows under the System tab, with the difference from your time next to it."
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Die Uhrzeit deiner gewählten Städte erscheint unter dem System-Tab, daneben der Unterschied zu deiner Zeit."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The time in your chosen cities shows under the System tab, with the difference from your time next to it."
           }
         },
         "es": {
@@ -12737,6 +13152,40 @@
         }
       }
     },
+    "Sustur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stummschalten"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Silenciar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couper le son"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Silenciar"
+          }
+        }
+      }
+    },
     "Swift Package Manager önbelleği": {
       "localizations": {
         "de": {
@@ -12805,6 +13254,41 @@
         }
       }
     },
+    "Söz eşzamanlaması": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Songtext-Synchronisierung"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lyrics sync"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sincronización de la letra"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Synchro des paroles"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sincronia da letra"
+          }
+        }
+      }
+    },
     "Söz satırı Ana Sayfa'da şarkı adının altında görünür; oradaki 💬 düğmesiyle de açıp kapatabilirsin. Sözler lrclib.net'ten gelir.": {
       "localizations": {
         "de": {
@@ -12841,16 +13325,16 @@
     },
     "Sözleri arayüz diline çevir (yapay zeka)": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Translate lyrics into the interface language (AI)"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Songtexte in die Oberflächensprache übersetzen (KI)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translate lyrics into the interface language (AI)"
           }
         },
         "es": {
@@ -12977,16 +13461,16 @@
     },
     "Sözleri çevir": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Translate lyrics"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Songtext übersetzen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translate lyrics"
           }
         },
         "es": {
@@ -13489,16 +13973,16 @@
     },
     "Temizle": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Clear"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Löschen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear"
           }
         },
         "es": {
@@ -13729,16 +14213,16 @@
     },
     "Tuşlara bas…": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Press keys…"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Tasten drücken …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press keys…"
           }
         },
         "es": {
@@ -14206,16 +14690,16 @@
     },
     "Uyku zamanlayıcısı": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sleep timer"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Einschlaf-Timer"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleep timer"
           }
         },
         "es": {
@@ -15091,16 +15575,16 @@
     },
     "Yarı boyuta küçült": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shrink to half size"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Auf halbe Größe verkleinern"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shrink to half size"
           }
         },
         "es": {
@@ -15467,16 +15951,16 @@
     },
     "Yok": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "None"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Keine"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
           }
         },
         "es": {
@@ -15568,6 +16052,41 @@
         }
       }
     },
+    "Yükleme": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upload"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upload"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subida"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envoi"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upload"
+          }
+        }
+      }
+    },
     "Zamanlayıcı": {
       "localizations": {
         "de": {
@@ -15638,16 +16157,16 @@
     },
     "Zaten kullanılıyor: %@": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Already in use: %@"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Bereits belegt: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Already in use: %@"
           }
         },
         "es": {
@@ -15774,16 +16293,16 @@
     },
     "işaretli": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "marked up"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "markiert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "marked up"
           }
         },
         "es": {
@@ -16592,16 +17111,16 @@
     },
     "Özgün sözleri göster": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Show original lyrics"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Originaltext anzeigen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show original lyrics"
           }
         },
         "es": {
@@ -16795,6 +17314,41 @@
         }
       }
     },
+    "İndirme": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Descarga"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléchargement"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download"
+          }
+        }
+      }
+    },
     "İndirme başarısız": {
       "localizations": {
         "de": {
@@ -16967,16 +17521,16 @@
     },
     "İptal et (kalan %lld dk)": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cancel (%lld min left)"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Abbrechen (noch %lld Min.)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel (%lld min left)"
           }
         },
         "es": {
@@ -17376,16 +17930,16 @@
     },
     "İşaretle…": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mark up…"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Markieren …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark up…"
           }
         },
         "es": {
@@ -17512,16 +18066,16 @@
     },
     "Şarkının sözleri bir kez, cihaz içi Apple modeliyle (ya da bağladığın bulut modelle) çevrilir; çeviri açıkken özgün söz yerine gösterilir. Bulut model bağlıysa sözler o sağlayıcıya gönderilir. Sağ tık menüsünden de açılıp kapanır.": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The song's lyrics are translated once with the on-device Apple model (or the cloud model you connected) and shown instead of the original while on. If a cloud model is connected the lyrics are sent to that provider. Also toggled from the right-click menu."
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Die Songtexte werden einmal mit dem Apple-Modell auf dem Gerät (oder dem verbundenen Cloud-Modell) übersetzt und bei Aktivierung statt des Originals angezeigt. Ist ein Cloud-Modell verbunden, werden die Texte an diesen Anbieter gesendet. Auch per Rechtsklick-Menü umschaltbar."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The song's lyrics are translated once with the on-device Apple model (or the cloud model you connected) and shown instead of the original while on. If a cloud model is connected the lyrics are sent to that provider. Also toggled from the right-click menu."
           }
         },
         "es": {
@@ -17580,16 +18134,16 @@
     },
     "Şarkıyı beğen": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Like song"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Song liken"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Like song"
           }
         },
         "es": {
@@ -17850,6 +18404,40 @@
         }
       }
     },
+    "Şu an ses çalan uygulama yok": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No app is playing sound right now"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurzeit spielt keine App Ton ab"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninguna app está reproduciendo sonido ahora"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune app ne joue de son actuellement"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum app está tocando som agora"
+          }
+        }
+      }
+    },
     "Şu an çalan bir şarkı yok": {
       "localizations": {
         "de": {
@@ -18027,16 +18615,16 @@
     "⌃ (Control)": {},
     "⌃, ⌥ ya da ⌘ ile birlikte bas": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Press with ⌃, ⌥ or ⌘"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Zusammen mit ⌃, ⌥ oder ⌘ drücken"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press with ⌃, ⌥ or ⌘"
           }
         },
         "es": {
@@ -18095,317 +18683,107 @@
       }
     },
     "⌥ (Option)": {},
-    "Hepsini Notlar'a aktar": {
+    "Pil bilgisi veren bağlı cihaz yok": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Send all to Notes"
+            "value": "No connected device reports a battery level"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Alle an Notizen senden"
+            "value": "Kein verbundenes Gerät meldet einen Akkustand"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enviar todo a Notas"
+            "value": "Ningún dispositivo conectado informa de su batería"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tout envoyer vers Notes"
+            "value": "Aucun appareil connecté ne signale sa batterie"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enviar tudo para Notas"
+            "value": "Nenhum dispositivo conectado informa a bateria"
           }
         }
       }
     },
-    "Notlar'a aktar": {
+    "Pil simgesinin üstüne gelince bağlı cihazların pilini göster": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Send to Notes"
+            "value": "Show connected devices' battery when hovering the battery icon"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "An Notizen senden"
+            "value": "Akkus verbundener Geräte beim Darüberfahren mit dem Akku-Symbol anzeigen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enviar a Notas"
+            "value": "Mostrar la batería de los dispositivos conectados al pasar sobre el icono de batería"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Envoyer vers Notes"
+            "value": "Afficher la batterie des appareils connectés au survol de l'icône de batterie"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enviar para Notas"
+            "value": "Mostrar a bateria dos dispositivos conectados ao passar sobre o ícone de bateria"
           }
         }
       }
     },
-    "AĞ": {
+    "Sözleri eşzamanla": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "NETWORK"
+            "value": "Sync lyrics"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "NETZWERK"
+            "value": "Songtext synchronisieren"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "RED"
+            "value": "Sincronizar letra"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "RÉSEAU"
+            "value": "Resynchroniser les paroles"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "REDE"
-          }
-        }
-      }
-    },
-    "İndirme": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Download"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Download"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Descarga"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Téléchargement"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Download"
-          }
-        }
-      }
-    },
-    "Yükleme": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Upload"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Upload"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subida"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Envoi"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Upload"
-          }
-        }
-      }
-    },
-    "Ağ hızı birimi": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Network speed unit"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einheit der Netzwerkgeschwindigkeit"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unidad de velocidad de red"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unité de vitesse réseau"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unidade da velocidade de rede"
-          }
-        }
-      }
-    },
-    "Mbps (bit, hız testleriyle aynı)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mbps (bits, same as speed tests)"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mbit/s (Bit, wie bei Geschwindigkeitstests)"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mbps (bits, igual que los test de velocidad)"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mbps (bits, comme les tests de débit)"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mbps (bits, igual aos testes de velocidade)"
-          }
-        }
-      }
-    },
-    "MB/s (bayt)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MB/s (bytes)"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MB/s (Byte)"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MB/s (bytes)"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mo/s (octets)"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MB/s (bytes)"
-          }
-        }
-      }
-    },
-    "Söz eşzamanlaması": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lyrics sync"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Songtext-Synchronisierung"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sincronización de la letra"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Synchro des paroles"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sincronia da letra"
+            "value": "Sincronizar letra"
           }
         }
       }

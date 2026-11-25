@@ -18,7 +18,7 @@ struct HotKeySpec: Equatable {
 }
 
 enum HotKeyAction: String, CaseIterable, Identifiable {
-    case toggle, home, shelf, clipboard, timer, stats, ai, batteries, notes
+    case toggle, home, shelf, clipboard, timer, stats, ai, batteries, notes, mixer
     var id: String { rawValue }
     var tab: Tab? { Tab(rawValue: rawValue) }
     var title: String { tab.map { L("Sekmeyi aç: \($0.title)") } ?? L("Notch'u aç / kapat") }

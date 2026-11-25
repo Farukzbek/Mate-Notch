@@ -56,10 +56,13 @@ struct NotesView: View {
                     .textFieldStyle(.plain).font(.system(size: 12)).focused($focused)
                     .onSubmit { notes.add(text); text = ""; focused = true }
                 if !notes.items.isEmpty {
-                    Button { notes.sendAllToNotes() } label: { Text("Hepsini Notlar'a aktar").font(.system(size: 10, weight: .semibold)) }
-                        .buttonStyle(PressStyle()).foregroundStyle(.white.opacity(0.6))
-                    Button { notes.clear() } label: { Text("Tümünü sil").font(.system(size: 10, weight: .semibold)) }
-                        .buttonStyle(PressStyle()).foregroundStyle(.white.opacity(0.5))
+                    // Yalnızca simge: hangi dilde olursa olsun taşmaz; yazı ipucunda
+                    Button { notes.sendAllToNotes() } label: { Image(systemName: "note.text.badge.plus").font(.system(size: 12)).frame(width: 22, height: 22) }
+                        .buttonStyle(PressStyle()).foregroundStyle(.white.opacity(0.65))
+                        .tip(L("Hepsini Notlar'a aktar"), .bottom, trailing: true)
+                    Button { notes.clear() } label: { Image(systemName: "trash").font(.system(size: 12)).frame(width: 22, height: 22) }
+                        .buttonStyle(PressStyle()).foregroundStyle(.white.opacity(0.55))
+                        .tip(L("Tümünü sil"), .bottom, trailing: true)
                 }
             }
             .padding(.horizontal, 12).frame(height: 34)
@@ -99,7 +102,7 @@ struct NoteCard: View {
                         .foregroundStyle(.green).padding(6).transition(.opacity)
                 } else if hover {
                     HStack(spacing: 8) {
-                        Button { notes.sendToNotes(text) } label: { Image(systemName: "note.text.badge.plus") }.tip(L("Notlar'a aktar"), .top)
+                        Button { notes.sendToNotes(text) } label: { Image(systemName: "note.text.badge.plus") }.tip(L("Notlar'a aktar"), .bottom, trailing: true)
                         Button { notes.remove(text) } label: { Image(systemName: "trash") }
                     }
                     .font(.system(size: 10)).buttonStyle(PressStyle()).padding(6)
