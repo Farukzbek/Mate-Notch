@@ -32,7 +32,7 @@
 
 - **Ciente do notch:** Lê o tamanho do notch físico e abre com uma animação elástica ao passar o ponteiro. Em Macs sem notch, mostra uma pílula virtual.
 - **Música (Apple Music + Spotify):** Capa, barra de progresso, tocar/pausar/próxima/anterior. A cor da capa tinge o fundo.
-- **Letras sincronizadas (motor do Mate Lyrics):** Três linhas no cartão de música (anterior esmaecida, atual brilhante, próxima esmaecida) e uma ou duas linhas sob o notch fechado. Em uma música sem letra, a área nunca abre. Usa o [lrclib.net](https://lrclib.net).
+- **Letras sincronizadas (motor do Mate Lyrics):** Três linhas no cartão de música (anterior esmaecida, atual brilhante, próxima esmaecida) e uma ou duas linhas sob o notch fechado. Em uma música sem letra, a área nunca abre. Usa o [lrclib.net](https://lrclib.net). Uma linha fina ao lado da letra mostra em que ponto você está; ao rolar, ela também marca a linha que está tocando.
 - **Atividades ao vivo (com o notch fechado):** indicador de música, timer, carregamento, gravação de tela. O ícone do indicador é selecionável (equalizador, onda sonora, AirPods, HomePod, logo da Apple…).
 - **Prateleira:** Arraste um arquivo para o notch e depois arraste de volta para onde precisar. Clique com o botão direito: Abrir, Visualização rápida, copiar para a área de transferência, copiar caminho, mostrar no Finder, enviar por AirDrop.
 - **Histórico da área de transferência:** Faixa “Copiado” ao copiar; busca, fixação (permanece após reiniciar), excluir um ou vários, tamanho ajustável e exclusão automática. Cópias de gerenciadores de senhas nunca são salvas.

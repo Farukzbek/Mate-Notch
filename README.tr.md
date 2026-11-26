@@ -33,7 +33,7 @@
 
 - **Notch'a uyumlu:** Fiziksel notch'un ölçüsünü okur, üzerine gelince yaylı bir animasyonla açılır. Notch'u olmayan Mac'lerde sanal bir hap gösterir.
 - **Müzik (Apple Music + Spotify):** Albüm kapağı, ilerleme çubuğu, oynat/duraklat/ileri/geri. Kapak rengi arka plana yansır.
-- **Senkron şarkı sözleri (Mate Lyrics altyapısı):** Müzik kartında 3 satır (önceki sönük, anlık parlak, sonraki sönük), kapalı notch'un altında 1 veya 2 satır. Sözü olmayan şarkıda alan hiç açılmaz. [lrclib.net](https://lrclib.net) kullanır.
+- **Senkron şarkı sözleri (Mate Lyrics altyapısı):** Müzik kartında 3 satır (önceki sönük, anlık parlak, sonraki sönük), kapalı notch'un altında 1 veya 2 satır. Sözü olmayan şarkıda alan hiç açılmaz. [lrclib.net](https://lrclib.net) kullanır. Sözlerin yanındaki ince çizgi sözlerin neresinde olduğunu gösterir; kaydırırken çalan satırı da işaretler.
 - **Canlı etkinlikler (kapalıyken):** müzik göstergesi, zamanlayıcı, şarj, ekran kaydı. Gösterge simgesi seçilebilir (equalizer, ses dalgası, AirPods, HomePod, Apple logosu…).
 - **Raf:** Dosyayı notch'a sürükle, sonra istediğin yere geri sürükle. Sağ tık: Aç, Hızlı Bakış, panoya kopyala, yolu kopyala, Finder'da göster, AirDrop ile gönder.
 - **Pano geçmişi:** Kopyalayınca "Kopyalandı" bandı; arama, sabitleme (yeniden başlatınca da durur), tek tek veya toplu silme, ayarlanabilir boyut ve otomatik silme. Şifre yöneticisi kopyaları kaydedilmez.

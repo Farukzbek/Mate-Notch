@@ -1762,25 +1762,33 @@ struct CardLyric: View {
         TimelineView(.periodic(from: .now, by: 0.2)) { _ in
             let idx = lyrics.index(in: lines, at: media.position) ?? -1
             let center = idx + browse
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach([-1, 0, 1], id: \.self) { o in
-                    slot(lines, center + o, current: center + o == idx, browsing: browse != 0 && o == 0)
-                        .background(RoundedRectangle(cornerRadius: 4).fill(.white.opacity(hoverRow == o + 1 ? 0.10 : 0)))
+            HStack(spacing: 6) {
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach([-1, 0, 1], id: \.self) { o in
+                        slot(lines, center + o, current: center + o == idx, browsing: browse != 0 && o == 0)
+                            .background(RoundedRectangle(cornerRadius: 4).fill(.white.opacity(hoverRow == o + 1 ? 0.10 : 0)))
+                    }
+                }
+                .overlay(LyricInteraction(
+                    onScroll: { scroll($0, lines) },
+                    onClick: { click($0, lines) },
+                    onHover: { hoverRow = $0 },
+                    menu: { menu($0, lines) }))
+                if lines.count > 1 {
+                    let last = CGFloat(lines.count - 1)
+                    LyricRail(position: CGFloat(max(0, center)) / last,
+                              visible: 3 / CGFloat(lines.count),
+                              playing: browse != 0 ? CGFloat(max(0, idx)) / last : nil)
                 }
             }
             .animation(.spring(response: 0.42, dampingFraction: 0.86), value: center)
         }
-        .overlay(LyricInteraction(
-            onScroll: { scroll($0, lines) },
-            onClick: { click($0, lines) },
-            onHover: { hoverRow = $0 },
-            menu: { menu($0, lines) }))
     }
 
     /// Senkronu olmayan sözler: yalnızca AÇIK notch'ta, durağan metin olarak (kaydırılabilir). Kapalı notch'ta gösterilmez.
     func plainBlock(_ rows: [String]) -> some View {
         let lines = rows.map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
-        return VStack(alignment: .leading, spacing: 0) {
+        let text = VStack(alignment: .leading, spacing: 0) {
             ForEach(0..<3, id: \.self) { o in
                 let i = plainTop + o
                 Text(lines.indices.contains(i) ? lines[i] : " ")
@@ -1806,6 +1814,13 @@ struct CardLyric: View {
                 m.addItem(info)
                 return m
             }))
+        return HStack(spacing: 6) {
+            text
+            if lines.count > 3 {
+                LyricRail(position: CGFloat(plainTop) / CGFloat(lines.count - 3), visible: 3 / CGFloat(lines.count))
+                    .animation(.snappy(duration: 0.25), value: plainTop)
+            }
+        }
     }
 
     private func currentIndex(_ lines: [LyricLine]) -> Int { lyrics.index(in: lines, at: media.position) ?? -1 }
@@ -1862,6 +1877,37 @@ struct CardLyric: View {
 
     func dim(_ t: String) -> some View {
         Text(t).font(.system(size: 12, weight: .medium, design: .rounded)).foregroundStyle(.white.opacity(0.4))
+    }
+}
+
+/// Sözlerin sağındaki ince dikey konum çizgisi: parlak parça görünen satırların şarkı sözleri içindeki yerini gösterir.
+/// Elle gezinirken parça maviye döner, çalan satırın yeri de beyaz bir işaretle kalır.
+struct LyricRail: View {
+    var position: CGFloat                  // 0 (ilk satır) … 1 (son satır)
+    var visible: CGFloat                   // görünen satırların toplama oranı (parçanın boyu)
+    var playing: CGFloat? = nil            // yalnızca gezinirken: çalan satırın yeri
+
+    private let height: CGFloat = 44
+    private func clamp(_ v: CGFloat) -> CGFloat { min(1, max(0, v)) }
+
+    var body: some View {
+        let thumb = max(9, height * min(1, visible))
+        Capsule().fill(.white.opacity(0.16))
+            .frame(width: 3, height: height)
+            .overlay(alignment: .top) {
+                Capsule()
+                    .fill(playing == nil ? Color.white.opacity(0.75) : Color(red: 0.55, green: 0.8, blue: 1))
+                    .frame(width: 3, height: thumb)
+                    .offset(y: (height - thumb) * clamp(position))
+            }
+            .overlay(alignment: .top) {
+                if let playing {
+                    Capsule().fill(.white).frame(width: 7, height: 2)
+                        .offset(y: (height - thumb) * clamp(playing) + thumb / 2 - 1)
+                }
+            }
+            .frame(width: 7)                       // işaret kırpılmasın
+            .allowsHitTesting(false)
     }
 }
 

@@ -32,7 +32,7 @@
 
 - **Adapté au notch :** Lit la taille du notch physique et s'ouvre avec une animation élastique au survol. Sur les Mac sans encoche, il affiche une pilule virtuelle.
 - **Musique (Apple Music + Spotify) :** Pochette, barre de progression, lecture/pause/suivant/précédent. La couleur de la pochette teinte l'arrière-plan.
-- **Paroles synchronisées (moteur Mate Lyrics) :** Trois lignes sur la carte musique (précédente atténuée, actuelle vive, suivante atténuée) et une ou deux lignes sous le notch fermé. L'espace ne s'ouvre jamais pour un morceau sans paroles. Utilise [lrclib.net](https://lrclib.net).
+- **Paroles synchronisées (moteur Mate Lyrics) :** Trois lignes sur la carte musique (précédente atténuée, actuelle vive, suivante atténuée) et une ou deux lignes sous le notch fermé. L'espace ne s'ouvre jamais pour un morceau sans paroles. Utilise [lrclib.net](https://lrclib.net). Un fin trait à côté des paroles indique où vous en êtes ; pendant le défilement, il signale aussi la ligne en cours.
 - **Activités en direct (à l'état fermé) :** indicateur de musique, minuteur, charge, enregistrement d'écran. L'icône de l'indicateur est au choix (égaliseur, onde sonore, AirPods, HomePod, logo Apple…).
 - **Étagère :** Faites glisser un fichier sur le notch, puis refaites-le glisser où vous voulez. Clic droit : Ouvrir, Coup d'œil, copier dans le presse-papiers, copier le chemin, afficher dans le Finder, envoyer par AirDrop.
 - **Historique du presse-papiers :** Bandeau « Copié » à la copie ; recherche, épinglage (conservé au redémarrage), suppression unitaire ou groupée, taille réglable et suppression automatique. Les copies des gestionnaires de mots de passe ne sont jamais enregistrées.

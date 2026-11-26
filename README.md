@@ -32,7 +32,7 @@
 
 - **Notch-aware:** Reads the physical notch size and opens with a springy animation on hover. On Macs without a notch it shows a virtual pill.
 - **Music (Apple Music + Spotify):** Artwork, progress bar, play/pause/next/previous. The artwork colour tints the background.
-- **Synced lyrics (Mate Lyrics engine):** Three lines on the music card (previous dim, current bright, next dim) and one or two lines under the closed notch. The area never opens for a song without lyrics. Uses [lrclib.net](https://lrclib.net).
+- **Synced lyrics (Mate Lyrics engine):** Three lines on the music card (previous dim, current bright, next dim) and one or two lines under the closed notch. The area never opens for a song without lyrics. Uses [lrclib.net](https://lrclib.net). A thin line beside the lyrics shows where you are in the song; while you scroll, it also marks the line that is playing.
 - **Live activities (while closed):** music indicator, timer, charging, screen recording. The indicator icon is selectable (equalizer, sound wave, AirPods, HomePod, Apple logo…).
 - **Shelf:** Drag a file onto the notch, then drag it back out wherever you need it. Right-click: Open, Quick Look, copy to clipboard, copy path, show in Finder, send with AirDrop.
 - **Clipboard history:** A "Copied" banner on copy; search, pinning (persists across restarts), delete one or many, adjustable size and automatic expiry. Password-manager copies are never stored.

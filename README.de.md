@@ -32,7 +32,7 @@
 
 - **Notch-bewusst:** Liest die Größe des physischen Notch und öffnet sich beim Darüberfahren mit einer federnden Animation. Auf Macs ohne Notch zeigt er eine virtuelle Pille.
 - **Musik (Apple Music + Spotify):** Cover, Fortschrittsbalken, Wiedergabe/Pause/Weiter/Zurück. Die Coverfarbe färbt den Hintergrund.
-- **Synchronisierte Songtexte (Mate-Lyrics-Technik):** Drei Zeilen auf der Musikkarte (vorherige gedimmt, aktuelle hell, nächste gedimmt) und eine oder zwei Zeilen unter dem geschlossenen Notch. Bei Songs ohne Text öffnet sich der Bereich nie. Nutzt [lrclib.net](https://lrclib.net).
+- **Synchronisierte Songtexte (Mate-Lyrics-Technik):** Drei Zeilen auf der Musikkarte (vorherige gedimmt, aktuelle hell, nächste gedimmt) und eine oder zwei Zeilen unter dem geschlossenen Notch. Bei Songs ohne Text öffnet sich der Bereich nie. Nutzt [lrclib.net](https://lrclib.net). Eine schmale Linie neben dem Songtext zeigt, wo im Text du bist; beim Scrollen markiert sie auch die gerade gespielte Zeile.
 - **Live-Aktivitäten (im geschlossenen Zustand):** Musikanzeige, Timer, Laden, Bildschirmaufnahme. Das Anzeigesymbol ist wählbar (Equalizer, Schallwelle, AirPods, HomePod, Apple-Logo …).
 - **Ablage:** Zieh eine Datei auf den Notch und zieh sie später dorthin zurück, wo du sie brauchst. Rechtsklick: Öffnen, Übersicht, in die Zwischenablage kopieren, Pfad kopieren, im Finder zeigen, per AirDrop senden.
 - **Zwischenablageverlauf:** „Kopiert“-Banner beim Kopieren; Suche, Anheften (bleibt nach dem Neustart), einzeln oder gesammelt löschen, einstellbare Größe und automatisches Löschen. Kopien von Passwortmanagern werden nie gespeichert.
